@@ -137,7 +137,7 @@ Responsabilidad: presentar información, recibir archivos, mostrar resultados.
 - Buscador en tiempo real por documento
 - Botón de exportar reporte
 
-Tecnología: HTML5 + CSS3 + JavaScript vanilla o React (sin servidor). Si se usa React, compilar previamente a archivos estáticos en `dist/`.
+Tecnología: HTML5 + CSS3 + JavaScript vanilla puro. Sin frameworks, sin compilación, sin npm.
 
 #### Capa de Lectura
 Responsabilidad: leer el archivo Excel y convertirlo a estructura interna.
@@ -215,8 +215,8 @@ ResultadoValidacion[] en memoria RAM
 │   CLIENTE    │◀──────────────▶│        SERVIDOR         │
 │              │                │                         │
 │  Navegador   │                │  ┌─────────────────┐   │
-│  (React SPA) │                │  │   API REST      │   │
-│              │                │  │   (Node.js /    │   │
+│  (HTML + CSS + JS) │                │  │   API REST      │   │
+│              │                │  │   (Express /    │   │
 │  Celular     │                │  │    Python)      │   │
 │  (responsive)│                │  └────────┬────────┘   │
 └──────────────┘                │           │             │
@@ -351,7 +351,7 @@ validador-cac/
 
 ```
 validador-cac/
-├── client/                     ← Frontend React (mismo src/ de Fase 1 adaptado)
+├── client/                     ← Frontend HTML+CSS+JS (mismo src/ de Fase 1))
 ├── server/
 │   ├── app.js                  ← Servidor Express/FastAPI
 │   ├── routes/
