@@ -2,7 +2,7 @@
 
 **Proyecto:** Validador de matriz CAC
 **Sprint:** 1 (MVP funcional)
-**Versión:** 1.0
+**Versión:** 1.1
 **Fecha:** Mayo 2026
 
 ---
@@ -49,7 +49,7 @@ Reglas de negocio: políticas aplicables
 
 ## CU-01 — Cargar archivo Excel
 
-**Historias cubiertas:** HU-01
+**Historias cubiertas:** HU-004
 
 **Actor principal:** Analista de calidad
 
@@ -93,7 +93,7 @@ Reglas de negocio: políticas aplicables
 
 ## CU-02 — Validar estructura del archivo
 
-**Historias cubiertas:** HU-12, HU-14
+**Historias cubiertas:** HU-004, HU-005
 
 **Actor principal:** Sistema (automático)
 
@@ -138,7 +138,7 @@ Reglas de negocio: políticas aplicables
 
 ## CU-03 — Procesar carga con progreso
 
-**Historias cubiertas:** HU-13
+**Historias cubiertas:** HU-006
 
 **Actor principal:** Sistema
 
@@ -173,7 +173,7 @@ Reglas de negocio: políticas aplicables
 
 ## CU-04 — Validar bloque de identificación (V1-V16)
 
-**Historias cubiertas:** HU-15, HU-19, HU-20
+**Historias cubiertas:** HU-010, HU-016
 
 **Actor principal:** Sistema (automático durante CU-03)
 
@@ -183,67 +183,81 @@ Reglas de negocio: políticas aplicables
 **Flujo principal:**
 1. Para cada paciente, el sistema toma las variables V1 a V16
 2. Aplica las validaciones de formato:
-   - V1, V2, V3, V4: nombres sin caracteres especiales
-   - V5: tipo de identificación contra catálogo (CC, TI, RC, PA, etc.)
-   - V6: número de identificación según tipo
-   - V7: fecha de nacimiento en formato AAAA-MM-DD
-   - V8: sexo (M, F)
-   - V9: código DIVIPOLA de 5 dígitos
-   - V10: régimen de afiliación (1, 2, 3)
-   - V11-V14: fechas en formato AAAA-MM-DD
-   - V15, V16: campos opcionales según corresponda
+   - V1, V2, V3, V4: nombres sin caracteres especiales, solo mayúsculas
+   - V2 permite comodín `NONE` cuando no existe segundo nombre
+   - V4 permite comodín `NOAP` cuando no existe segundo apellido
+   - V5: tipo de identificación contra catálogo (CC, TI, RC, PA, CE, CD, SC, PT, PE, CN, AS, MS, DE, SI)
+   - V6: número de identificación según formato del tipo en V5
+   - V7: fecha de nacimiento en formato `AAAA-MM-DD`
+   - V8: sexo — solo `M` o `F`
+   - V9: código ocupación CIUO o comodines `9999`/`9998`
+   - V10: régimen de afiliación (C, S, P, E, N, I)
+   - V11: código EAPB o entidad territorial
+   - V12: pertenencia étnica (1-6)
+   - V13: grupo poblacional según rangos válidos del catálogo
+   - V14: municipio DIVIPOLA exactamente 5 dígitos
+   - V15: máximo dos teléfonos separados por guion o comodín `0`
+   - V16: fecha de afiliación en formato `AAAA-MM-DD`
 3. Aplica las validaciones de coherencia:
-   - V11 (fecha afiliación) debe ser posterior a V7 (fecha nacimiento)
-   - V12 (fecha desafiliación) si existe, debe ser posterior a V11
+   - Si V5 = `AS` o `MS` → V10 debe ser `S`
+   - V16 (fecha afiliación) debe ser posterior a V7 (fecha nacimiento)
+   - Para EPS: V16 debe ser posterior a `1995-01-01`
+   - V7 debe ser anterior a la fecha de corte del reporte
 4. Cada error encontrado se registra con: paciente, variable, regla, severidad
-5. La severidad es **error crítico** (rojo) si bloquea el cargue, **advertencia** (amarillo) si es revisable
+5. La severidad es **error** (rojo) si bloquea el cargue, **advertencia** (amarillo) si es revisable
 
 **Postcondición:** Lista de errores del bloque identificación creada.
 
 **Reglas de negocio:**
-- "NONE" es válido en V3 (segundo nombre) y V4 (segundo apellido) cuando no existe
-- "NOAP" es válido en V2 (primer apellido) solo en casos específicos del instructivo
-- Los valores 98 y 99 son códigos de "sin información" del catálogo CAC
+- Los comodines `NONE` y `NOAP` deben ir en mayúscula sostenida
+- `AS` y `MS` solo son válidos en régimen subsidiado (V10 = `S`)
+- V14 debe tener exactamente 5 dígitos; los primeros 2 corresponden al departamento DANE
 
 ---
 
 ## CU-05 — Validar bloque de diagnóstico (V17-V44)
 
-**Historias cubiertas:** HU-16, HU-19, HU-20
+**Historias cubiertas:** HU-011, HU-016
 
 **Actor principal:** Sistema (automático durante CU-03)
 
 **Flujo principal:**
 1. Para cada paciente, el sistema toma las variables V17 a V44
 2. Valida formato:
-   - V17: código CIE-10 con formato correcto (letra + 2-4 dígitos)
-   - V18, V19, V20, V24: fechas en AAAA-MM-DD
-   - V21: motivo de no diagnóstico (catálogo 1-7)
-   - V22: motivo específico si V21=7
-   - V25, V26, V27, V28: variables del tumor según corresponda
-   - V29: estadio clínico
+   - V17: código CIE-10 con formato correcto (letra + 2-4 dígitos), contra catálogo operativo SISCAC
+   - V17 bloquea el código `C80X` (eliminado del archivo operativo)
+   - V18, V19, V20, V23, V24, V26: fechas en `AAAA-MM-DD` o comodines válidos
+   - V21: tipo de estudio diagnóstico (catálogo: 5, 6, 7, 8, 9, 10, 99)
+   - V22: motivo sin histopatología — obligatorio si V21 = `7`
+   - V27: histología del tumor (catálogo 1-24, 98, 99)
+   - V28: grado de diferenciación (catálogo 1-4, 94, 95, 98, 99)
+   - V29: estadificación según tabla por tipo de cáncer
+   - V42: antecedente otro cáncer primario (1, 2, 99)
 3. Aplica validaciones de coherencia:
-   - V18 (fecha diagnóstico) ≤ V24 (fecha histopatología)
-   - V19 (fecha remisión) anterior a V20 (fecha ingreso)
-   - Si V17 empieza en "D" (carcinoma in situ), V29 debe ser 0
-   - Si V17 = "C80X" → advertencia "código eliminado del catálogo"
-   - Si V21=7, V22 debe estar lleno con motivo
-4. Valida validaciones cruzadas específicas:
-   - HER2 (V31) solo aplica si el cáncer es de mama
-   - Gleason (V37) solo aplica si el cáncer es de próstata
-5. Registra errores y advertencias con detalle
+   - V19 (fecha remisión) ≤ V20 (fecha ingreso) ≤ V18 (fecha diagnóstico)
+   - V23 (fecha recolección muestra) ≤ V24 (fecha informe histopatológico)
+   - Si V21 = `7` → V22 obligatorio; V23 y V24 deben ser `1845-01-01`
+   - Si V17 inicia con `D` (in situ) → V29 debe ser `0`
+4. Valida variables dependientes del tipo de cáncer:
+   - V31, V32, V33 (HER2) — solo si V17 corresponde a cáncer de mama
+   - V34, V35 (Dukes) — solo si V17 corresponde a cáncer colorrectal
+   - V36 (Ann Arbor/Lugano) — solo si V17 corresponde a linfoma o mieloma múltiple
+   - V37 (Gleason) — solo si V17 corresponde a cáncer de próstata; coherencia con V8 = `M`
+   - V38, V39 (clasificación de riesgo) — solo si V17 corresponde a leucemia o linfoma
+5. Registra errores y advertencias con detalle de variable, regla y recomendación
 
 **Postcondición:** Lista de errores del bloque diagnóstico creada.
 
 **Reglas de negocio:**
-- Comodines de fecha como `1845-01-01` representan "sin información histórica"
-- El código CIE-10 puede tener variantes válidas (C50, C50.1, C50.9)
+- Comodines de fecha `1800-01-01` = desconocido; `1845-01-01` = no aplica
+- El código `C80X` nunca es válido, independiente del contexto
+- La opción `99` en pacientes incidentes se considera dato no gestionado (advertencia)
 
 ---
 
 ## CU-06 — Visualizar errores por paciente
 
-**Historias cubiertas:** HU-02
+**Historias cubiertas:** HU-022, HU-016
 
 **Actor principal:** Analista de calidad
 
@@ -275,7 +289,7 @@ Reglas de negocio: políticas aplicables
 
 ## CU-07 — Buscar paciente específico
 
-**Historias cubiertas:** HU-21
+**Historias cubiertas:** HU-023
 
 **Actor principal:** Analista de calidad
 
@@ -304,7 +318,7 @@ Reglas de negocio: políticas aplicables
 
 ## CU-08 — Exportar reporte Excel
 
-**Historias cubiertas:** HU-03
+**Historias cubiertas:** HU-030
 
 **Actor principal:** Analista de calidad
 
@@ -342,7 +356,7 @@ Reglas de negocio: políticas aplicables
 
 ## CU-09 — Funcionamiento sin internet
 
-**Historias cubiertas:** HU-06, HU-34
+**Historias cubiertas:** HU-039
 
 **Actor principal:** Digitador
 
@@ -364,7 +378,7 @@ Reglas de negocio: políticas aplicables
 
 ## CU-10 — Borrado de datos al cerrar
 
-**Historias cubiertas:** HU-35
+**Historias cubiertas:** HU-036
 
 **Actor principal:** Sistema
 
@@ -389,23 +403,19 @@ Reglas de negocio: políticas aplicables
 
 | Caso de Uso | Historias cubiertas |
 |---|---|
-| CU-01 | HU-01 |
-| CU-02 | HU-12, HU-14 |
-| CU-03 | HU-13 |
-| CU-04 | HU-15, HU-19, HU-20 |
-| CU-05 | HU-16, HU-19, HU-20 |
-| CU-06 | HU-02 |
-| CU-07 | HU-21 |
-| CU-08 | HU-03 |
-| CU-09 | HU-06, HU-34 |
-| CU-10 | HU-35 |
+| CU-01 | HU-004 |
+| CU-02 | HU-004, HU-005 |
+| CU-03 | HU-006 |
+| CU-04 | HU-010, HU-016 |
+| CU-05 | HU-011, HU-016 |
+| CU-06 | HU-022, HU-016 |
+| CU-07 | HU-023 |
+| CU-08 | HU-030 |
+| CU-09 | HU-039 |
+| CU-10 | HU-036 |
 
-**Historias del Sprint 1 cubiertas:** 14 de 16
+**Historias del Sprint 1 cubiertas:** 9 de 9 explícitas
 
-**Historias técnicas no requieren caso de uso explícito:**
-- HU-10 (código modular) → se valida en arquitectura
-- HU-11 (validaciones documentadas) → se valida en arquitectura
-
----
-
-**Próximo paso:** Diseñar la arquitectura técnica detallada que soporte estos casos de uso.
+**Historias cubiertas transversalmente sin caso de uso propio:**
+- HU-016 (clasificar por severidad) → cubierta en CU-04, CU-05 y CU-06
+- HU-035 (mensajes de error claros) → cubierta en flujos alternos de todos los CU
