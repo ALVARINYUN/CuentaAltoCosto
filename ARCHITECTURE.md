@@ -1,6 +1,7 @@
-# Arquitectura Técnica - Validador CAC
+# Arquitectura del sistema — Validador CAC
 
-**Proyecto:** Validador de matriz CAC para reporte de cohorte cáncer
+**Proyecto:** Validador CAC para reporte de cohorte cáncer
+**Normativa base:** Resolución 0247/2014 · Instructivo CAC-IEP1-I01 · Medición enero 2025
 **Versión:** 1.0
 **Fecha:** Mayo 2026
 
@@ -8,749 +9,841 @@
 
 ## Índice
 
-1. [Principios arquitectónicos](#1-principios-arquitectónicos)
-2. [Stack tecnológico](#2-stack-tecnológico)
-3. [Estructura de carpetas](#3-estructura-de-carpetas)
-4. [Diagrama de componentes](#4-diagrama-de-componentes)
-5. [Flujo de datos](#5-flujo-de-datos)
-6. [Especificación de archivos](#6-especificación-de-archivos)
-7. [Estructuras de datos](#7-estructuras-de-datos)
-8. [Decisiones arquitectónicas (ADR)](#8-decisiones-arquitectónicas-adr)
-9. [Estándares de código](#9-estándares-de-código)
-10. [Roadmap técnico](#10-roadmap-técnico)
+1. [Resumen ejecutivo](#1-resumen-ejecutivo)
+2. [Contexto y restricciones](#2-contexto-y-restricciones)
+3. [Evolución del sistema por fases](#3-evolución-del-sistema-por-fases)
+4. [Arquitectura Fase 1 — MVP local](#4-arquitectura-fase-1--mvp-local-sprint-1-y-2)
+5. [Arquitectura Fase 2 — Web institucional](#5-arquitectura-fase-2--web-institucional-sprint-4-en-adelante)
+6. [Estructura de carpetas](#6-estructura-de-carpetas)
+7. [Módulo de validaciones](#7-módulo-de-validaciones)
+8. [Módulo de catálogos](#8-módulo-de-catálogos)
+9. [Módulo de exportaciones](#9-módulo-de-exportaciones)
+10. [Modelo de datos](#10-modelo-de-datos)
+11. [Seguridad y privacidad](#11-seguridad-y-privacidad)
+12. [Decisiones de diseño](#12-decisiones-de-diseño)
+13. [Mapeo HU → componentes](#13-mapeo-hu--componentes)
 
 ---
 
-## 1. Principios arquitectónicos
+## 1. Resumen ejecutivo
 
-Las "leyes" que rigen todo el proyecto. Si una decisión viola alguno de estos principios, se rechaza.
+El validador CAC es una herramienta que permite a equipos de salud detectar errores en bases de datos de pacientes con cáncer antes de enviarlas a la CAC (Cuenta de Alto Costo). Trabaja sobre 134 variables definidas por el instructivo oficial, agrupadas en 8 módulos.
 
-### Principio 1 — Privacidad por diseño
-Los datos del paciente nunca salen del navegador. No hay backend, no hay localStorage para datos sensibles, no hay analytics, no hay telemetría.
+El sistema tiene dos fases de vida claramente distintas:
 
-### Principio 2 — Cero instalación
-El usuario abre un archivo `.html` con doble clic. No instala Python, no habilita macros, no pide permisos de admin.
+**Fase 1 (Sprint 1–3):** Aplicación local que corre en el navegador sin servidor. No guarda datos. Toda la información vive en memoria RAM mientras la pestaña está abierta. Está pensada para equipos que no tienen infraestructura web disponible.
 
-### Principio 3 — Separación de responsabilidades
-Cada archivo tiene UNA responsabilidad clara. Si tocas un tema, modificas un solo archivo.
+**Fase 2 (Sprint 4+):** Versión web institucional con servidor, base de datos central, autenticación por roles y acceso desde celular. Para hospitales que quieren un sistema compartido entre varios usuarios.
 
-### Principio 4 — Sin frameworks pesados
-HTML, CSS y JavaScript puro. Una sola librería externa: SheetJS para leer Excel.
-
-### Principio 5 — Auditable
-Cualquier persona puede abrir los archivos con un editor de texto y entender qué hacen.
-
-### Principio 6 — Trazabilidad normativa
-Cada validación referencia el número de variable y la regla del instructivo CAC que aplica.
-
-### Principio 7 — Funcionamiento offline
-La aplicación funciona sin conexión a internet una vez descargada.
+La arquitectura está diseñada para que la transición entre fases sea posible sin reescribir la lógica de negocio (validaciones, catálogos, exportaciones).
 
 ---
 
-## 2. Stack tecnológico
+## 2. Contexto y restricciones
 
-| Capa | Tecnología | Versión | Licencia | Justificación |
-|---|---|---|---|---|
-| Estructura | HTML | 5 | Estándar W3C | Universal, sin instalación |
-| Estilos | CSS | 3 | Estándar W3C | Personalización completa |
-| Lógica | JavaScript | ES6+ | Estándar ECMA | Soportado en navegadores modernos |
-| Excel | SheetJS (xlsx) | 0.18.5 | Apache 2.0 | Lee/escribe Excel sin backend |
-| Editor | VS Code | Cualquiera | MIT | Estándar de la industria |
-| Control versiones | Git | Cualquiera | GPL | Estándar profesional |
+### 2.1 Datos sensibles
 
-### Lo que NO usamos y por qué
+Los datos que procesa este sistema son información de salud de pacientes con cáncer. Esto impone restricciones estrictas:
 
-| Tecnología | Por qué NO |
-|---|---|
-| React, Vue, Angular | Requieren build, complican distribución, agregan complejidad innecesaria |
-| Node.js (servidor) | Implicaría backend, viola Principio 1 |
-| Bases de datos | Datos no se persisten por privacidad |
-| TypeScript | Requiere compilación, complica auditoría |
-| jQuery | JavaScript moderno ya lo cubre |
-| Bootstrap | Genera dependencias innecesarias, CSS propio es suficiente |
+- **Nunca** enviar datos a servidores externos no autorizados.
+- En Fase 1: procesar todo localmente, sin red.
+- En Fase 2: almacenar solo en servidor institucional autorizado.
+- No usar `localStorage` ni `sessionStorage` para datos de pacientes.
+- Al cerrar la pestaña en Fase 1, todos los datos desaparecen.
+
+### 2.2 Restricciones de la Fase 1
+
+- Funciona abriendo `index.html` directamente en el navegador (protocolo `file://`).
+- No requiere internet. Todas las librerías van en `libs/` local.
+- No requiere permisos de administrador ni instalación.
+- Solo usa memoria RAM del proceso del navegador.
+- No deja rastro en disco.
+
+### 2.3 Escala esperada
+
+- Archivos de hasta 10.000 filas (HU-040).
+- Archivos habituales: 500–2.000 pacientes por IPS.
+- Procesamiento debe ser fluido sin congelar la interfaz.
+
+### 2.4 Catálogos externos requeridos
+
+| Catálogo | Variables | Fuente oficial |
+|---|---|---|
+| CIE-10 archivo operativo | V17, V44 | SISCAC |
+| DIVIPOLA | V14 | DANE |
+| EAPB | V11 | MinSalud |
+| REPS / IPS | V25, V51, V52, V64, V65, V77, V82, V92, V93, V101, V102, V110, V113, V116, V119, V122 | MinSalud |
+| ATC medicamentos | V53.1-V53.9, V54-V56, V66.1-V66.9, V67-V69 | SISCAC |
+| CIUO ocupaciones | V9 | OIT |
+| BDUA | V1-V4, V7, V16 | ADRES |
+
+Cada catálogo se carga como archivo independiente (`JSON` o `CSV`) y no está embebido en la lógica de validación (HU-042).
 
 ---
 
-## 3. Estructura de carpetas
+## 3. Evolución del sistema por fases
+
+```
+Sprint 0-1      Sprint 2-3      Sprint 4        Sprint 5-8
+───────────     ───────────     ──────────      ──────────
+MVP Local   →   + Catálogos →   Web Inst.   →   Completo
+                + Dashboard     + Auth          + Archivo
+                + Excel         + Celular        plano CAC
+                  export        + BD central
+```
+
+La capa de validaciones y la capa de catálogos son **compartidas entre ambas fases**. Se escriben una sola vez y funcionan tanto en el navegador (Fase 1) como en el servidor (Fase 2).
+
+---
+
+## 4. Arquitectura Fase 1 — MVP local (Sprint 1 y 2)
+
+### 4.1 Visión general
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    NAVEGADOR (RAM)                       │
+│                                                         │
+│  ┌──────────┐   ┌──────────────┐   ┌────────────────┐  │
+│  │   UI     │   │   Motor de   │   │   Catálogos    │  │
+│  │ (HTML +  │──▶│  Validación  │──▶│   (JSON/CSV    │  │
+│  │  JS)     │   │              │   │   en memoria)  │  │
+│  └──────────┘   └──────────────┘   └────────────────┘  │
+│       │                │                                │
+│       ▼                ▼                                │
+│  ┌──────────┐   ┌──────────────┐                        │
+│  │  Lector  │   │  Exportador  │                        │
+│  │  Excel   │   │  (Excel)     │                        │
+│  │ (SheetJS)│   │ (SheetJS)    │                        │
+│  └──────────┘   └──────────────┘                        │
+│                                                         │
+│  ━━━━━━━━━━ TODO VIVE EN MEMORIA RAM ━━━━━━━━━━━━━━━━  │
+└─────────────────────────────────────────────────────────┘
+         ▲                              │
+         │ .xlsx                        │ .xlsx (reporte)
+    [Archivo local                [Descarga al
+     del usuario]                  navegador]
+```
+
+### 4.2 Capas de la Fase 1
+
+#### Capa UI
+Responsabilidad: presentar información, recibir archivos, mostrar resultados.
+
+- `index.html` — punto de entrada único
+- Zona de carga por drag-and-drop o clic
+- Tabla de pacientes con errores expandibles
+- Barra de progreso durante validación
+- Buscador en tiempo real por documento
+- Botón de exportar reporte
+
+Tecnología: HTML5 + CSS3 + JavaScript vanilla o React (sin servidor). Si se usa React, compilar previamente a archivos estáticos en `dist/`.
+
+#### Capa de Lectura
+Responsabilidad: leer el archivo Excel y convertirlo a estructura interna.
+
+- Usa **SheetJS** (`xlsx`) como librería local en `libs/`
+- Lee solo la primera hoja
+- Normaliza encabezados (mayúsculas/minúsculas indiferente)
+- Valida estructura mínima antes de procesar
+- Produce array de objetos `{ V1, V2, ..., V134 }`
+
+#### Capa de Validación
+Responsabilidad: aplicar todas las reglas de la matriz CAC sobre cada registro.
+
+- Arquitectura de reglas independientes por variable
+- Cada regla retorna `{ variable, tipo, severidad, mensaje, recomendacion }`
+- Tipos: `formato` | `catalogo` | `coherencia` | `dependencia`
+- Severidades: `error` | `advertencia`
+- El motor recorre las reglas en orden y acumula resultados
+- Procesa de forma asíncrona con `setTimeout` o `Web Workers` para no congelar UI
+
+#### Capa de Catálogos
+Responsabilidad: proveer listas de valores válidos para validación.
+
+- Cada catálogo es un archivo JSON o CSV en `catalogos/`
+- Se carga en memoria al inicio o bajo demanda
+- La lógica de validación nunca tiene valores hardcodeados
+- El administrador puede actualizar los archivos sin tocar el código
+
+#### Capa de Exportación
+Responsabilidad: generar el reporte Excel de validación.
+
+- Usa **SheetJS** para escribir el archivo
+- Genera 3 hojas: Resumen, Errores por paciente, Errores frecuentes
+- El archivo se descarga directamente en el navegador
+- Nombre con timestamp: `Reporte_CAC_YYYYMMDD_HHMM.xlsx`
+- No incluye nombres de pacientes, solo número de documento
+
+### 4.3 Flujo de datos Fase 1
+
+```
+Usuario carga .xlsx
+      │
+      ▼
+SheetJS lee archivo → Array de filas crudas
+      │
+      ▼
+Validador de estructura → ¿Columnas mínimas presentes?
+      │ Sí
+      ▼
+Motor de validación (asíncrono, por lotes de 100 filas)
+  ├── Reglas V1-V16 (identificación)
+  ├── Reglas V17-V44 (diagnóstico)
+  ├── Reglas V45-V73 (terapia sistémica)     [Sprint 5]
+  ├── Reglas V74-V85 (cirugía)               [Sprint 6]
+  ├── Reglas V86-V105 (radioterapia)         [Sprint 6]
+  ├── Reglas V106-V110 (trasplante)          [Sprint 6]
+  ├── Reglas V111-V124 (complementario)      [Sprint 6]
+  └── Reglas V125-V134 (resultado final)     [Sprint 7]
+      │
+      ▼
+ResultadoValidacion[] en memoria RAM
+      │
+      ├──▶ UI: tabla de pacientes con errores
+      └──▶ Exportador: archivo Excel de reporte
+```
+
+---
+
+## 5. Arquitectura Fase 2 — Web institucional (Sprint 4 en adelante)
+
+### 5.1 Visión general
+
+```
+┌──────────────┐     HTTPS      ┌─────────────────────────┐
+│   CLIENTE    │◀──────────────▶│        SERVIDOR         │
+│              │                │                         │
+│  Navegador   │                │  ┌─────────────────┐   │
+│  (React SPA) │                │  │   API REST      │   │
+│              │                │  │   (Node.js /    │   │
+│  Celular     │                │  │    Python)      │   │
+│  (responsive)│                │  └────────┬────────┘   │
+└──────────────┘                │           │             │
+                                │  ┌────────▼────────┐   │
+                                │  │   Motor de      │   │
+                                │  │   Validación    │   │
+                                │  │  (mismo código  │   │
+                                │  │   que Fase 1)   │   │
+                                │  └────────┬────────┘   │
+                                │           │             │
+                                │  ┌────────▼────────┐   │
+                                │  │   Base de datos │   │
+                                │  │  (PostgreSQL /  │   │
+                                │  │   MongoDB)      │   │
+                                │  └─────────────────┘   │
+                                └─────────────────────────┘
+                                         │
+                                   Servidor institucional
+                                   autorizado (no nube pública
+                                   sin acuerdo de datos)
+```
+
+### 5.2 Nuevos módulos en Fase 2
+
+#### Autenticación y roles (HU-037)
+- Login con usuario y contraseña
+- Roles: Digitador, Analista, Auditor, Coordinador, Administrador
+- JWT para sesiones
+- Cada acción queda asociada a un usuario
+
+#### Base de datos central
+- Registros CAC persistentes (no solo en RAM)
+- Un registro puede ser creado desde PC o celular y continuado desde otro dispositivo
+- Estado del registro: `Borrador` | `Validado` | `Exportado`
+
+#### Auditoría de cambios (HU-038)
+- Tabla de log: usuario, fecha/hora, variable, valor anterior, valor nuevo, módulo
+- Inmutable: no se pueden eliminar registros del log
+
+#### API REST
+- `POST /validar` — recibe array de registros, retorna errores
+- `GET /registros` — lista registros con filtros
+- `POST /registros` — crea o actualiza un registro
+- `GET /exportar/excel` — genera reporte Excel
+- `GET /exportar/plano` — genera archivo plano CAC (Sprint 8)
+- `GET /catalogos/:nombre` — retorna catálogo actualizado
+
+### 5.3 Reutilización del motor de validación
+
+El motor de validación de la Fase 1 se escribe en JavaScript puro (sin dependencias de navegador). En la Fase 2 se ejecuta en Node.js en el servidor sin modificaciones. Esto garantiza que las reglas sean idénticas en ambas fases.
+
+```
+validaciones/
+├── engine.js          ← Motor principal (compartido Fase 1 y 2)
+├── reglas/
+│   ├── modulo1.js     ← V1-V16
+│   ├── modulo2.js     ← V17-V44
+│   ├── modulo3.js     ← V45-V73
+│   ├── modulo4.js     ← V74-V85
+│   ├── modulo5.js     ← V86-V105
+│   ├── modulo6.js     ← V106-V110
+│   ├── modulo7.js     ← V111-V124
+│   └── modulo8.js     ← V125-V134
+└── tipos.js           ← Constantes y tipos compartidos
+```
+
+---
+
+## 6. Estructura de carpetas
+
+### Fase 1 — Aplicación local
 
 ```
 validador-cac/
 │
-├── index.html                   ← Página principal (dashboard)
-├── sprint1.html                 ← Validador del Sprint 1
+├── index.html                  ← Punto de entrada único
+├── README.md
 │
-├── css/
-│   └── styles.css               ← Estilos compartidos
+├── src/
+│   ├── main.js                 ← Arranque de la app
+│   ├── ui/
+│   │   ├── carga.js            ← Zona drag-and-drop, CU-01
+│   │   ├── progreso.js         ← Barra de progreso, CU-03
+│   │   ├── tabla-resultados.js ← Vista de errores, CU-06
+│   │   ├── buscador.js         ← Búsqueda por documento, CU-07
+│   │   └── exportar.js         ← Botón exportar, CU-08
+│   │
+│   ├── validaciones/
+│   │   ├── engine.js           ← Motor principal
+│   │   ├── tipos.js            ← Constantes, severidades, tipos
+│   │   └── reglas/
+│   │       ├── modulo1.js      ← V1-V16 identificación
+│   │       ├── modulo2.js      ← V17-V44 diagnóstico
+│   │       ├── modulo3.js      ← V45-V73 terapia sistémica
+│   │       ├── modulo4.js      ← V74-V85 cirugía
+│   │       ├── modulo5.js      ← V86-V105 radioterapia
+│   │       ├── modulo6.js      ← V106-V110 trasplante
+│   │       ├── modulo7.js      ← V111-V124 complementario
+│   │       └── modulo8.js      ← V125-V134 resultado final
+│   │
+│   ├── catalogos/
+│   │   ├── cargador.js         ← Lee y cachea catálogos
+│   │   └── validador-catalogo.js ← Busca en catálogo
+│   │
+│   ├── lector/
+│   │   ├── excel.js            ← Lee .xlsx con SheetJS
+│   │   └── estructura.js       ← Valida columnas mínimas, CU-02
+│   │
+│   └── exportador/
+│       └── excel-reporte.js    ← Genera reporte .xlsx, CU-08
 │
-├── js/
-│   ├── core.js                  ← Utilidades base
-│   ├── catalogos.js             ← Tablas de valores permitidos
-│   ├── ui.js                    ← Componentes visuales
-│   ├── validaciones-s1.js       ← Reglas del Sprint 1
-│   └── exportar.js              ← Generación de reportes
+├── catalogos/                  ← Archivos de datos externos
+│   ├── cie10.json              ← Códigos CIE-10 operativos
+│   ├── divipola.json           ← Municipios DANE
+│   ├── eapb.json               ← Entidades aseguradoras
+│   ├── reps.json               ← IPS habilitadas
+│   ├── atc.json                ← Medicamentos antineoplásicos
+│   └── ciuo.json               ← Ocupaciones
 │
-├── libs/
-│   └── xlsx.full.min.js         ← SheetJS (única librería externa)
+├── libs/                       ← Librerías descargadas (sin internet)
+│   ├── xlsx.full.min.js        ← SheetJS para leer/escribir Excel
+│   └── [otras librerías UI]
 │
-├── docs/
-│   ├── instructivo-CAC.pdf      ← Referencia normativa
-│   └── ejemplos/                ← Excel de prueba
-│
-├── README.md                    ← Instrucciones de uso
-├── USER_STORIES.md              ← Backlog
-├── USE_CASES_SPRINT_1.md        ← Casos de uso
-└── ARCHITECTURE.md              ← Este documento
+└── docs/
+    ├── MATRIZ_VARIABLES.md
+    ├── USER_STORIES.md
+    ├── USE_CASES_SPRINT_1.md
+    └── ARCHITECTURE.md         ← Este archivo
 ```
 
-### Reglas de la estructura
-
-- **Una sola página por sprint** (sprint1.html, sprint2.html). No usamos SPA.
-- **Archivos JS pequeños y enfocados.** Si un archivo supera 500 líneas, se parte.
-- **Sin subcarpetas en js/** para Sprint 1. Si crece, evaluamos en Sprint 2.
-- **libs/ contiene solo dependencias externas** descargadas, nunca código propio.
-
----
-
-## 4. Diagrama de componentes
+### Fase 2 — Web institucional (estructura adicional)
 
 ```
-                    ┌─────────────────┐
-                    │   index.html    │
-                    │   (dashboard)   │
-                    └────────┬────────┘
-                             │ link a
-                             ▼
-                    ┌─────────────────┐
-                    │  sprint1.html   │
-                    │  (validador)    │
-                    └────────┬────────┘
-                             │ carga
-              ┌──────────────┼──────────────┐
-              │              │              │
-              ▼              ▼              ▼
-       ┌──────────┐   ┌──────────┐   ┌──────────┐
-       │ styles.  │   │  xlsx.   │   │   js/    │
-       │   css    │   │ full.min │   │ (módulos)│
-       └──────────┘   └──────────┘   └─────┬────┘
-                                            │
-                          ┌─────────────────┼─────────────────┐
-                          ▼                 ▼                 ▼
-                   ┌──────────┐      ┌──────────┐      ┌──────────┐
-                   │ core.js  │◀─────│validac.- │─────▶│catalogos.│
-                   │          │      │  s1.js   │      │   js     │
-                   └──────────┘      └────┬─────┘      └──────────┘
-                          ▲               │
-                          │               ▼
-                          │         ┌──────────┐
-                          └─────────│  ui.js   │
-                                    └────┬─────┘
-                                         │
-                                         ▼
-                                    ┌──────────┐
-                                    │exportar. │
-                                    │   js     │
-                                    └──────────┘
-```
-
-### Reglas de dependencias
-
-- `core.js` y `catalogos.js` no dependen de nadie (raíz)
-- `validaciones-s1.js` depende de `core.js` y `catalogos.js`
-- `ui.js` depende de `core.js`
-- `exportar.js` depende de `core.js`
-- `sprint1.html` orquesta todo (entry point)
-
-### Regla de oro
-
-**La flecha apunta hacia el que es usado.** Nadie puede tener flecha en círculo (dependencia circular).
-
----
-
-## 5. Flujo de datos
-
-```
-┌─────────────────┐
-│ Usuario arrastra│
-│ archivo Excel   │
-└────────┬────────┘
-         │
-         ▼ (FileReader API)
-┌─────────────────┐
-│  xlsx parsea    │
-│   el binario    │
-└────────┬────────┘
-         │
-         ▼ (array de objetos)
-┌─────────────────────────────────────────┐
-│  core.js: normaliza datos               │
-│  [{v1:"MARIA", v2:"PEREZ", ...}, ...]   │
-└────────┬────────────────────────────────┘
-         │
-         ▼
-┌─────────────────────────────────────────┐
-│  validaciones-s1.js                     │
-│  Para cada paciente:                    │
-│    - Aplica reglas de identificación    │
-│    - Aplica reglas de diagnóstico       │
-│    - Genera lista de errores            │
-└────────┬────────────────────────────────┘
-         │
-         ▼ (array de resultados)
-┌─────────────────────────────────────────┐
-│  ui.js: dibuja tabla y stats            │
-└────────┬────────────────────────────────┘
-         │
-         ▼ (acción del usuario)
-┌─────────────────────────────────────────┐
-│  exportar.js: genera reporte Excel      │
-│  Descarga al navegador del usuario      │
-└─────────────────────────────────────────┘
+validador-cac/
+├── client/                     ← Frontend React (mismo src/ de Fase 1 adaptado)
+├── server/
+│   ├── app.js                  ← Servidor Express/FastAPI
+│   ├── routes/
+│   │   ├── registros.js
+│   │   ├── validacion.js
+│   │   ├── exportacion.js
+│   │   ├── catalogos.js
+│   │   └── auth.js
+│   ├── middleware/
+│   │   ├── auth.js             ← Verificación JWT
+│   │   └── auditoria.js        ← Log de cambios automático
+│   ├── db/
+│   │   ├── conexion.js
+│   │   ├── modelos/
+│   │   │   ├── Registro.js
+│   │   │   ├── Usuario.js
+│   │   │   └── LogAuditoria.js
+│   │   └── migraciones/
+│   └── validaciones/           ← Mismo código que src/validaciones/
+└── docker-compose.yml          ← Despliegue institucional
 ```
 
 ---
 
-## 6. Especificación de archivos
+## 7. Módulo de validaciones
 
-### 6.1 core.js
+### 7.1 Estructura de una regla
 
-**Responsabilidad:** Utilidades base usadas por todos los demás archivos.
-
-**Funciones expuestas:**
+Cada regla es una función pura que recibe el registro completo y retorna un resultado o null:
 
 ```javascript
-/**
- * Lee un archivo Excel y retorna array de objetos.
- * @param {File} file - Archivo cargado desde input
- * @returns {Promise<Array<Object>>} - Pacientes parseados
- */
-async function leerExcel(file)
+// Ejemplo: validación de V5 (tipo de identificación)
+function validarV5(registro) {
+  const CODIGOS_VALIDOS = ['CC','CE','CD','PA','SC','PT','PE','RC','TI','CN','AS','MS','DE','SI'];
+  const valor = registro.V5;
 
-/**
- * Convierte fecha serial de Excel a string AAAA-MM-DD.
- * @param {number|string} valor - Serial Excel o string
- * @returns {string} - Fecha formato AAAA-MM-DD
- */
-function parsearFecha(valor)
+  if (!valor || valor.trim() === '') {
+    return {
+      variable: 'V5',
+      tipo: 'formato',
+      severidad: 'error',
+      valorEncontrado: valor,
+      mensaje: 'El tipo de identificación es obligatorio.',
+      recomendacion: 'Registre uno de los códigos válidos: CC, TI, RC, PA, CE, CD, SC, PT, PE, CN, AS, MS, DE, SI.'
+    };
+  }
 
-/**
- * Valida que un string cumpla formato AAAA-MM-DD.
- * @param {string} fecha
- * @returns {boolean}
- */
-function esFechaValida(fecha)
+  if (!CODIGOS_VALIDOS.includes(valor.toUpperCase())) {
+    return {
+      variable: 'V5',
+      tipo: 'catalogo',
+      severidad: 'error',
+      valorEncontrado: valor,
+      mensaje: `El código "${valor}" no existe en el catálogo de tipos de identificación.`,
+      recomendacion: 'Verifique que el código corresponda al catálogo oficial CAC.'
+    };
+  }
 
-/**
- * Normaliza texto: quita tildes, mayúsculas, espacios extras.
- * @param {string} texto
- * @returns {string}
- */
-function normalizarTexto(texto)
+  return null; // sin error
+}
 
-/**
- * Compara dos fechas. Retorna negativo si a<b, 0 si igual, positivo si a>b.
- * @param {string} fechaA
- * @param {string} fechaB
- * @returns {number}
- */
-function compararFechas(fechaA, fechaB)
-```
-
-**No expone:** lógica de validación, lógica de UI, lógica de exportación.
-
----
-
-### 6.2 catalogos.js
-
-**Responsabilidad:** Tablas de valores permitidos según el instructivo CAC.
-
-**Constantes expuestas:**
-
-```javascript
-const CATALOGO_TIPO_ID = {
-  "CC": "Cédula de Ciudadanía",
-  "TI": "Tarjeta de Identidad",
-  "RC": "Registro Civil",
-  "PA": "Pasaporte",
-  "CE": "Cédula de Extranjería",
-  "AS": "Adulto sin Identificar",
-  "MS": "Menor sin Identificar",
-  "PE": "Permiso Especial",
-  "PT": "Permiso de Protección Temporal"
-};
-
-const CATALOGO_REGIMEN = {
-  "1": "Contributivo",
-  "2": "Subsidiado",
-  "3": "Especial/Excepción"
-};
-
-const CATALOGO_SEXO = {
-  "M": "Masculino",
-  "F": "Femenino"
-};
-
-const CODIGOS_SIN_INFO = ["98", "99"];
-const COMODIN_FECHA_HISTORICA = "1845-01-01";
-const FECHA_CORTE = "2025-01-01";
-
-const CIE10_MAMA = ["C50"];
-const CIE10_PROSTATA = ["C61"];
-const CIE10_ELIMINADOS = ["C80X"];
-```
-
-**Regla:** Si el instructivo CAC cambia, SOLO se modifica este archivo.
-
----
-
-### 6.3 ui.js
-
-**Responsabilidad:** Componentes visuales reutilizables.
-
-**Funciones expuestas:**
-
-```javascript
-/**
- * Renderiza la tabla de resultados de validación.
- * @param {Array<ResultadoPaciente>} resultados
- * @param {HTMLElement} contenedor
- */
-function renderizarTabla(resultados, contenedor)
-
-/**
- * Muestra notificación temporal en pantalla.
- * @param {string} mensaje
- * @param {string} tipo - "exito" | "error" | "advertencia"
- */
-function mostrarToast(mensaje, tipo)
-
-/**
- * Actualiza la barra de progreso.
- * @param {number} porcentaje - 0 a 100
- * @param {string} texto - Texto descriptivo opcional
- */
-function actualizarProgreso(porcentaje, texto)
-
-/**
- * Dibuja el panel de estadísticas.
- * @param {EstadisticasValidacion} stats
- * @param {HTMLElement} contenedor
- */
-function renderizarStats(stats, contenedor)
-
-/**
- * Filtra la tabla por documento de identidad.
- * @param {string} texto - Texto de búsqueda
- */
-function filtrarTabla(texto)
-```
-
----
-
-### 6.4 validaciones-s1.js
-
-**Responsabilidad:** Aplicar las reglas del Sprint 1 (variables 1-44).
-
-**Funciones expuestas:**
-
-```javascript
-/**
- * Valida todos los pacientes y retorna resultados.
- * @param {Array<Paciente>} pacientes
- * @returns {Array<ResultadoPaciente>}
- */
-function validarPacientes(pacientes)
-
-/**
- * Valida un paciente individual.
- * @param {Paciente} paciente
- * @returns {ResultadoPaciente}
- */
-function validarPaciente(paciente)
-```
-
-**Funciones internas (no expuestas):**
-
-```javascript
-function _validarIdentificacion(paciente)  // V1-V16
-function _validarDiagnostico(paciente)     // V17-V44
-function _crearError(variable, mensaje, severidad, valor, sugerencia)
-```
-
-**Cada validación debe documentarse así:**
-
-```javascript
-/**
- * V18 - Fecha de diagnóstico
- * Regla CAC: Debe estar en formato AAAA-MM-DD.
- *            Debe ser anterior o igual a V24 (fecha histopatología).
- */
-function validarV18(paciente, errores) {
-  // ...
+// Ejemplo: validación cruzada V5 → V10
+function validarCoherenciaV5V10(registro) {
+  const tiposRestringidos = ['AS', 'MS'];
+  if (tiposRestringidos.includes(registro.V5) && registro.V10 !== 'S') {
+    return {
+      variable: 'V10',
+      tipo: 'coherencia',
+      severidad: 'error',
+      valorEncontrado: registro.V10,
+      mensaje: `El tipo de ID "${registro.V5}" solo es válido en Régimen Subsidiado, pero V10 = "${registro.V10}".`,
+      recomendacion: 'Si el tipo de identificación es AS o MS, el régimen (V10) debe ser S (Subsidiado).'
+    };
+  }
+  return null;
 }
 ```
 
----
-
-### 6.5 exportar.js
-
-**Responsabilidad:** Generar archivos descargables con los resultados.
-
-**Funciones expuestas:**
+### 7.2 Motor principal
 
 ```javascript
-/**
- * Genera Excel con reporte de errores y descarga al usuario.
- * @param {Array<ResultadoPaciente>} resultados
- */
-function exportarReporteExcel(resultados)
+// engine.js
+async function validarRegistro(registro, catalogos) {
+  const errores = [];
 
-/**
- * Genera resumen ejecutivo en formato simple.
- * @param {Array<ResultadoPaciente>} resultados
- * @returns {Object} - Objeto con estadísticas
- */
-function generarResumen(resultados)
-```
+  // Módulo 1: Identificación
+  errores.push(...await modulo1.validar(registro, catalogos));
 
----
+  // Módulo 2: Diagnóstico
+  errores.push(...await modulo2.validar(registro, catalogos));
 
-### 6.6 sprint1.html
+  // Módulos siguientes según sprint...
 
-**Responsabilidad:** Página HTML principal del Sprint 1, orquesta todo.
+  return errores.filter(e => e !== null);
+}
 
-**Estructura:**
+async function validarBase(registros, catalogos, onProgreso) {
+  const resultados = [];
 
-```html
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Validador CAC - Sprint 1</title>
-  <link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
-  <header>...</header>
-  <main>
-    <section id="zona-carga">...</section>
-    <section id="zona-progreso" hidden>...</section>
-    <section id="zona-resultados" hidden>...</section>
-    <section id="zona-stats" hidden>...</section>
-  </main>
+  // Procesar en lotes de 100 para no bloquear UI
+  const LOTE = 100;
+  for (let i = 0; i < registros.length; i += LOTE) {
+    const lote = registros.slice(i, i + LOTE);
+    for (const registro of lote) {
+      const errores = await validarRegistro(registro, catalogos);
+      resultados.push({ registro, errores });
+    }
+    onProgreso(Math.min(i + LOTE, registros.length), registros.length);
+    await pausar(0); // ceder control al navegador entre lotes
+  }
 
-  <script src="libs/xlsx.full.min.js"></script>
-  <script src="js/catalogos.js"></script>
-  <script src="js/core.js"></script>
-  <script src="js/ui.js"></script>
-  <script src="js/validaciones-s1.js"></script>
-  <script src="js/exportar.js"></script>
-  <script>
-    // Orquestación: eventos, flujo principal
-  </script>
-</body>
-</html>
-```
-
-**Reglas:**
-- El orden de los `<script>` respeta las dependencias
-- La lógica al final del HTML es solo orquestación, no validaciones
-- No hay JavaScript inline en elementos HTML (sin onclick="...")
-
----
-
-## 7. Estructuras de datos
-
-### 7.1 Paciente
-
-Objeto que representa una fila del Excel.
-
-```javascript
-{
-  v1: "MARIA",
-  v2: "PEREZ",
-  v3: "DEL CARMEN",
-  v4: "GOMEZ",
-  v5: "CC",
-  v6: "12345678",
-  v7: "1985-03-15",
-  v8: "F",
-  v9: "11001",
-  v10: "1",
-  // ... v11 a v134
-  _fila: 5  // número de fila original en el Excel (para reportar)
+  return resultados;
 }
 ```
 
-### 7.2 Error de validación
+### 7.3 Tipos de validación implementados
+
+| Tipo | Descripción | Ejemplo |
+|---|---|---|
+| `formato` | El valor no cumple el formato esperado | V7 con separador `/` en lugar de `-` |
+| `catalogo` | El valor no existe en el catálogo cerrado | V5 = `XX` |
+| `coherencia` | Dos variables son inconsistentes entre sí | V5 = `AS` y V10 = `C` |
+| `dependencia` | Una variable obligatoria está vacía según condición | V21 = `7` y V22 vacío |
+| `comodin` | Uso incorrecto de un comodín | `1845-01-01` en campo que no lo permite |
+| `rango_fecha` | Fecha fuera del rango permitido | V7 posterior a fecha de corte |
+
+### 7.4 Catálogo de comodines de fecha
+
+| Comodín | Significado | Variables que lo aceptan |
+|---|---|---|
+| `1800-01-01` | Desconocido | V18, V19, V20, V23, V24, V26, V30, V39, V43, V49, V62, V88, V97, V103, V109, V115, V118, V121 |
+| `1840-01-01` | No aplica (mama in situ) | V32 |
+| `1845-01-01` | No aplica (contexto general) | V23, V24, V30, V32, V35, V39, V43, V49, V58, V62, V71, V76, V80, V88, V97, V103, V109, V112, V115, V118, V121, V130, V131 |
+
+### 7.5 Reglas de variables de control
+
+Las variables de control activan o desactivan bloques completos:
+
+| Variable de control | Valor que desactiva | Bloque afectado |
+|---|---|---|
+| V21 | `7` | V22 obligatorio; V23, V24 = `1845-01-01` |
+| V45 | `98` | V46-V73 → No Aplica |
+| V74 | `2` | V75-V85 → No Aplica |
+| V86 | `98` | V87-V105 → No Aplica |
+| V106 | `98` | V107-V110 → No Aplica |
+| V111 | `98` | V112, V113 → No Aplica |
+| V114 | `2` | V115, V116 → No Aplica |
+| V117 | `98` o `2` | V118, V119 → No Aplica |
+| V120 | `98` o `2` | V121, V122 → No Aplica |
+| V127 | `2` (fallecido) | V126 = `99`, V131 con fecha, V132 con causa |
+
+---
+
+## 8. Módulo de catálogos
+
+### 8.1 Formato de catálogos JSON
 
 ```javascript
+// catalogos/cie10.json
 {
-  variable: "V18",
-  severidad: "error",            // "error" | "advertencia"
-  mensaje: "Formato de fecha inválido",
-  regla: "V18 debe tener formato AAAA-MM-DD según instructivo CAC-IEP1-I01",
-  valorActual: "15/03/1985",
-  sugerencia: "Cambiar a 1985-03-15"
+  "version": "2025-01",
+  "fuente": "SISCAC",
+  "datos": [
+    { "codigo": "C50", "descripcion": "Tumor maligno de la mama", "valido": true },
+    { "codigo": "C80X", "descripcion": "Tumor maligno de sitio no especificado", "valido": false }
+  ]
 }
-```
 
-### 7.3 ResultadoPaciente
-
-```javascript
+// catalogos/divipola.json
 {
-  documento: "12345678",
-  fila: 5,
-  errores: [/* objetos Error */],
-  advertencias: [/* objetos Error con severidad=advertencia */],
-  estado: "con_errores"  // "ok" | "con_advertencias" | "con_errores"
-}
-```
-
-### 7.4 EstadisticasValidacion
-
-```javascript
-{
-  totalPacientes: 276,
-  pacientesOk: 120,
-  pacientesConAdvertencias: 80,
-  pacientesConErrores: 76,
-  totalErrores: 245,
-  totalAdvertencias: 156,
-  porcentajeCumplimiento: 43.5,
-  erroresFrecuentes: [
-    { variable: "V18", cantidad: 45, descripcion: "Fecha mal formateada" },
-    // ...
+  "version": "2024",
+  "fuente": "DANE",
+  "datos": [
+    { "codigo": "11001", "departamento": "11", "municipio": "001", "nombre": "Bogotá D.C." },
+    { "codigo": "05001", "departamento": "05", "municipio": "001", "nombre": "Medellín" }
   ]
 }
 ```
 
----
+### 8.2 Cargador de catálogos
 
-## 8. Decisiones arquitectónicas (ADR)
+```javascript
+// catalogos/cargador.js
+class CargadorCatalogos {
+  constructor() {
+    this.cache = {};
+  }
 
-Los ADR son registros de **decisiones importantes** con su justificación. Sirven para que en el futuro alguien (incluso tú mismo) entienda por qué se tomó cierto camino.
+  async cargar(nombre) {
+    if (this.cache[nombre]) return this.cache[nombre];
+    const respuesta = await fetch(`catalogos/${nombre}.json`);
+    const datos = await respuesta.json();
+    this.cache[nombre] = datos;
+    return datos;
+  }
 
-### ADR-001 — HTML/JS puro sin framework
+  async cargarTodos() {
+    const nombres = ['cie10', 'divipola', 'eapb', 'reps', 'atc', 'ciuo'];
+    await Promise.all(nombres.map(n => this.cargar(n)));
+  }
 
-**Estado:** Aceptado
-**Contexto:** Se evaluó React, Vue y Vanilla JS para el frontend.
-**Decisión:** Vanilla JavaScript con HTML5 y CSS3.
-**Justificación:**
-- Sin paso de build (no Webpack, no npm run build)
-- Distribución como archivo plano
-- Auditoría más simple para áreas de seguridad
-- Cero dependencias de actualización de frameworks
-**Consecuencias:**
-- (+) Portabilidad total
-- (+) Auditable por cualquier persona
-- (-) Más código manual para componentes
-- (-) Sin reactividad automática
+  buscar(nombre, codigo) {
+    const catalogo = this.cache[nombre];
+    if (!catalogo) throw new Error(`Catálogo "${nombre}" no cargado`);
+    return catalogo.datos.find(d => d.codigo === codigo) || null;
+  }
 
-### ADR-002 — SheetJS como única dependencia externa
+  esValido(nombre, codigo) {
+    const entrada = this.buscar(nombre, codigo);
+    return entrada !== null && entrada.valido !== false;
+  }
+}
+```
 
-**Estado:** Aceptado
-**Contexto:** Se necesita leer y escribir archivos Excel desde el navegador.
-**Decisión:** Usar SheetJS (xlsx.full.min.js) versión 0.18.5.
-**Justificación:**
-- Licencia Apache 2.0 (libre para uso comercial)
-- Estándar de facto para Excel en JavaScript
-- Funciona 100% en navegador sin backend
-- Soporta .xlsx y .xls
+### 8.3 Actualización de catálogos
 
-### ADR-003 — Sin backend ni servidor
-
-**Estado:** Aceptado
-**Contexto:** Los datos clínicos son sensibles (Ley 1581).
-**Decisión:** Aplicación 100% cliente, todo en navegador.
-**Justificación:**
-- Garantiza que los datos nunca salen del PC del usuario
-- Reduce costos de infraestructura a cero
-- Simplifica el despliegue (compartir un archivo)
-**Consecuencias:**
-- (+) Privacidad absoluta
-- (+) Cero costo de operación
-- (-) Sin sincronización entre usuarios
-- (-) Sin reporte centralizado de cumplimiento
-
-### ADR-004 — Sin localStorage para datos sensibles
-
-**Estado:** Aceptado
-**Contexto:** localStorage persiste datos entre sesiones del navegador.
-**Decisión:** No usar localStorage ni sessionStorage para datos del paciente.
-**Justificación:**
-- Si el PC es compartido, otro usuario podría ver los datos
-- Cumple principio de "datos efímeros"
-- Solo se permite localStorage para preferencias de UI (tema oscuro/claro)
-
-### ADR-005 — Catálogos en archivo JS separado
-
-**Estado:** Aceptado
-**Contexto:** Los catálogos del instructivo CAC cambian anualmente.
-**Decisión:** Tener un archivo `catalogos.js` con constantes exportables.
-**Justificación:**
-- Actualizar catálogos no requiere tocar lógica
-- Reduce riesgo de bug por modificación
-**Consecuencias futuras:** En Sprint 2 se evalúa migrar a JSON externo.
-
-### ADR-006 — Una página HTML por sprint
-
-**Estado:** Aceptado
-**Contexto:** Se evaluó SPA vs multi-page.
-**Decisión:** Cada sprint tiene su archivo HTML (sprint1.html, sprint2.html).
-**Justificación:**
-- Más simple de mantener
-- Permite que el usuario use solo el sprint que necesita
-- Reduce tamaño del archivo cargado por página
+Para actualizar un catálogo, el administrador reemplaza el archivo JSON en `catalogos/`. No se modifica ningún archivo de código. El sistema detecta la versión del catálogo en tiempo de ejecución (HU-043).
 
 ---
 
-## 9. Estándares de código
+## 9. Módulo de exportaciones
 
-### 9.1 Nomenclatura
+### 9.1 Reporte Excel de validación (Sprint 2)
 
-| Elemento | Convención | Ejemplo |
+**Hoja 1 — Resumen:**
+
+| Campo | Descripción |
+|---|---|
+| Total pacientes | Número de filas procesadas |
+| Sin errores | Pacientes sin ningún error |
+| Con errores críticos | Pacientes con al menos un error |
+| Solo advertencias | Pacientes sin errores pero con advertencias |
+| % cumplimiento | `(sin errores / total) × 100` |
+| Variables más fallidas | Top 5 variables con más errores |
+
+**Hoja 2 — Errores por paciente:**
+
+| Columna | Descripción |
+|---|---|
+| Documento | V6 del paciente (no nombre) |
+| Variable | Ej: V18 |
+| Tipo | formato / catalogo / coherencia / dependencia |
+| Severidad | error / advertencia |
+| Valor encontrado | Lo que tiene el registro |
+| Descripción | Qué está mal |
+| Recomendación | Cómo corregirlo |
+
+**Hoja 3 — Errores frecuentes:**
+
+| Columna | Descripción |
+|---|---|
+| Variable | Ej: V17 |
+| Regla | Descripción corta de la regla |
+| Cantidad | Número de pacientes con ese error |
+| % sobre total | Proporción del error |
+
+### 9.2 Reporte PDF ejecutivo (Sprint 3)
+
+Generado con **jsPDF** (librería local). Incluye:
+- Encabezado con nombre de la entidad, fecha y periodo
+- Indicadores visuales (semáforos de cumplimiento por módulo)
+- Top 10 errores más frecuentes
+- Recomendaciones prioritarias
+- Sin datos individuales de pacientes
+
+### 9.3 Reporte Word editable (Sprint 3)
+
+Generado con **docx** (librería local). Incluye:
+- Mismo contenido que PDF pero editable
+- Tabla de errores detallada
+- Secciones con marcadores para facilitar edición
+
+### 9.4 Archivo plano CAC (Sprint 8)
+
+- Exporta los 168 campos en el orden oficial del instructivo
+- Validación previa obligatoria: si hay errores críticos, se bloquea la exportación
+- Si hay solo advertencias, exporta con constancia registrada
+- Se registra: fecha, usuario (Fase 2), versión de la aplicación
+
+---
+
+## 10. Modelo de datos
+
+### 10.1 Registro CAC (en memoria Fase 1 / en BD Fase 2)
+
+```javascript
+{
+  // Identificación interna
+  id: "uuid",
+  estado: "borrador" | "validado" | "exportado",
+  fechaCreacion: "ISO-8601",
+  fechaUltimaModificacion: "ISO-8601",
+
+  // Variables CAC (V1 a V134 + subfases)
+  V1: "MARIA",
+  V2: "NONE",
+  V3: "GARCIA",
+  V4: "NOAP",
+  V5: "CC",
+  V6: "12345678",
+  V7: "1975-03-15",
+  // ... hasta V134
+
+  // Subfases de variables compuestas
+  "V46.1": "1",
+  "V46.2": "2",
+  // ...
+  "V53.1": "L01XA01",
+  // ...
+  "V66.1": "97",
+  // ...
+}
+```
+
+### 10.2 Resultado de validación (en memoria)
+
+```javascript
+{
+  registroId: "uuid",
+  documento: "12345678",    // Solo V6, sin nombre
+  totalErrores: 3,
+  totalAdvertencias: 1,
+  errores: [
+    {
+      variable: "V18",
+      tipo: "formato",
+      severidad: "error",
+      valorEncontrado: "15/03/2024",
+      mensaje: "La fecha de diagnóstico tiene formato incorrecto.",
+      recomendacion: "Use el formato AAAA-MM-DD. Ejemplo: 2024-03-15"
+    }
+  ]
+}
+```
+
+### 10.3 Esquema de base de datos (Fase 2)
+
+```sql
+-- Registros CAC
+CREATE TABLE registros_cac (
+  id UUID PRIMARY KEY,
+  estado VARCHAR(20) NOT NULL DEFAULT 'borrador',
+  datos JSONB NOT NULL,           -- Variables V1-V134
+  creado_por UUID REFERENCES usuarios(id),
+  fecha_creacion TIMESTAMPTZ DEFAULT NOW(),
+  fecha_modificacion TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Log de auditoría (inmutable)
+CREATE TABLE log_auditoria (
+  id UUID PRIMARY KEY,
+  registro_id UUID REFERENCES registros_cac(id),
+  usuario_id UUID REFERENCES usuarios(id),
+  fecha TIMESTAMPTZ DEFAULT NOW(),
+  variable VARCHAR(10),
+  modulo VARCHAR(50),
+  valor_anterior TEXT,
+  valor_nuevo TEXT
+);
+
+-- Usuarios y roles
+CREATE TABLE usuarios (
+  id UUID PRIMARY KEY,
+  nombre VARCHAR(200) NOT NULL,
+  email VARCHAR(200) UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
+  rol VARCHAR(50) NOT NULL,       -- digitador, analista, auditor, coordinador, admin
+  activo BOOLEAN DEFAULT true
+);
+
+-- Versiones de catálogos
+CREATE TABLE versiones_catalogo (
+  nombre VARCHAR(50) PRIMARY KEY,
+  version VARCHAR(20) NOT NULL,
+  fecha_carga TIMESTAMPTZ DEFAULT NOW(),
+  cargado_por UUID REFERENCES usuarios(id)
+);
+```
+
+---
+
+## 11. Seguridad y privacidad
+
+### 11.1 Principios
+
+1. **Minimización de datos:** el reporte de validación solo incluye el número de documento, nunca nombres, fechas de nacimiento ni diagnósticos.
+2. **Procesamiento local en Fase 1:** cero llamadas a servidores externos.
+3. **Sin persistencia en Fase 1:** al cerrar la pestaña, todo desaparece.
+4. **Servidor autorizado en Fase 2:** no se admiten proveedores de nube pública sin acuerdo de procesamiento de datos.
+
+### 11.2 Checklist Fase 1
+
+- [ ] No usar `localStorage` para datos de pacientes
+- [ ] No usar `sessionStorage` para datos de pacientes
+- [ ] No usar `IndexedDB` para datos de pacientes
+- [ ] No hacer `fetch` ni `XMLHttpRequest` con datos de pacientes
+- [ ] No incluir datos en URLs (query strings)
+- [ ] Todas las librerías en `libs/` local (sin CDN externo)
+- [ ] Mostrar advertencia al cargar sobre la naturaleza de los datos
+
+### 11.3 Checklist Fase 2
+
+- [ ] HTTPS obligatorio
+- [ ] JWT con expiración (máximo 8 horas)
+- [ ] Contraseñas hasheadas con bcrypt
+- [ ] Log de auditoría inmutable
+- [ ] Backup cifrado de la base de datos
+- [ ] Acceso restringido por IP institucional (opcional)
+- [ ] No exponer datos de pacientes en logs del servidor
+
+---
+
+## 12. Decisiones de diseño
+
+### 12.1 ¿Por qué HTML local y no una app instalada?
+
+Los equipos de salud en Colombia frecuentemente trabajan en PCs institucionales donde no tienen permisos de administrador para instalar software. Un archivo HTML que se abre en el navegador supera esta restricción sin requerir aprobación del área de TI (HU-039).
+
+### 12.2 ¿Por qué catálogos en JSON externos y no en el código?
+
+Los catálogos (CIE-10, DIVIPOLA, REPS, etc.) se actualizan periódicamente por entidades externas. Si están en el código, cada actualización requiere un desarrollador. Con archivos JSON independientes, el administrador puede actualizarlos sin tocar el código (HU-042). Además, esto permite que diferentes instituciones tengan versiones diferentes del mismo catálogo.
+
+### 12.3 ¿Por qué procesar en lotes y no todo de una vez?
+
+JavaScript es de un solo hilo. Procesar 10.000 filas de una sola vez congela el navegador completamente. Procesar en lotes de 100 con `await pausar(0)` entre lotes permite que el navegador actualice la barra de progreso y responda a eventos del usuario (HU-040).
+
+### 12.4 ¿Por qué el motor de validación es JavaScript puro sin frameworks?
+
+Para garantizar que el mismo código funcione en el navegador (Fase 1) y en Node.js en el servidor (Fase 2) sin modificaciones. Si se usara, por ejemplo, una librería que depende de APIs del navegador, no funcionaría en el servidor.
+
+### 12.5 ¿Por qué no incluir nombres en los reportes?
+
+Los reportes de validación se comparten por correo o chat dentro de los equipos. Si incluyeran nombres y diagnósticos de pacientes, estarían circulando datos sensibles de salud fuera de sistemas controlados. El número de documento es suficiente para que el equipo identifique el caso internamente.
+
+### 12.6 ¿Por qué separar modulo1.js hasta modulo8.js?
+
+Cada módulo de variables tiene entre 5 y 40 reglas. Un solo archivo de validación tendría miles de líneas, sería inmanejable y los conflictos de Git al trabajar en equipo serían frecuentes. La separación por módulo permite que diferentes desarrolladores trabajen en paralelo en el Sprint 5 (tratamiento) y Sprint 6 (cirugía) sin pisarse.
+
+---
+
+## 13. Mapeo HU → componentes
+
+| Historia | Componente principal | Sprint |
 |---|---|---|
-| Variables | camelCase | `pacienteActual`, `totalErrores` |
-| Funciones | camelCase | `validarFecha()`, `mostrarToast()` |
-| Funciones privadas | `_camelCase` | `_validarIdentificacion()` |
-| Constantes | UPPER_SNAKE_CASE | `CATALOGO_REGIMEN`, `FECHA_CORTE` |
-| Clases CSS | kebab-case | `.zona-carga`, `.btn-primario` |
-| IDs HTML | kebab-case | `id="zona-resultados"` |
-| Archivos | kebab-case | `validaciones-s1.js` |
-
-### 9.2 Indentación y formato
-
-- **Indentación:** 2 espacios (no tabs)
-- **Punto y coma:** obligatorio al final de cada sentencia
-- **Comillas:** preferir comillas dobles `"texto"`, simples para JSX no aplica
-- **Líneas largas:** máximo 100 caracteres
-- **Líneas en blanco:** una entre funciones, dos entre secciones lógicas
-
-### 9.3 Comentarios
-
-**Funciones públicas:** usar JSDoc
-
-```javascript
-/**
- * Valida que una fecha cumpla formato AAAA-MM-DD.
- * @param {string} fecha - Fecha a validar
- * @returns {boolean} - true si es válida
- * @example
- *   esFechaValida("2025-01-15") // true
- *   esFechaValida("15/01/2025") // false
- */
-function esFechaValida(fecha) { ... }
-```
-
-**Validaciones:** referenciar variable del instructivo
-
-```javascript
-// V18 - Fecha de diagnóstico (Instructivo CAC-IEP1-I01)
-// Regla: formato AAAA-MM-DD, anterior o igual a V24
-```
-
-**No hacer:**
-- Comentarios obvios (`i++; // incrementa i`)
-- Código comentado (usar Git para historial)
-- Comentarios en idioma mixto (todo en español)
-
-### 9.4 Manejo de errores
-
-```javascript
-// CORRECTO: lanzar error con mensaje claro
-if (!archivo) {
-  throw new Error("No se proporcionó archivo Excel");
-}
-
-// CORRECTO: capturar y mostrar al usuario
-try {
-  const datos = await leerExcel(file);
-} catch (error) {
-  mostrarToast("Error al leer archivo: " + error.message, "error");
-}
-
-// EVITAR: silenciar errores
-try { ... } catch (e) {} // ❌ malo
-```
-
-### 9.5 Git — Convención de commits
-
-Formato: `tipo: descripción corta`
-
-| Tipo | Cuándo usar |
-|---|---|
-| `feat` | Nueva funcionalidad |
-| `fix` | Corrección de bug |
-| `docs` | Cambios en documentación |
-| `style` | Formato, sin cambio de lógica |
-| `refactor` | Reorganización de código |
-| `test` | Agregar/modificar pruebas |
-| `chore` | Tareas de mantenimiento |
-
-**Ejemplos:**
-- `feat: validar formato de fecha en V18`
-- `fix: corregir parseo de fechas con comodín 1845-01-01`
-- `docs: agregar casos de uso del Sprint 1`
-- `refactor: separar catálogos a archivo independiente`
+| HU-001 | `docs/MATRIZ_VARIABLES.md` (consulta externa) | 0 |
+| HU-002 | `docs/MATRIZ_VARIABLES.md` (edición en repo) | 0 |
+| HU-003 | Git + historial de commits en MATRIZ_VARIABLES.md | 2 |
+| HU-004 | `src/ui/carga.js` + `src/lector/excel.js` | 1 |
+| HU-005 | `src/lector/estructura.js` | 1 |
+| HU-006 | `src/ui/progreso.js` | 2 |
+| HU-007 | Formulario manual (Fase 2 web) | 3 |
+| HU-008 | CSS responsive (Fase 2 web) | 4 |
+| HU-009 | BD central + API (Fase 2) | 4 |
+| HU-010 | `src/validaciones/reglas/modulo1.js` | 1 |
+| HU-011 | `src/validaciones/reglas/modulo2.js` | 2 |
+| HU-012 | `src/validaciones/reglas/modulo3.js` | 5 |
+| HU-013 | `src/validaciones/reglas/modulo4.js` | 6 |
+| HU-014 | `src/validaciones/reglas/modulo5.js` | 6 |
+| HU-015 | `src/validaciones/reglas/modulo8.js` | 7 |
+| HU-016 | `src/validaciones/tipos.js` (constantes de severidad) | 1 |
+| HU-017 | `catalogos/cie10.json` + `src/catalogos/cargador.js` | 2 |
+| HU-018 | `catalogos/divipola.json` + `src/catalogos/cargador.js` | 2 |
+| HU-019 | `catalogos/eapb.json` | 3 |
+| HU-020 | `catalogos/reps.json` | 4 |
+| HU-021 | `catalogos/atc.json` | 5 |
+| HU-022 | `src/ui/tabla-resultados.js` | 1 |
+| HU-023 | `src/ui/buscador.js` | 1 |
+| HU-024 | `src/ui/tabla-resultados.js` (filtros) | 2 |
+| HU-025 | `src/ui/tabla-resultados.js` (ordenamiento) | 2 |
+| HU-026 | `src/ui/tabla-resultados.js` (paginación) | 2 |
+| HU-027 | `src/ui/dashboard.js` | 2 |
+| HU-028 | `src/ui/dashboard.js` (por bloque) | 3 |
+| HU-029 | `src/ui/dashboard.js` (errores frecuentes) | 3 |
+| HU-030 | `src/exportador/excel-reporte.js` | 2 |
+| HU-031 | `src/exportador/pdf-reporte.js` | 3 |
+| HU-032 | `src/exportador/word-reporte.js` | 3 |
+| HU-033 | `src/exportador/archivo-plano.js` | 8 |
+| HU-034 | Tooltips en UI (datos de MATRIZ_VARIABLES) | 2 |
+| HU-035 | Mensajes en `src/validaciones/tipos.js` | 1 |
+| HU-036 | Sin localStorage + aviso en UI + `libs/` local | 1 |
+| HU-037 | `server/routes/auth.js` + middleware JWT | 4 |
+| HU-038 | `server/middleware/auditoria.js` + tabla log | 5 |
+| HU-039 | Estructura `index.html` + `libs/` sin CDN | 1 |
+| HU-040 | Procesamiento por lotes en `engine.js` | 7 |
+| HU-041 | Variable de configuración `FECHA_CORTE` en `tipos.js` | 6 |
+| HU-042 | Carpeta `catalogos/` con JSON independientes | 2 |
+| HU-043 | `version.json` con versión de app y catálogos | 2 |
 
 ---
 
-## 10. Roadmap técnico
+## Notas finales
 
-### Sprint 1 — MVP funcional (Fase 1)
+Este documento es la fuente de verdad arquitectónica del proyecto. Cualquier cambio de tecnología, estructura de carpetas o decisión de diseño debe actualizarse aquí antes de implementarse.
 
-**Archivos a crear:**
-1. `css/styles.css` (base visual)
-2. `js/core.js` (utilidades base)
-3. `js/catalogos.js` (catálogos CAC)
-4. `js/ui.js` (componentes visuales)
-5. `js/validaciones-s1.js` (reglas V1-V44)
-6. `js/exportar.js` (reporte Excel)
-7. `libs/xlsx.full.min.js` (descargar)
-8. `index.html` (dashboard)
-9. `sprint1.html` (validador)
-10. `README.md` (instrucciones)
-
-**Orden de construcción:**
-1. styles.css (sin dependencias)
-2. catalogos.js (sin dependencias)
-3. core.js (sin dependencias)
-4. ui.js (depende de core)
-5. validaciones-s1.js (depende de core + catalogos)
-6. exportar.js (depende de core)
-7. sprint1.html (orquesta todo)
-8. index.html (link a sprint1)
-
-### Sprint 2 — UX y estadísticas (Fase 2)
-
-- `js/validaciones-s2.js` (V45-V105)
-- `sprint2.html`
-- Mejoras en `ui.js` (filtros, ordenamiento)
-- `js/dashboard.js` (estadísticas avanzadas)
-
-### Sprint 3 — Avanzado (Fase 3)
-
-- `js/validaciones-s3.js` (V106-V134)
-- `sprint3.html`
-- Exportación PDF en `exportar.js`
-- Configuración de año de medición
-
----
-
-## Apéndice — Glosario técnico
-
-| Término | Definición |
-|---|---|
-| ADR | Architecture Decision Record |
-| API | Application Programming Interface |
-| CIE-10 | Clasificación Internacional de Enfermedades, 10ª revisión |
-| DIVIPOLA | División Político-Administrativa de Colombia |
-| MVP | Minimum Viable Product (Producto mínimo viable) |
-| SISCAC | Sistema de Información de la Cuenta de Alto Costo |
-| SPA | Single Page Application |
-| UI | User Interface (Interfaz de usuario) |
-| JSDoc | Sistema de documentación para JavaScript |
-
----
-
-**Próximo paso:** Comenzar la implementación según el orden de construcción del Sprint 1.
+La matriz de variables (`MATRIZ_VARIABLES.md`) es la fuente de verdad de las reglas de negocio. Cuando el instructivo CAC cambie, ese documento se actualiza primero, y los archivos de reglas en `src/validaciones/reglas/` se actualizan en consecuencia.
