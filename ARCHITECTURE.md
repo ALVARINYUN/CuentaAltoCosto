@@ -74,6 +74,7 @@ Los datos que procesa este sistema son información de salud de pacientes con c�
 | EAPB | V11 | MinSalud |
 | REPS / IPS | V25, V51, V52, V64, V65, V77, V82, V92, V93, V101, V102, V110, V113, V116, V119, V122 | MinSalud |
 | ATC medicamentos | V53.1-V53.9, V54-V56, V66.1-V66.9, V67-V69 | SISCAC |
+| CUPS procedimientos | V74, V78, V83, V90, V99 | MinSalud — Resolución 2641/2024 |
 | CIUO ocupaciones | V9 | OIT |
 | BDUA | V1-V4, V7, V16 | ADRES |
 
@@ -334,6 +335,7 @@ validador-cac/
 │   ├── eapb.json               ← Entidades aseguradoras
 │   ├── reps.json               ← IPS habilitadas
 │   ├── atc.json                ← Medicamentos antineoplásicos
+│   ├── cups.json               ← Procedimientos CUPS (Res. 2641/2024 MinSalud)
 │   └── ciuo.json               ← Ocupaciones
 │
 ├── libs/                       ← Librerías descargadas (sin internet)
@@ -549,7 +551,7 @@ class CargadorCatalogos {
   }
 
   async cargarTodos() {
-    const nombres = ['cie10', 'divipola', 'eapb', 'reps', 'atc', 'ciuo'];
+    const nombres = ['cie10', 'divipola', 'eapb', 'reps', 'atc', 'cups', 'ciuo'];
     await Promise.all(nombres.map(n => this.cargar(n)));
   }
 
@@ -817,6 +819,7 @@ Cada módulo de variables tiene entre 5 y 40 reglas. Un solo archivo de validaci
 | HU-019 | `catalogos/eapb.json` | 3 |
 | HU-020 | `catalogos/reps.json` | 4 |
 | HU-021 | `catalogos/atc.json` | 5 |
+| HU-044 | `catalogos/cups.json` | 6 |
 | HU-022 | `src/ui/tabla-resultados.js` | 1 |
 | HU-023 | `src/ui/buscador.js` | 1 |
 | HU-024 | `src/ui/tabla-resultados.js` (filtros) | 2 |

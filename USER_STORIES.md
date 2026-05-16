@@ -2,7 +2,7 @@
 
 **Proyecto:** Validador CAC para reporte de cohorte cáncer  
 **Normativa base:** Resolución 0247/2014 · Instructivo CAC-IEP1-I01 · Medición enero 2025  
-**Versión del backlog:** 2.0  
+**Versión del backlog:** 2.1  
 **Fecha:** Mayo 2026  
 
 ---
@@ -281,7 +281,8 @@
 - V75 valida tiempos quirúrgicos.
 - V76 valida primera cirugía en periodo.
 - V77 valida IPS contra REPS.
-- V78 valida CUPS.
+- V78 valida CUPS contra catálogo oficial.
+- V83 valida CUPS contra catálogo oficial.
 - V80 solo aplica si hubo más de una cirugía.
 - V85 es coherente con V127.
 
@@ -301,7 +302,8 @@
 - Si V86 = `98`, el resto registra no aplica.
 - V87 valida número de sesiones.
 - V88 valida fecha de inicio.
-- V90 valida CUPS.
+- V90 valida CUPS contra catálogo oficial.
+- V99 valida CUPS contra catálogo oficial.
 - V92 y V93 validan IPS contra REPS.
 - V94 valida finalización.
 - V96 solo aplica si V95 = `2`.
@@ -436,6 +438,27 @@
 
 **Prioridad:** Media  
 **Sprint sugerido:** Sprint 5
+
+---
+
+## HU-044 — Cargar catálogo CUPS
+
+**Como** administrador,  
+**quiero** cargar el catálogo de procedimientos CUPS,  
+**para** validar los códigos de cirugía y radioterapia registrados en el reporte CAC.
+
+**Criterios de aceptación:**
+- Permite importar el catálogo en formato Excel, CSV o JSON.
+- Valida V78 (CUPS primera cirugía) contra el catálogo.
+- Valida V83 (CUPS última cirugía) contra el catálogo.
+- Valida V90 (CUPS primer esquema radioterapia) contra el catálogo.
+- Valida V99 (CUPS último esquema radioterapia) contra el catálogo.
+- Informa si el código ingresado no existe en el catálogo.
+- Se actualiza sin modificar el código fuente.
+- Identifica la versión del catálogo cargado (Resolución 2641/2024 MinSalud vigente para 2025).
+
+**Prioridad:** Media  
+**Sprint sugerido:** Sprint 6
 
 ---
 
@@ -821,6 +844,7 @@
 - EAPB separado de la lógica.
 - REPS separado de la lógica.
 - ATC separado de la lógica.
+- CUPS separado de la lógica.
 - Identifica versión de catálogo cargado.
 
 **Prioridad:** Alta  
@@ -911,9 +935,9 @@
 
 **Objetivo:** validar bloques terapéuticos restantes.
 
-**Historias:** HU-013, HU-014, HU-041
+**Historias:** HU-013, HU-014, HU-041, HU-044
 
-**Entregable:** validaciones terapéuticas ampliadas.
+**Entregable:** validaciones terapéuticas ampliadas con catálogo CUPS.
 
 ---
 
@@ -942,7 +966,7 @@
 | Concepto | Cantidad |
 |---|---:|
 | Épicas | 12 |
-| Historias | 43 |
+| Historias | 44 |
 | Sprints sugeridos | 9 |
 | Primera entrega útil | Sprint 1 |
 | Primera entrega clínica fuerte | Sprint 2 |
