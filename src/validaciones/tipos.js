@@ -22,6 +22,10 @@
     return String(valor ?? '').trim();
   }
 
+  function textoOriginal(valor) {
+    return String(valor ?? '');
+  }
+
   function textoMayuscula(valor) {
     return texto(valor).toUpperCase();
   }
@@ -37,7 +41,7 @@
       return false;
     }
 
-    const fecha = new Date(`${valorTexto}T00:00:00`);
+    const fecha = new Date(`${valorTexto}T00:00:00Z`);
 
     if (Number.isNaN(fecha.getTime())) {
       return false;
@@ -57,22 +61,77 @@
       return null;
     }
 
-    const a = new Date(`${fechaA}T00:00:00`).getTime();
-    const b = new Date(`${fechaB}T00:00:00`).getTime();
+    const a = new Date(`${fechaA}T00:00:00Z`).getTime();
+    const b = new Date(`${fechaB}T00:00:00Z`).getTime();
 
     if (a < b) return -1;
     if (a > b) return 1;
     return 0;
   }
 
-  function crearHallazgo({ variable, valor, regla, mensaje, recomendacion, severidad = SEVERIDAD.ERROR }) {
+  function calcularEdad(fechaNacimiento, fechaCorte = '2025-05-05') {
+    if (!esFechaISO(fechaNacimiento) || !esFechaISO(fechaCorte)) {
+      return null;
+    }
+
+    const nacimiento = new Date(`${fechaNacimiento}T00:00:00Z`);
+    const corte = new Date(`${fechaCorte}T00:00:00Z`);
+
+    let edad = corte.getUTCFullYear() - nacimiento.getUTCFullYear();
+    const mes = corte.getUTCMonth() - nacimiento.getUTCMonth();
+
+    if (mes < 0 || (mes === 0 && corte.getUTCDate() < nacimiento.getUTCDate())) {
+      edad -= 1;
+    }
+
+    return edad;
+  }
+
+  function calcularDias(fechaInicio, fechaFin = '2025-05-05') {
+    if (!esFechaISO(fechaInicio) || !esFechaISO(fechaFin)) {
+      return null;
+    }
+
+    const inicio = new Date(`${fechaInicio}T00:00:00Z`).getTime();
+    const fin = new Date(`${fechaFin}T00:00:00Z`).getTime();
+
+    return Math.floor((fin - inicio) / (1000 * 60 * 60 * 24));
+  }
+
+  function crearDatoRelacionado(variable, nombre, valor, nota = '') {
     return {
+      variable,
+      nombre,
+      valor: texto(valor),
+      nota
+    };
+  }
+
+  function crearHallazgo({
+    codigo,
+    titulo,
+    variable,
+    valor,
+    regla,
+    mensaje,
+    recomendacion,
+    severidad = SEVERIDAD.ERROR,
+    datosRelacionados = [],
+    columnasCorregir = [],
+    explicacion = ''
+  }) {
+    return {
+      codigo,
+      titulo: titulo || mensaje || codigo || 'Hallazgo de validación',
       variable,
       valor: texto(valor),
       regla,
       mensaje,
       recomendacion,
-      severidad
+      severidad,
+      datosRelacionados,
+      columnasCorregir,
+      explicacion
     };
   }
 
@@ -111,10 +170,14 @@
     SEVERIDAD,
     ESTADO_PACIENTE,
     texto,
+    textoOriginal,
     textoMayuscula,
     estaVacio,
     esFechaISO,
     compararFechas,
+    calcularEdad,
+    calcularDias,
+    crearDatoRelacionado,
     crearHallazgo,
     contarPorSeveridad,
     resolverEstadoPaciente

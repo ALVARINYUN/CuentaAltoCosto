@@ -1,17 +1,23 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Validador CAC — Cohorte Cáncer</title>
-  <link rel="stylesheet" href="css/estilos.css" />
+  <title>Validador CAC - Cohorte Cáncer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@400;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/estilos.css?v=56" />
 </head>
+
 <body>
 
-  <!-- AVISO DE PRIVACIDAD -->
+  <!-- Aviso de privacidad -->
   <div id="aviso-privacidad" class="aviso-privacidad">
     <div class="aviso-contenido">
-      <span class="aviso-icono">⚠️</span>
+      <span class="aviso-icono">!</span>
       <p>
         Esta aplicación procesa información de salud de pacientes con cáncer.
         <strong>Los datos nunca salen de este equipo.</strong>
@@ -21,132 +27,145 @@
     </div>
   </div>
 
-  <!-- ENCABEZADO -->
+  <!-- Encabezado -->
   <header class="encabezado">
     <div class="encabezado-contenido">
       <div class="encabezado-marca">
-        <span class="marca-icono">⬡</span>
+        <div class="marca-icono-wrap">CAC</div>
         <div>
           <h1 class="marca-titulo">Validador CAC</h1>
-          <p class="marca-subtitulo">Cohorte de Alto Costo — Cáncer</p>
+          <p class="marca-subtitulo">Cohorte de Alto Costo - Cáncer</p>
         </div>
       </div>
       <div class="encabezado-meta">
-        <span class="meta-badge">Resolución 0247/2014</span>
+        <span class="meta-badge">Resolucion 0247/2014</span>
         <span class="meta-badge">Instructivo CAC-IEP1-I01</span>
-        <span id="version-app" class="meta-version">v1.0.0</span>
+        <span id="version-app" class="meta-version">Sprint 2B</span>
       </div>
     </div>
   </header>
 
-  <!-- CONTENIDO PRINCIPAL -->
   <main class="contenido-principal">
 
-    <!-- SECCIÓN 1: CARGA DE ARCHIVO -->
-    <section id="seccion-carga" class="seccion activa">
+    <!-- Indicador de pasos -->
+    <div class="steps-indicador">
+      <div class="step-item activo" id="step-1">
+        <div class="step-bola">1</div>
+        <span class="step-texto">Cargar archivo</span>
+      </div>
+      <div class="step-item" id="step-2">
+        <div class="step-bola">2</div>
+        <span class="step-texto">Validando</span>
+      </div>
+      <div class="step-item" id="step-3">
+        <div class="step-bola">3</div>
+        <span class="step-texto">Resultados</span>
+      </div>
+    </div>
+
+    <!-- Seccion de carga -->
+    <section id="seccion-carga" class="seccion">
       <div class="seccion-encabezado">
-        <span class="seccion-numero">01</span>
+        <div class="seccion-numero">01</div>
         <div>
           <h2 class="seccion-titulo">Cargar archivo</h2>
-          <p class="seccion-desc">Cargue el archivo Excel con los datos CAC para validar</p>
+          <p class="seccion-desc">Cargue el archivo Excel con los datos CAC para iniciar la validación automática.</p>
         </div>
       </div>
 
+      <input type="file" id="input-archivo" accept=".xlsx,.xls" hidden />
+
       <div id="zona-carga" class="zona-carga">
-        <input type="file" id="input-archivo" accept=".xlsx,.xls" hidden />
         <div class="zona-carga-interior">
-          <div class="zona-icono">📂</div>
+          <div class="zona-icono">Archivo</div>
           <p class="zona-titulo">Arrastra tu archivo Excel aquí</p>
           <p class="zona-subtitulo">o</p>
-          <button id="btn-seleccionar" class="btn btn-primario">Seleccionar archivo</button>
-          <p class="zona-formatos">Formatos aceptados: .xlsx · .xls</p>
+          <button id="btn-seleccionar" class="btn btn-primario btn-grande" type="button">Seleccionar archivo</button>
+          <p class="zona-formatos">Formatos aceptados: .xlsx .xls</p>
         </div>
       </div>
 
       <div id="archivo-info" class="archivo-info oculto">
         <div class="archivo-info-contenido">
-          <span class="archivo-icono">📊</span>
+          <span class="archivo-icono">Archivo</span>
           <div class="archivo-detalles">
             <p id="archivo-nombre" class="archivo-nombre"></p>
             <p id="archivo-tamano" class="archivo-tamano"></p>
           </div>
-          <button id="btn-cambiar-archivo" class="btn btn-secundario btn-pequeño">Cambiar</button>
+          <button id="btn-cambiar-archivo" class="btn btn-secundario btn-pequeno" type="button">Cambiar archivo</button>
         </div>
       </div>
 
-      <div id="mensaje-estructura" class="mensaje oculto"></div>
+      <div id="selector-hoja-contenedor" class="mensaje mensaje-info oculto"></div>
+      <div id="mensaje-carga" class="mensaje oculto"></div>
 
       <div class="zona-acciones">
-        <button id="btn-validar" class="btn btn-primario btn-grande" disabled>
-          Iniciar validación
-        </button>
+        <button id="btn-validar" class="btn btn-primario btn-grande" type="button" disabled>Iniciar validación</button>
       </div>
     </section>
 
-    <!-- SECCIÓN 2: PROGRESO -->
+    <!-- Seccion de progreso -->
     <section id="seccion-progreso" class="seccion oculto">
       <div class="seccion-encabezado">
-        <span class="seccion-numero">02</span>
+        <div class="seccion-numero">02</div>
         <div>
           <h2 class="seccion-titulo">Validando</h2>
-          <p id="progreso-texto" class="seccion-desc">Iniciando validación...</p>
+          <p class="seccion-desc">La app está revisando las variables y reglas disponibles.</p>
         </div>
       </div>
 
       <div class="progreso-barra-contenedor">
-        <div id="progreso-barra" class="progreso-barra" style="width: 0%"></div>
+        <div id="progreso-barra" class="progreso-barra" style="width: 0%;"></div>
       </div>
-      <p id="progreso-porcentaje" class="progreso-porcentaje">0%</p>
+      <div id="progreso-porcentaje" class="progreso-porcentaje">0%</div>
     </section>
 
-    <!-- SECCIÓN 3: RESULTADOS -->
+    <!-- Seccion de resultados -->
     <section id="seccion-resultados" class="seccion oculto">
-      <div class="seccion-encabezado">
-        <span class="seccion-numero">03</span>
+      <div class="seccion-encabezado resultados-header">
+        <div class="seccion-numero">03</div>
         <div>
           <h2 class="seccion-titulo">Resultados</h2>
-          <p id="resultados-resumen" class="seccion-desc"></p>
+          <p class="seccion-desc">Revise los pacientes con errores, advertencias y registros sin hallazgos.</p>
         </div>
         <div class="resultados-acciones">
-          <button id="btn-nueva-validacion" class="btn btn-secundario">Nueva validación</button>
-          <button id="btn-exportar" class="btn btn-primario" disabled>Exportar reporte</button>
+          <button id="btn-exportar" class="btn btn-primario" type="button">Exportar reporte</button>
+          <button id="btn-validar-otra-hoja" class="btn btn-secundario" type="button">Validar otra hoja</button>
+          <button id="btn-cargar-otro-archivo" class="btn btn-secundario" type="button">Cargar otro archivo</button>
         </div>
       </div>
 
-      <!-- TARJETAS DE RESUMEN -->
+      <div class="nota-resultados-flujo">
+        Si necesita revisar otra hoja del mismo Excel, use <strong>Validar otra hoja</strong>. Si necesita empezar con
+        un Excel diferente, use <strong>Cargar otro archivo</strong>. La paginación de resultados se conserva para
+        revisar pacientes por partes.
+      </div>
+
       <div class="tarjetas-resumen">
         <div class="tarjeta tarjeta-total">
-          <p class="tarjeta-numero" id="total-pacientes">0</p>
-          <p class="tarjeta-label">Pacientes</p>
+          <p id="total-pacientes" class="tarjeta-numero">0</p>
+          <p class="tarjeta-label">Pacientes procesados</p>
         </div>
         <div class="tarjeta tarjeta-error">
-          <p class="tarjeta-numero" id="total-errores">0</p>
+          <p id="pacientes-error" class="tarjeta-numero">0</p>
           <p class="tarjeta-label">Con errores</p>
         </div>
         <div class="tarjeta tarjeta-advertencia">
-          <p class="tarjeta-numero" id="total-advertencias">0</p>
-          <p class="tarjeta-label">Advertencias</p>
+          <p id="pacientes-advertencia" class="tarjeta-numero">0</p>
+          <p class="tarjeta-label">Con advertencias</p>
         </div>
         <div class="tarjeta tarjeta-ok">
-          <p class="tarjeta-numero" id="total-ok">0</p>
+          <p id="pacientes-ok" class="tarjeta-numero">0</p>
           <p class="tarjeta-label">Sin problemas</p>
         </div>
       </div>
 
-      <!-- BUSCADOR -->
       <div class="buscador-contenedor">
-        <input
-          type="text"
-          id="input-busqueda"
-          class="buscador-input"
-          placeholder="Buscar por número de documento..."
-        />
-        <button id="btn-limpiar-busqueda" class="btn btn-secundario btn-pequeño oculto">
-          Limpiar
-        </button>
+        <input id="buscador-documento" class="buscador-input" type="search"
+          placeholder="Buscar por numero de documento..." />
+        <button id="btn-limpiar-busqueda" class="btn btn-secundario" type="button">Limpiar búsqueda</button>
       </div>
 
-      <!-- TABLA DE RESULTADOS -->
       <div class="tabla-contenedor">
         <table class="tabla-resultados">
           <thead>
@@ -155,38 +174,47 @@
               <th>Errores</th>
               <th>Advertencias</th>
               <th>Estado</th>
-              <th></th>
+              <th>Acción</th>
             </tr>
           </thead>
-          <tbody id="tabla-cuerpo">
-            <!-- Filas generadas por JS -->
-          </tbody>
+          <tbody id="tabla-cuerpo"></tbody>
         </table>
-        <p id="sin-resultados" class="sin-resultados oculto">
-          No se encontró paciente con ese documento.
-        </p>
+        <p id="sin-resultados" class="sin-resultados oculto">No se encontró paciente con ese documento.</p>
       </div>
-
     </section>
 
   </main>
 
-  <!-- PIE DE PÁGINA -->
   <footer class="pie">
-    <p>Validador CAC · Datos procesados localmente · Ningún dato sale de este equipo</p>
+    <span>Validador CAC</span>
+    <span class="pie-dot"></span>
+    <span>Datos procesados localmente</span>
+    <span class="pie-dot"></span>
+    <span>Ningún dato sale de este equipo</span>
   </footer>
 
-  <!-- SCRIPTS -->
-  <script src="libs/xlsx.full.min.js"></script>
-  <script src="src/validaciones/tipos.js"></script>
-  <script src="src/validaciones/reglas/modulo1.js"></script>
-  <script src="src/validaciones/engine.js"></script>
-  <script src="src/lector/excel.js"></script>
-  <script src="src/lector/estructura.js"></script>
-  <script src="src/ui/carga.js"></script>
-  <script src="src/ui/progreso.js"></script>
-  <script src="src/ui/tabla-resultados.js"></script>
-  <script src="src/ui/buscador.js"></script>
-  <script src="src/main.js"></script>
+  <!-- Scripts -->
+  <script src="libs/xlsx-js-style.bundle.js?v=16"></script>
+  <script src="src/validaciones/tipos.js?v=16"></script>
+
+  <script src="src/validaciones/reglas/modulo1.js?v=33"></script>
+  <script src="src/catalogos/cie10.js?v=1"></script>
+  <script src="src/catalogos/cargador.js?v=1"></script>
+  <script src="src/validaciones/reglas/modulo2.js?v=fix-v18-v24-texto-01"></script>
+  <script src="src/validaciones/reglas/modulo3.js?v=fix-v28-error001-texto-01"></script>
+
+  <script src="src/lector/estructura.js?v=fix-regex-v29-03"></script>
+  <script src="src/lector/excel.js?v=fix-matriz-original-01"></script>
+  <script src="src/validaciones/engine.js?v=fix-regex-v29-03"></script>
+
+  <script src="src/ui/carga.js?v=16"></script>
+  <script src="src/ui/progreso.js?v=16"></script>
+  <script src="src/ui/tabla-resultados.js?v=54"></script>
+  <script src="src/ui/buscador.js?v=16"></script>
+  <script src="src/exportador/excel-reporte.js?v=fix-matriz-original-01"></script>
+  <script src="src/main.js?v=fix-regex-v29-03"></script>
+  <script src="src/ui/reiniciar-flujo.js?v=56"></script>
+
 </body>
+
 </html>

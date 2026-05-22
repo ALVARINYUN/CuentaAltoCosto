@@ -1,88 +1,348 @@
-// =======================================================
-// Validador CAC - lector/excel.js
-// Lee archivos Excel usando SheetJS
-// =======================================================
+
 
 (function () {
   'use strict';
 
-  function normalizarTexto(valor) {
+  const CAMPOS_FECHA = [
+    'V7', 'V16',
+    'V18', 'V19', 'V20', 'V23', 'V24',
+    'V26'
+  ];
+
+  const VARIABLES_VALIDABLES = Array.from({ length: 28 }, (_, i) => `V${i + 1}`);
+
+  function texto(valor) {
     return String(valor ?? '').trim();
   }
 
-  function leerArchivoExcel(archivo) {
-    return new Promise((resolve, reject) => {
-      if (!archivo) {
-        reject(new Error('No se recibió ningún archivo.'));
-        return;
+  function celdaVacia(valor) {
+    return valor === null || valor === undefined || texto(valor) === '';
+  }
+
+  function filaVacia(fila) {
+    return !Array.isArray(fila) || fila.every(celdaVacia);
+  }
+
+  function serialToDate(valor) {
+    if (valor === null || valor === undefined || valor === '') return '';
+
+    if (valor instanceof Date && !Number.isNaN(valor.getTime())) {
+      const yyyy = valor.getFullYear();
+      const mm = String(valor.getMonth() + 1).padStart(2, '0');
+      const dd = String(valor.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    if (typeof valor === 'number' && Number.isFinite(valor)) {
+      const fecha = new Date(Math.round((valor - 25569) * 86400 * 1000));
+      const yyyy = fecha.getUTCFullYear();
+      const mm = String(fecha.getUTCMonth() + 1).padStart(2, '0');
+      const dd = String(fecha.getUTCDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    return texto(valor);
+  }
+
+  function normalizarBasicoEncabezado(valor) {
+    return texto(valor)
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, '')
+      .replace(/[^a-z0-9]/g, '');
+  }
+
+  function normalizarEncabezado(valor) {
+    if (window.CACEstructura && typeof window.CACEstructura.normalizarEncabezado === 'function') {
+      return window.CACEstructura.normalizarEncabezado(valor);
+    }
+
+    const limpio = normalizarBasicoEncabezado(valor);
+
+    // Fallback seguro si estructura.js no cargara:
+    // captura el número completo después de "v".
+    // Si es 29 o mayor, no lo convierte en V2/V3/V10.
+    const match = limpio.match(/^v(\d{1,3})/);
+
+    if (match) {
+      const numero = Number(match[1]);
+
+      if (Number.isInteger(numero) && numero >= 1 && numero <= 28) {
+        return `V${numero}`;
       }
+    }
 
-      const extensionValida = /\.(xlsx|xls)$/i.test(archivo.name);
+    return texto(valor).toUpperCase();
+  }
 
-      if (!extensionValida) {
-        reject(new Error('Formato no válido. Solo se aceptan archivos Excel (.xlsx o .xls).'));
-        return;
-      }
+  function esVariableValida(variable) {
+    return VARIABLES_VALIDABLES.includes(variable);
+  }
 
-      if (typeof XLSX === 'undefined') {
-        reject(new Error('La librería XLSX no está cargada. Verifica libs/xlsx.full.min.js.'));
-        return;
-      }
+  function numeroVariable(variable) {
+    const match = texto(variable).match(/^V(\d+)$/);
+    return match ? Number(match[1]) : null;
+  }
 
-      const lector = new FileReader();
+  function analizarFilaEncabezados(fila) {
+    const mapeos = [];
+    const variablesYaMapeadas = new Set();
 
-      lector.onload = function (evento) {
-        try {
-          const datos = new Uint8Array(evento.target.result);
-          const libro = XLSX.read(datos, { type: 'array', cellDates: false });
-
-          if (!libro.SheetNames || libro.SheetNames.length === 0) {
-            reject(new Error('El archivo no contiene hojas.'));
-            return;
-          }
-
-          const nombreHoja = libro.SheetNames[0];
-          const hoja = libro.Sheets[nombreHoja];
-
-          const matriz = XLSX.utils.sheet_to_json(hoja, {
-            header: 1,
-            defval: '',
-            raw: false
-          });
-
-          if (!matriz || matriz.length === 0) {
-            reject(new Error('El archivo está vacío.'));
-            return;
-          }
-
-          const encabezados = matriz[0].map(normalizarTexto).filter(Boolean);
-          const filas = matriz
-            .slice(1)
-            .filter((fila) => Array.isArray(fila) && fila.some((celda) => normalizarTexto(celda) !== ''));
-
-          resolve({
-            archivo,
-            nombreArchivo: archivo.name,
-            tamanoArchivo: archivo.size,
-            nombreHoja,
-            encabezados,
-            filas,
-            totalFilas: filas.length
-          });
-        } catch (error) {
-          reject(new Error('No se pudo leer el archivo Excel. Verifica que no esté dañado.'));
-        }
+    if (filaVacia(fila)) {
+      return {
+        esCandidata: false,
+        puntaje: 0,
+        consecutivasDesdeV1: 0,
+        variables: [],
+        mapeos: []
       };
+    }
 
-      lector.onerror = function () {
-        reject(new Error('Ocurrió un error al leer el archivo.'));
+    fila.forEach((celda, indiceColumna) => {
+      const variable = normalizarEncabezado(celda);
+
+      // No se permite que una columna posterior sobrescriba una variable
+      // que ya fue detectada antes. Esto protege el mapeo real V1-V28.
+      if (esVariableValida(variable) && !variablesYaMapeadas.has(variable)) {
+        variablesYaMapeadas.add(variable);
+
+        mapeos.push({
+          indiceColumna,
+          variable,
+          encabezadoOriginal: texto(celda)
+        });
+      }
+    });
+
+    const variables = [...new Set(mapeos.map((m) => m.variable))];
+    const numeros = variables.map(numeroVariable).filter(Number.isFinite).sort((a, b) => a - b);
+
+    let consecutivasDesdeV1 = 0;
+
+    for (let n = 1; n <= 28; n += 1) {
+      if (numeros.includes(n)) consecutivasDesdeV1 = n;
+      else break;
+    }
+
+    const tieneBaseFuerte =
+      variables.includes('V1') &&
+      variables.includes('V2') &&
+      variables.includes('V3') &&
+      variables.includes('V4') &&
+      variables.includes('V5') &&
+      variables.includes('V6');
+
+    const esCandidata = tieneBaseFuerte && consecutivasDesdeV1 >= 6;
+
+    const puntaje =
+      consecutivasDesdeV1 * 100 +
+      variables.length * 5 +
+      (variables.includes('V16') ? 20 : 0) +
+      (variables.includes('V24') ? 20 : 0) +
+      (variables.includes('V28') ? 20 : 0);
+
+    return {
+      esCandidata,
+      puntaje,
+      consecutivasDesdeV1,
+      variables,
+      mapeos
+    };
+  }
+
+  function detectarFilaEncabezados(matriz) {
+    let mejor = null;
+    const limite = Math.min(matriz.length, 80);
+
+    for (let indice = 0; indice < limite; indice += 1) {
+      const analisis = analizarFilaEncabezados(matriz[indice]);
+
+      if (!analisis.esCandidata) continue;
+
+      if (!mejor || analisis.puntaje > mejor.puntaje) {
+        mejor = {
+          ...analisis,
+          indice,
+          filaExcel: indice + 1
+        };
+      }
+    }
+
+    if (!mejor) {
+      return {
+        indice: -1,
+        filaExcel: null,
+        variables: [],
+        mapeos: [],
+        consecutivasDesdeV1: 0
       };
+    }
 
-      lector.readAsArrayBuffer(archivo);
+    return mejor;
+  }
+
+  function obtenerMatrizHoja(libro, nombreHoja) {
+    const hoja = libro.Sheets[nombreHoja];
+
+    if (!hoja) return [];
+
+    return XLSX.utils.sheet_to_json(hoja, {
+      header: 1,
+      defval: '',
+      blankrows: false,
+      raw: true
     });
   }
 
-  window.CACLectorExcel = {
-    leerArchivoExcel
+  async function leerLibroExcel(archivo) {
+    const buffer = await archivo.arrayBuffer();
+    const libro = XLSX.read(buffer, {
+      type: 'array',
+      cellDates: true,
+      raw: true
+    });
+
+    return {
+      libro,
+      hojas: Array.isArray(libro.SheetNames) ? libro.SheetNames : []
+    };
+  }
+
+  function valorNormalizado(variable, valor) {
+    if (CAMPOS_FECHA.includes(variable)) return serialToDate(valor);
+
+    if (celdaVacia(valor)) return '';
+
+    return texto(valor);
+  }
+
+  function filaParecePaciente(registro) {
+    const valoresBase = [
+      registro.V1, registro.V2, registro.V3, registro.V4,
+      registro.V5, registro.V6, registro.V7, registro.V8
+    ].filter((valor) => !celdaVacia(valor)).length;
+
+    const tieneIdentificacion = !celdaVacia(registro.V5) || !celdaVacia(registro.V6);
+    const tieneNombre = !celdaVacia(registro.V1) || !celdaVacia(registro.V3);
+
+    return valoresBase >= 3 && (tieneIdentificacion || tieneNombre);
+  }
+
+  function construirRegistroDesdeFila(filaOriginal, mapeos, nombreHoja, filaExcel) {
+    const registro = {
+      __filaExcel: filaExcel,
+      __fila: filaExcel,
+      __hoja: nombreHoja
+    };
+
+    mapeos.forEach(({ indiceColumna, variable, encabezadoOriginal }) => {
+      registro[variable] = valorNormalizado(variable, filaOriginal[indiceColumna]);
+      registro[`__encabezado_${variable}`] = encabezadoOriginal;
+      registro[`__columna_${variable}`] = indiceColumna + 1;
+    });
+
+    return registro;
+  }
+
+  function extraerDatosHoja({ libro, nombreHoja }) {
+    if (!libro || !nombreHoja) {
+      throw new Error('No se recibió libro u hoja para procesar.');
+    }
+
+    const matriz = obtenerMatrizHoja(libro, nombreHoja);
+
+    if (!matriz.length) {
+      return {
+        nombreHoja,
+        encabezados: [],
+        encabezadosOriginales: [],
+        filas: [],
+        registros: [],
+        totalFilas: 0,
+        filaEncabezados: null,
+        filaInicioDatos: null,
+        matrizOriginal: matriz,
+        mapeos: [],
+        errorEstructura: 'La hoja está vacía.'
+      };
+    }
+
+    const deteccion = detectarFilaEncabezados(matriz);
+
+    if (deteccion.indice < 0) {
+      return {
+        nombreHoja,
+        encabezados: [],
+        encabezadosOriginales: [],
+        filas: [],
+        registros: [],
+        totalFilas: 0,
+        filaEncabezados: null,
+        filaInicioDatos: null,
+        matrizOriginal: matriz,
+        mapeos: [],
+        deteccionEncabezados: deteccion,
+        errorEstructura: 'No se detectó una fila válida de encabezados CAC.'
+      };
+    }
+
+    const filaEncabezadosIndice = deteccion.indice;
+    const filaEncabezados = filaEncabezadosIndice + 1;
+    const filaInicioDatos = filaEncabezados + 1;
+    const mapeos = deteccion.mapeos;
+
+    const encabezados = mapeos.map((m) => m.variable);
+    const encabezadosOriginales = mapeos.map((m) => m.encabezadoOriginal);
+
+    const registros = [];
+
+    for (let indiceMatriz = filaEncabezadosIndice + 1; indiceMatriz < matriz.length; indiceMatriz += 1) {
+      const filaOriginal = matriz[indiceMatriz];
+
+      if (filaVacia(filaOriginal)) continue;
+
+      const filaExcel = indiceMatriz + 1;
+      const registro = construirRegistroDesdeFila(filaOriginal, mapeos, nombreHoja, filaExcel);
+
+      if (!filaParecePaciente(registro)) continue;
+
+      registros.push(registro);
+    }
+
+    console.log(
+      `Hoja "${nombreHoja}": encabezados en fila ${filaEncabezados}, datos desde fila ${filaInicioDatos}, ${registros.length} pacientes leídos.`
+    );
+
+    return {
+      nombreHoja,
+      encabezados,
+      encabezadosOriginales,
+      cabeceras: encabezados,
+      filas: registros,
+      registros,
+      totalFilas: registros.length,
+      filaEncabezados,
+      filaEncabezadosIndice,
+      filaInicioDatos,
+      matrizOriginal: matriz,
+      mapeos,
+      deteccionEncabezados: {
+        filaExcel: deteccion.filaExcel,
+        variables: deteccion.variables,
+        consecutivasDesdeV1: deteccion.consecutivasDesdeV1
+      }
+    };
+  }
+
+  const api = {
+    CAMPOS_FECHA,
+    leerLibroExcel,
+    extraerDatosHoja,
+    detectarFilaEncabezados,
+    normalizarEncabezado,
+    serialToDate
   };
+
+  window.CACLectorExcel = api;
 })();
