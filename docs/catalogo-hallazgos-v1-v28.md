@@ -1744,3 +1744,20 @@ se registró 7.
 3. Cuando se agreguen nuevas reglas, actualizar el total de hallazgos y la tabla resumen.
 
 4. No inventar reglas para variables que todavía no aparezcan en la extracción del código.
+
+---
+
+# Total de hallazgos encontrados hasta V28
+
+Con base en la extracción actual del código de validaciones, el catálogo maestro contiene:
+
+| Concepto | Total |
+|---|---:|
+| Hallazgos encontrados | 80 |
+| Errores | 58 |
+| Advertencias | 22 |
+| Variables cubiertas | V1 a V28 |
+
+Este total corresponde a los hallazgos encontrados en el código actual de la app hasta la variable V28.
+
+El total general del validador completo sigue pendiente, porque todavía no se han documentado ni cerrado las reglas de las 134 variables.
