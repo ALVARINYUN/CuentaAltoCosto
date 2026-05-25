@@ -6,12 +6,15 @@ Este documento consolida la cantidad total de errores y advertencias encontrados
 
 | Concepto | Total |
 |---|---:|
-| Hallazgos encontrados | 171 |
-| Errores | 137 |
+| Hallazgos encontrados | 172 |
+| Errores | 138 |
 | Advertencias | 34 |
 | Variables cubiertas | V1 a V28 |
 
 > Este total corresponde al corte actual extraído de las reglas trabajadas en `src/validaciones/reglas/`. El total global definitivo del validador completo queda pendiente hasta cerrar las 134 variables.
+
+> Actualización: se agregó `V27-ERROR-005` después de implementar la regla espejo de V27: si `V27=98`, entonces `V21` debe ser `7`.
+
 
 ---
 
@@ -45,7 +48,7 @@ Este documento consolida la cantidad total de errores y advertencias encontrados
 | V24 | Fecha del primer informe histopatológico válido | 5 | 5 | 0 |
 | V25 | Código de habilitación de la IPS confirmadora | 4 | 2 | 2 |
 | V26 | Fecha de primera consulta con médico tratante | 4 | 3 | 1 |
-| V27 | Histología del tumor | 6 | 5 | 1 |
+| V27 | Histología del tumor | 7 | 6 | 1 |
 | V28 | Grado de diferenciación del tumor sólido maligno | 5 | 5 | 0 |
 
 ---
@@ -449,8 +452,8 @@ Este documento consolida la cantidad total de errores y advertencias encontrados
 
 ## V27 — Histología del tumor
 
-**Total en V27: 6 hallazgos**  
-**Errores:** 5  
+**Total en V27: 7 hallazgos**  
+**Errores:** 6  
 **Advertencias:** 1
 
 | Código | Tipo | Hallazgo |
@@ -459,6 +462,7 @@ Este documento consolida la cantidad total de errores y advertencias encontrados
 | `V27-ERROR-002` | Error | Histología debe ser un número válido |
 | `V27-ERROR-003` | Error | Código de histología no permitido |
 | `V27-ERROR-004` | Error | V27 debe ser 98 cuando el diagnóstico fue clínico exclusivamente |
+| `V27-ERROR-005` | Error | V27 usa 98 pero V21 no indica diagnóstico clínico exclusivamente |
 | `V27-ERROR-006` | Error | Célula pequeña solo es válida para cáncer de pulmón |
 | `V27-ADV-001` | Advertencia | Histología desconocida |
 
@@ -476,8 +480,43 @@ Este documento consolida la cantidad total de errores y advertencias encontrados
 | `V28-ERROR-004` | Error | V28 debe ser 98 cuando el diagnóstico fue clínico exclusivamente |
 | `V28-ERROR-005` | Error | V28 usa 98 pero V21 no indica diagnóstico clínico exclusivamente |
 
+
+---
+
+# Hallazgos con trazabilidad entre variables
+
+Estos hallazgos no validan una sola celda aislada, sino la coherencia entre dos o más variables.
+
+| Código | Cruce | Qué valida |
+|---|---|---|
+| `V5-ERROR-004` | V5 ↔ V10 | AS solo es válido si V10=S |
+| `V5-ERROR-005` | V5 ↔ V10 | MS solo es válido si V10=S |
+| `V16-ERROR-004` | V16 ↔ V7 | La fecha de afiliación no puede ser anterior al nacimiento |
+| `V17-ERROR-006` | V17 ↔ V8 | El CIE-10 debe corresponder al sexo del paciente cuando el catálogo lo restringe |
+| `V17-ADVERTENCIA-007` | V17 ↔ V7/V18 | Código CIE-10 con restricción de edad |
+| `V18-ADVERTENCIA-007` | V18 ↔ V24 | La fecha de diagnóstico puede no coincidir con la fecha del informe histopatológico |
+| `V19-ERROR-007` | V19 ↔ V20 | La remisión/interconsulta no debe ser posterior al ingreso diagnóstico |
+| `V19-ERROR-008` | V19 ↔ V18 | La remisión/interconsulta no debe ser posterior al diagnóstico |
+| `V20-ERROR-007` | V20 ↔ V18 | El ingreso diagnóstico no debe ser posterior al diagnóstico |
+| `V22-ERROR-005` | V22 ↔ V21 | Si V21=7, V22 no puede ser 98 |
+| `V22-ADVERTENCIA-006` | V22 ↔ V21 | Si V21 es diferente de 7, normalmente V22 debería ser 98 |
+| `V23-ERROR-007` | V23 ↔ V21 | Si V21=7, V23 debe ser 1845-01-01 |
+| `V24-ERROR-007` | V24 ↔ V21 | Si V21=7, V24 debe ser 1845-01-01 |
+| `V23-ERROR-008` | V23 ↔ V21 | V23 no puede usar 1845-01-01 si V21 no es 7 |
+| `V24-ERROR-008` | V24 ↔ V21 | V24 no puede usar 1845-01-01 si V21 no es 7 |
+| `V23-ERROR-009` | V23 ↔ V24 | La muestra no puede estar tomada después del informe histopatológico |
+| `V23-ERROR-010` | V23 ↔ V18 | La muestra no puede aparecer después de la fecha de diagnóstico |
+| `V26-ADV-001` | V26 ↔ V18 | La primera consulta con médico tratante aparece antes del diagnóstico |
+| `V27-ERROR-004` | V27 ↔ V21 | Si V21=7, V27 debe ser 98 |
+| `V27-ERROR-005` | V27 ↔ V21 | Si V27=98, V21 debe ser 7 |
+| `V27-ERROR-006` | V27 ↔ V17 | V27=21 solo aplica para cáncer de pulmón C34 |
+| `V28-ERROR-004` | V28 ↔ V21 | Si V21=7, V28 debe ser 98 |
+| `V28-ERROR-005` | V28 ↔ V21 | Si V28=98, V21 debe ser 7 |
+
+**Total de hallazgos con trazabilidad identificados:** 23.
+
 ---
 
 # Total final
 
- **171 hallazgos encontrados hasta V28**: **137 errores** y **34 advertencias**.
+ **172 hallazgos encontrados hasta V28**: **138 errores** y **34 advertencias**.
