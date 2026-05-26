@@ -1,7 +1,4 @@
-// =======================================================
-// Validador CAC - validaciones/tipos.js
-// Tipos, severidades y utilidades comunes de validación
-// =======================================================
+
 
 (function () {
   'use strict';

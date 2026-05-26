@@ -1,6 +1,6 @@
 // =======================================================
 // Validador CAC - main.js
-// Orquestador principal acumulativo V1-V28.
+// Orquestador principal acumulativo V1-V35.
 // Selector de hoja, cambio de hoja y exportación Excel.
 // =======================================================
 
@@ -126,7 +126,7 @@
 
   function limpiarResultadosVisuales() {
     const cuerpo = document.getElementById('tabla-cuerpo');
-    const inputBusqueda = document.getElementById('input-busqueda');
+    const inputBusqueda = document.getElementById('buscador-documento') || document.getElementById('input-busqueda');
     const botonLimpiar = document.getElementById('btn-limpiar-busqueda');
     const botonExportar = document.getElementById('btn-exportar');
 
@@ -141,6 +141,9 @@
 
     const idsResumen = [
       'total-pacientes',
+      'pacientes-error',
+      'pacientes-advertencia',
+      'pacientes-ok',
       'total-errores',
       'total-advertencias',
       'total-ok',
@@ -167,11 +170,56 @@
       : 'Primero ejecuta una validación.';
   }
 
+  function actualizarResumenVisualSeguro(resumen) {
+    if (!resumen || !Array.isArray(resumen.resultados)) return;
+
+    const resultados = resumen.resultados;
+
+    const totalPacientes = resumen.totalPacientes ?? resultados.length;
+    const conErrores = resumen.conErrores ?? resultados.filter((r) => Number(r.errores || 0) > 0).length;
+    const conAdvertencias = resumen.conAdvertencias ?? resultados.filter((r) => Number(r.advertencias || 0) > 0).length;
+    const soloConAdvertencias = resumen.soloConAdvertencias ?? resultados.filter((r) => Number(r.errores || 0) === 0 && Number(r.advertencias || 0) > 0).length;
+    const sinProblemas = resumen.sinProblemas ?? resultados.filter((r) => Number(r.errores || 0) === 0 && Number(r.advertencias || 0) === 0).length;
+    const totalErrores = resumen.totalErrores ?? resultados.reduce((suma, r) => suma + Number(r.errores || 0), 0);
+    const totalAdvertencias = resumen.totalAdvertencias ?? resultados.reduce((suma, r) => suma + Number(r.advertencias || 0), 0);
+    const totalHallazgos = totalErrores + totalAdvertencias;
+
+    const totalPacientesEl = document.getElementById('total-pacientes');
+    const pacientesErrorEl = document.getElementById('pacientes-error') || document.getElementById('total-errores');
+    const pacientesAdvertenciaEl = document.getElementById('pacientes-advertencia') || document.getElementById('total-advertencias');
+    const pacientesOkEl = document.getElementById('pacientes-ok') || document.getElementById('total-ok');
+    const resumenEl = document.getElementById('resultados-resumen');
+
+    if (totalPacientesEl) totalPacientesEl.textContent = totalPacientes;
+    if (pacientesErrorEl) pacientesErrorEl.textContent = conErrores;
+    if (pacientesAdvertenciaEl) pacientesAdvertenciaEl.textContent = conAdvertencias;
+    if (pacientesOkEl) pacientesOkEl.textContent = sinProblemas;
+
+    if (resumenEl) {
+      resumenEl.innerHTML = `
+        Validación completa. Se procesaron <strong>${totalPacientes}</strong> pacientes.
+        <strong>${conErrores}</strong> tienen errores,
+        <strong>${conAdvertencias}</strong> tienen advertencias,
+        <strong>${soloConAdvertencias}</strong> tienen solo advertencias y
+        <strong>${sinProblemas}</strong> no tienen hallazgos.
+        <br>
+        <span class="resumen-hallazgos">
+          Errores detectados: <strong>${totalErrores}</strong> ·
+          Advertencias detectadas: <strong>${totalAdvertencias}</strong> ·
+          Hallazgos totales: <strong>${totalHallazgos}</strong>
+        </span>
+      `;
+    }
+  }
+
   function describirModo(modo) {
     const mapa = {
       ACUMULATIVO_V1_V16: 'V1-V16',
       ACUMULATIVO_V1_V24: 'V1-V24',
-      ACUMULATIVO_V1_V28: 'V1-V28'
+      ACUMULATIVO_V1_V28: 'V1-V28',
+      ACUMULATIVO_V1_V29: 'V1-V29',
+      ACUMULATIVO_V1_V33: 'V1-V33',
+      ACUMULATIVO_V1_V35: 'V1-V35'
     };
 
     return mapa[modo] || modo || 'estructura detectada';
@@ -302,10 +350,18 @@
 
       CACProgresoUI.actualizarProgreso(100, 'Validación finalizada.');
       CACTablaResultadosUI.renderizarResultados(resumen);
+      actualizarResumenVisualSeguro(resumen);
       habilitarExportacion();
+
+      // Refuerzo visual: evita que una versión anterior del render o un reinicio tardío
+      // deje las tarjetas en cero aunque el resumen interno ya tenga hallazgos.
+      setTimeout(function () {
+        actualizarResumenVisualSeguro(estadoApp.resumenValidacion);
+      }, 50);
 
       setTimeout(function () {
         CACProgresoUI.mostrarResultados();
+        actualizarResumenVisualSeguro(estadoApp.resumenValidacion);
       }, 300);
     }, 200);
   }
@@ -399,7 +455,7 @@
   }
 
   function inicializarBuscador() {
-    const inputBusqueda = document.getElementById('input-busqueda');
+    const inputBusqueda = document.getElementById('buscador-documento') || document.getElementById('input-busqueda');
     const botonLimpiar = document.getElementById('btn-limpiar-busqueda');
 
     if (!inputBusqueda) return;

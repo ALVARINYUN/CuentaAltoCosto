@@ -485,9 +485,10 @@
         variable,
         codigo: c.enie,
         titulo: `${nombreCampo} contiene letra Ñ`,
-        mensaje: `${nombreCampo} contiene la letra Ñ.`,
-        regla: 'Según la regla documentada, V1 no debe contener Ñ.',
-        recomendacion: 'Revise el nombre contra BDUA y normalice el carácter si aplica.'
+        mensaje: `${nombreCampo} contiene la letra Ñ. Este dato debe revisarse contra BDUA o el soporte oficial del paciente.`,
+        regla: 'El nombre debe registrarse como aparece en BDUA y sin caracteres que puedan generar inconsistencias en la identificación. La Ñ puede existir en nombres reales, por eso no se bloquea como error, pero sí se deja como advertencia de revisión.',
+        recomendacion: 'Verifique el primer nombre contra BDUA o el documento soporte. Si la Ñ corresponde al nombre real del paciente, conserve el dato. Si fue un error de digitación o normalización, corríjalo.',
+        severidad: CACTipos.SEVERIDAD.ADVERTENCIA
       }));
     }
 

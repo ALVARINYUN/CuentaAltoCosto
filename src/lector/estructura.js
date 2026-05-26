@@ -1,10 +1,7 @@
 // =======================================================
 // Validador CAC - lector/estructura.js
-// Estructura acumulativa V1-V28 con encabezados reales.
-// Reconoce encabezados como v1primernombre, v2segundonombre...
-// Ignora correctamente V29+ para no confundir v29 con V2,
-// v39 con V3, v109 con V10, etc.
-// Si el archivo trae menos variables, valida solo hasta las presentes.
+// Estructura acumulativa V1-V35
+// Sprint 2E: V34-V35
 // =======================================================
 
 (function () {
@@ -26,50 +23,89 @@
     'V25', 'V26', 'V27', 'V28'
   ];
 
+  const VARIABLES_SPRINT_2C = ['V29'];
+
+  const VARIABLES_SPRINT_2D = [
+    'V30', 'V31', 'V32', 'V33'
+  ];
+
+  const VARIABLES_SPRINT_2E = [
+    'V34', 'V35'
+  ];
+
   const VARIABLES_HASTA_2A = [
     ...VARIABLES_SPRINT_1,
     ...VARIABLES_SPRINT_2A
   ];
 
-  const VARIABLES_ESPERADAS = [
+  const VARIABLES_HASTA_2B = [
     ...VARIABLES_SPRINT_1,
     ...VARIABLES_SPRINT_2A,
     ...VARIABLES_SPRINT_2B
   ];
 
+  const VARIABLES_HASTA_2C = [
+    ...VARIABLES_SPRINT_1,
+    ...VARIABLES_SPRINT_2A,
+    ...VARIABLES_SPRINT_2B,
+    ...VARIABLES_SPRINT_2C
+  ];
+
+  const VARIABLES_HASTA_2D = [
+    ...VARIABLES_HASTA_2C,
+    ...VARIABLES_SPRINT_2D
+  ];
+
+  const VARIABLES_ESPERADAS = [
+    ...VARIABLES_HASTA_2D,
+    ...VARIABLES_SPRINT_2E
+  ];
+
   const MAPA_ENCABEZADOS = {
     v1: 'V1',
     v1primernombre: 'V1',
+    primernombre: 'V1',
 
     v2: 'V2',
     v2segundonombre: 'V2',
+    segundonombre: 'V2',
 
     v3: 'V3',
     v3primerapellido: 'V3',
+    primerapellido: 'V3',
 
     v4: 'V4',
     v4segundoapellido: 'V4',
+    segundoapellido: 'V4',
 
     v5: 'V5',
     v5tipoidentificacion: 'V5',
     v5tipodeidentificacion: 'V5',
     v5tipodeidentificacin: 'V5',
+    tipoidentificacion: 'V5',
+    tipodeidentificacion: 'V5',
 
     v6: 'V6',
     v6numeroidentificacion: 'V6',
     v6numerodeidentificacion: 'V6',
     v6nmerodeidentificacin: 'V6',
+    numeroidentificacion: 'V6',
+    numerodeidentificacion: 'V6',
 
     v7: 'V7',
     v7fechanacimiento: 'V7',
     v7fechadenacimiento: 'V7',
+    fechanacimiento: 'V7',
+    fechadenacimiento: 'V7',
 
     v8: 'V8',
     v8sexo: 'V8',
+    sexo: 'V8',
 
     v9: 'V9',
     v9ocupacion: 'V9',
     v9ocupacin: 'V9',
+    ocupacion: 'V9',
 
     v10: 'V10',
     v10regimenafiliacion: 'V10',
@@ -206,7 +242,69 @@
     v28gradodediferenciacindeltumors: 'V28',
     v28gradodediferenciaciondeltumor: 'V28',
     v28gradodediferenciacindeltumorslidomaligno: 'V28',
-    v28gradodediferenciaciondeltumorsolidomaligno: 'V28'
+    v28gradodediferenciaciondeltumorsolidomaligno: 'V28',
+
+    v29: 'V29',
+    v29estadificacion: 'V29',
+    v29primeraestadificacion: 'V29',
+    v29estadificaciontnm: 'V29',
+    v29estadificacionfigo: 'V29',
+    v29primeradestadificacionbasadaentnmfigo: 'V29',
+    v29primeraestadificacionbasadaentnmfigo: 'V29',
+    v29sies: 'V29',
+    v29siesuntumorsolido: 'V29',
+    v29siestumorsolido: 'V29',
+    v29siestumorsolidocualfuelaprimeraestadificacion: 'V29',
+    v29siestumorsolidocualfuelaprimeraestadificacionbasadaentnmfigo: 'V29',
+    v29siestumorsolidocualfuelaprimeraestadificacionbasadaentnmfigouotrascompatiblesconestanumeracionseguntumor: 'V29',
+    siestumorsolidocualfuelaprimeraestadificacionbasadaentnmfigouotrascompatiblesconestanumeracionseguntumor: 'V29',
+    siesuntumorsolidocualfuelaprimeraestadificacionbasadaentnmfigouotrascompatiblesconestanumeracionseguntumor: 'V29',
+
+    v30: 'V30',
+    v30fechaestadificacion: 'V30',
+    v30fechadeestadificacion: 'V30',
+    v30fechaenqueserealizoestaestadificacion: 'V30',
+    v30fechaenqueserealizestaestadificacin: 'V30',
+    fechaenqueserealizoestaestadificacion: 'V30',
+
+    v31: 'V31',
+    v31her2: 'V31',
+    v31pruebaher2: 'V31',
+    v31paracancerdemamaselelerealizoher2: 'V31',
+    v31paracancerdemamaselelerealizolapruebaher2: 'V31',
+    v31paracancerdemamaselelerealizoalusuarioapruebaher2antesdeliniciodeltratamiento: 'V31',
+    paracancerdemamaselelerealizoalusuarioapruebaher2antesdeliniciodeltratamiento: 'V31',
+    paracancerdemamaselelerealizoaesteusuariolapruebaher2llamadotambienreceptor2delfactordecrecimientoepidermicohumanotambienllamadoerbb2antesdeliniciodeltratamiento: 'V31',
+
+    v32: 'V32',
+    v32fechaher2: 'V32',
+    v32fechapruebaher2: 'V32',
+    v32fechaderealizacionher2: 'V32',
+    v32fechaderealizaciondelaunicaultimapruebaher2: 'V32',
+    v32paracancerdemamafechaderealizaciondelaunicaultimapruebaher2: 'V32',
+    paracancerdemamafechaderealizaciondelaunicaultimapruebaher2: 'V32',
+
+    v33: 'V33',
+    v33resultadoher2: 'V33',
+    v33resultadopruebaher2: 'V33',
+    v33resultadodelaunicaultimapruebaher2: 'V33',
+    v33paracancerdemamaresultadodelaunicaultimapruebaher2: 'V33',
+    paracancerdemamaresultadodelaunicaultimapruebaher2: 'V33',
+
+    v34: 'V34',
+    v34dukes: 'V34',
+    v34estadificaciondukes: 'V34',
+    v34estadificaciondedukes: 'V34',
+    v34paracancercolorrectalestadificaciondedukes: 'V34',
+    paracancercolorrectalestadificaciondedukes: 'V34',
+    paracancercolorrectalestadificaciondukes: 'V34',
+
+    v35: 'V35',
+    v35fechadukes: 'V35',
+    v35fechaestadificaciondukes: 'V35',
+    v35fechaestadificaciondedukes: 'V35',
+    v35fechaenqueserealizolaestadificaciondedukes: 'V35',
+    fechaenqueserealizolaestadificaciondedukes: 'V35'
   };
 
   const MAPA_ENCABEZADOS_SPRINT_1 = MAPA_ENCABEZADOS;
@@ -221,20 +319,67 @@
       .replace(/[^a-z0-9]/g, '');
   }
 
-  function extraerVariableDesdeEncabezado(valor) {
+  function esEncabezadoV29(valor) {
     const limpio = limpiarEncabezado(valor);
 
-    // Importante:
-    // Primero se captura TODO el número que viene después de "v".
-    // Así "v29..." se lee como 29 y se ignora, no como V2.
-    // También evita que "v109..." se lea como V10.
+    if (limpio === 'v29' || limpio === '29') return true;
+
+    return (
+      limpio.includes('siestumorsolido') &&
+      limpio.includes('primeraestadificacion') &&
+      limpio.includes('tnm') &&
+      limpio.includes('figo') &&
+      limpio.includes('compatibles') &&
+      limpio.includes('numeracion') &&
+      limpio.includes('tumor')
+    );
+  }
+
+  function esEncabezadoV30(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v30' || limpio === '30') return true;
+    return limpio.includes('fecha') && limpio.includes('realiz') && limpio.includes('estadificacion');
+  }
+
+  function esEncabezadoV31(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v31' || limpio === '31') return true;
+    return limpio.includes('her2') && limpio.includes('tratamiento') && (limpio.includes('realizo') || limpio.includes('realiz'));
+  }
+
+  function esEncabezadoV32(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v32' || limpio === '32') return true;
+    return limpio.includes('fecha') && limpio.includes('her2') && (limpio.includes('realizacion') || limpio.includes('realizacin') || limpio.includes('realiz'));
+  }
+
+  function esEncabezadoV33(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v33' || limpio === '33') return true;
+    return limpio.includes('resultado') && limpio.includes('her2');
+  }
+
+  function esEncabezadoV34(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v34' || limpio === '34') return true;
+    return limpio.includes('colorrectal') && limpio.includes('dukes');
+  }
+
+  function esEncabezadoV35(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v35' || limpio === '35') return true;
+    return limpio.includes('fecha') && limpio.includes('dukes');
+  }
+
+  function extraerVariableDesdeEncabezado(valor) {
+    const limpio = limpiarEncabezado(valor);
     const coincidencia = limpio.match(/^v(\d{1,3})/);
 
     if (!coincidencia) return null;
 
     const numero = Number(coincidencia[1]);
 
-    if (!Number.isInteger(numero) || numero < 1 || numero > 28) {
+    if (!Number.isInteger(numero) || numero < 1 || numero > 35) {
       return null;
     }
 
@@ -246,6 +391,14 @@
     const original = String(valor ?? '').trim().toUpperCase();
 
     if (VARIABLES_ESPERADAS.includes(original)) return original;
+
+    if (esEncabezadoV29(valor)) return 'V29';
+    if (esEncabezadoV30(valor)) return 'V30';
+    if (esEncabezadoV31(valor)) return 'V31';
+    if (esEncabezadoV32(valor)) return 'V32';
+    if (esEncabezadoV33(valor)) return 'V33';
+    if (esEncabezadoV34(valor)) return 'V34';
+    if (esEncabezadoV35(valor)) return 'V35';
 
     const claveLimpia = limpiarEncabezado(valor);
 
@@ -261,13 +414,37 @@
       VARIABLES_ESPERADAS.includes(variable)
     );
 
+    const tiene2E = VARIABLES_SPRINT_2E.some((variable) => presentes.includes(variable));
+    const tiene2D = VARIABLES_SPRINT_2D.some((variable) => presentes.includes(variable));
+    const tiene2C = VARIABLES_SPRINT_2C.some((variable) => presentes.includes(variable));
     const tiene2B = VARIABLES_SPRINT_2B.some((variable) => presentes.includes(variable));
     const tiene2A = VARIABLES_SPRINT_2A.some((variable) => presentes.includes(variable));
+
+    if (tiene2E) {
+      return {
+        modo: 'ACUMULATIVO_V1_V35',
+        variables: VARIABLES_ESPERADAS
+      };
+    }
+
+    if (tiene2D) {
+      return {
+        modo: 'ACUMULATIVO_V1_V33',
+        variables: VARIABLES_HASTA_2D
+      };
+    }
+
+    if (tiene2C) {
+      return {
+        modo: 'ACUMULATIVO_V1_V29',
+        variables: VARIABLES_HASTA_2C
+      };
+    }
 
     if (tiene2B) {
       return {
         modo: 'ACUMULATIVO_V1_V28',
-        variables: VARIABLES_ESPERADAS
+        variables: VARIABLES_HASTA_2B
       };
     }
 
@@ -306,8 +483,6 @@
   }
 
   function validarEstructuraSprint1(encabezados) {
-    // Compatibilidad con main.js anterior:
-    // Aunque el nombre diga Sprint1, la estructura se resuelve dinámicamente.
     return validarEstructura(encabezados);
   }
 
@@ -319,21 +494,49 @@
     return validarEstructura(encabezados);
   }
 
+  function validarEstructuraSprint2C(encabezados) {
+    return validarEstructura(encabezados);
+  }
+
+  function validarEstructuraSprint2D(encabezados) {
+    return validarEstructura(encabezados);
+  }
+
+  function validarEstructuraSprint2E(encabezados) {
+    return validarEstructura(encabezados);
+  }
+
   window.CACEstructura = {
     VARIABLES_SPRINT_1,
     VARIABLES_SPRINT_2A,
     VARIABLES_SPRINT_2B,
+    VARIABLES_SPRINT_2C,
+    VARIABLES_SPRINT_2D,
+    VARIABLES_SPRINT_2E,
     VARIABLES_HASTA_2A,
+    VARIABLES_HASTA_2B,
+    VARIABLES_HASTA_2C,
+    VARIABLES_HASTA_2D,
     VARIABLES_ESPERADAS,
     MAPA_ENCABEZADOS,
     MAPA_ENCABEZADOS_SPRINT_1,
     limpiarEncabezado,
+    esEncabezadoV29,
+    esEncabezadoV30,
+    esEncabezadoV31,
+    esEncabezadoV32,
+    esEncabezadoV33,
+    esEncabezadoV34,
+    esEncabezadoV35,
     extraerVariableDesdeEncabezado,
     normalizarEncabezado,
     resolverVariablesEsperadasDinamicas,
     validarEstructura,
     validarEstructuraSprint1,
     validarEstructuraSprint2A,
-    validarEstructuraSprint2B
+    validarEstructuraSprint2B,
+    validarEstructuraSprint2C,
+    validarEstructuraSprint2D,
+    validarEstructuraSprint2E
   };
 })();

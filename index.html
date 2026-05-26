@@ -5,11 +5,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Validador CAC - Cohorte Cáncer</title>
+
+  <!-- Fuente Nunito -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@400;600;700&display=swap"
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="css/estilos.css?v=56" />
+
+  <!-- CSS de la app -->
+  <link rel="stylesheet" href="css/estilos.css?v=57" />
 </head>
 
 <body>
@@ -40,7 +44,7 @@
       <div class="encabezado-meta">
         <span class="meta-badge">Resolucion 0247/2014</span>
         <span class="meta-badge">Instructivo CAC-IEP1-I01</span>
-        <span id="version-app" class="meta-version">Sprint 2B</span>
+        <span id="version-app" class="meta-version">Sprint 2E</span>
       </div>
     </div>
   </header>
@@ -141,6 +145,10 @@
         revisar pacientes por partes.
       </div>
 
+      <div id="resultados-resumen" class="nota-resultados-flujo resumen-validacion-final" aria-live="polite">
+        Ejecute la validación para ver el resumen consolidado.
+      </div>
+
       <div class="tarjetas-resumen">
         <div class="tarjeta tarjeta-total">
           <p id="total-pacientes" class="tarjeta-numero">0</p>
@@ -202,17 +210,20 @@
   <script src="src/catalogos/cargador.js?v=1"></script>
   <script src="src/validaciones/reglas/modulo2.js?v=fix-v18-v24-texto-01"></script>
   <script src="src/validaciones/reglas/modulo3.js?v=fix-v27-error-005-01"></script>
+  <script src="src/validaciones/reglas/modulo4.js?v=sprint-2c-v29-catalogos-legibles-01"></script>
+  <script src="src/validaciones/reglas/modulo5.js?v=sprint-2d-v30-v33-sin-no-debe-hacer-02"></script>
+  <script src="src/validaciones/reglas/modulo6.js?v=sprint-2e-v34-v35-descripciones-simples-03"></script>
 
-  <script src="src/lector/estructura.js?v=fix-regex-v29-03"></script>
-  <script src="src/lector/excel.js?v=fix-matriz-original-01"></script>
-  <script src="src/validaciones/engine.js?v=fix-regex-v29-03"></script>
+  <script src="src/lector/estructura.js?v=sprint-2e-v34-v35-fix-tiene2e-02"></script>
+  <script src="src/lector/excel.js?v=sprint-2e-v34-v35-02"></script>
+  <script src="src/validaciones/engine.js?v=sprint-2e-v34-v35-02"></script>
 
   <script src="src/ui/carga.js?v=16"></script>
   <script src="src/ui/progreso.js?v=16"></script>
-  <script src="src/ui/tabla-resultados.js?v=54"></script>
+  <script src="src/ui/tabla-resultados.js?v=sprint-2e-v34-v35-resumen-visual-02"></script>
   <script src="src/ui/buscador.js?v=16"></script>
   <script src="src/exportador/excel-reporte.js?v=fix-matriz-original-01"></script>
-  <script src="src/main.js?v=fix-regex-v29-03"></script>
+  <script src="src/main.js?v=sprint-2e-v34-v35-resumen-visual-02"></script>
   <script src="src/ui/reiniciar-flujo.js?v=56"></script>
 
 </body>

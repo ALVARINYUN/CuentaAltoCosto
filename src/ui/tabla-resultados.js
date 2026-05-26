@@ -1,9 +1,3 @@
-// =======================================================
-// Validador CAC - ui/tabla-resultados.js
-// Tabla con selector de pacientes por página.
-// Detalle paginado de a 1 hallazgo por vez: Hallazgo 1, 2, 3...
-// Ordena por fila Excel ascendente.
-// =======================================================
 
 (function () {
   'use strict';
@@ -47,7 +41,18 @@
     V21: 'Tipo de estudio diagnóstico',
     V22: 'Motivo por el cual no tuvo diagnóstico por histopatología',
     V23: 'Fecha de recolección de muestra para estudio histopatológico',
-    V24: 'Fecha del primer o único informe histopatológico válido'
+    V24: 'Fecha del primer o único informe histopatológico válido',
+    V25: 'Código válido de habilitación de la IPS',
+    V26: 'Fecha de primera consulta con médico tratante',
+    V27: 'Histología del tumor en muestra de biopsia o pieza quirúrgica',
+    V28: 'Grado de diferenciación del tumor sólido',
+    V29: 'Primera estadificación basada en TNM, FIGO u otras compatibles',
+    V30: 'Fecha en que se realizó la estadificación',
+    V31: 'HER2 realizado antes del inicio del tratamiento',
+    V32: 'Fecha de realización de la única o última prueba HER2',
+    V33: 'Resultado de la única o última prueba HER2',
+    V34: 'Estadificación de Dukes para cáncer colorrectal',
+    V35: 'Fecha en que se realizó la estadificación de Dukes'
   };
 
   function texto(valor) {
@@ -61,6 +66,11 @@
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;');
+  }
+
+
+  function escaparHTMLConSaltos(valor) {
+    return escaparHTML(valor).replace(/\n/g, '<br>');
   }
 
   function obtenerNombreVariable(variable) {
@@ -139,11 +149,17 @@
     const totalFilas = resumen.totalPacientes ?? resumen.resultados?.length ?? 0;
 
     // Estas tarjetas cuentan filas/pacientes, no hallazgos individuales.
+    // Un mismo paciente puede aparecer en “Con errores” y en “Con advertencias”
+    // si tiene ambos tipos de hallazgo.
     const filasConErrores = resumen.conErrores
       ?? resumen.resultados?.filter((r) => obtenerErrores(r) > 0).length
       ?? 0;
 
-    const filasSoloConAdvertencias = resumen.conAdvertencias
+    const filasConAdvertencias = resumen.conAdvertencias
+      ?? resumen.resultados?.filter((r) => obtenerAdvertencias(r) > 0).length
+      ?? 0;
+
+    const filasSoloConAdvertencias = resumen.soloConAdvertencias
       ?? resumen.resultados?.filter((r) => obtenerErrores(r) === 0 && obtenerAdvertencias(r) > 0).length
       ?? 0;
 
@@ -174,13 +190,14 @@
 
     if (totalPacientesEl) totalPacientesEl.textContent = totalFilas;
     if (totalErroresEl) totalErroresEl.textContent = filasConErrores;
-    if (totalAdvertenciasEl) totalAdvertenciasEl.textContent = filasSoloConAdvertencias;
+    if (totalAdvertenciasEl) totalAdvertenciasEl.textContent = filasConAdvertencias;
     if (totalOkEl) totalOkEl.textContent = filasSinHallazgos;
 
     if (resumenEl) {
       resumenEl.innerHTML = `
         Validación completa. Se procesaron <strong>${totalFilas}</strong> filas del Excel.
         <strong>${filasConErrores}</strong> filas tienen al menos un error,
+        <strong>${filasConAdvertencias}</strong> filas tienen al menos una advertencia,
         <strong>${filasSoloConAdvertencias}</strong> filas tienen solo advertencias y
         <strong>${filasSinHallazgos}</strong> filas no tienen hallazgos.
         <br>
@@ -403,7 +420,7 @@
       <article class="tarjeta-hallazgo ${clase}">
         <h5>${escaparHTML(codigo)}${codigo ? ' · ' : ''}${escaparHTML(titulo || obtenerNombreVariable(variable))}</h5>
 
-        <p><strong>Qué pasa:</strong> ${escaparHTML(mensaje)}</p>
+        <p><strong>Qué pasa:</strong> ${escaparHTMLConSaltos(mensaje)}</p>
 
         <div class="datos-involucrados">
           <strong>Datos involucrados:</strong>
@@ -421,9 +438,9 @@
 
         <p><strong>Dónde revisar:</strong> ${escaparHTML(columnas)}</p>
 
-        ${regla ? `<p><strong>Por qué importa:</strong> ${escaparHTML(regla)}</p>` : ''}
+        ${regla ? `<p><strong>Por qué importa:</strong> ${escaparHTMLConSaltos(regla)}</p>` : ''}
 
-        <p><strong>Qué hacer:</strong> ${escaparHTML(recomendacion)}</p>
+        <p><strong>Qué hacer:</strong> ${escaparHTMLConSaltos(recomendacion)}</p>
       </article>
     `;
   }

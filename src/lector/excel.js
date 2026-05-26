@@ -1,15 +1,16 @@
-
-
 (function () {
   'use strict';
 
   const CAMPOS_FECHA = [
     'V7', 'V16',
     'V18', 'V19', 'V20', 'V23', 'V24',
-    'V26'
+    'V26',
+    'V30', 'V32', 'V35'
   ];
 
-  const VARIABLES_VALIDABLES = Array.from({ length: 28 }, (_, i) => `V${i + 1}`);
+  // Variables válidas acumuladas hasta Sprint 2E.
+  // V1-V35: incluye V34 y V35 para que el lector no las descarte.
+  const VARIABLES_VALIDABLES = Array.from({ length: 35 }, (_, i) => `V${i + 1}`);
 
   function texto(valor) {
     return String(valor ?? '').trim();
@@ -62,13 +63,13 @@
 
     // Fallback seguro si estructura.js no cargara:
     // captura el número completo después de "v".
-    // Si es 29 o mayor, no lo convierte en V2/V3/V10.
+    // Permite V1-V35.
     const match = limpio.match(/^v(\d{1,3})/);
 
     if (match) {
       const numero = Number(match[1]);
 
-      if (Number.isInteger(numero) && numero >= 1 && numero <= 28) {
+      if (Number.isInteger(numero) && numero >= 1 && numero <= 35) {
         return `V${numero}`;
       }
     }
@@ -103,7 +104,7 @@
       const variable = normalizarEncabezado(celda);
 
       // No se permite que una columna posterior sobrescriba una variable
-      // que ya fue detectada antes. Esto protege el mapeo real V1-V28.
+      // que ya fue detectada antes. Esto protege el mapeo real V1-V33.
       if (esVariableValida(variable) && !variablesYaMapeadas.has(variable)) {
         variablesYaMapeadas.add(variable);
 
@@ -120,7 +121,7 @@
 
     let consecutivasDesdeV1 = 0;
 
-    for (let n = 1; n <= 28; n += 1) {
+    for (let n = 1; n <= 35; n += 1) {
       if (numeros.includes(n)) consecutivasDesdeV1 = n;
       else break;
     }
@@ -140,7 +141,12 @@
       variables.length * 5 +
       (variables.includes('V16') ? 20 : 0) +
       (variables.includes('V24') ? 20 : 0) +
-      (variables.includes('V28') ? 20 : 0);
+      (variables.includes('V28') ? 20 : 0) +
+      (variables.includes('V29') ? 30 : 0) +
+      (variables.includes('V30') ? 30 : 0) +
+      (variables.includes('V33') ? 30 : 0) +
+      (variables.includes('V34') ? 30 : 0) +
+      (variables.includes('V35') ? 30 : 0);
 
     return {
       esCandidata,
@@ -337,6 +343,7 @@
 
   const api = {
     CAMPOS_FECHA,
+    VARIABLES_VALIDABLES,
     leerLibroExcel,
     extraerDatosHoja,
     detectarFilaEncabezados,

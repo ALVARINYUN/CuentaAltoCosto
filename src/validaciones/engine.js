@@ -1,7 +1,7 @@
 // =======================================================
 // Validador CAC - validaciones/engine.js
-// Motor acumulativo V1-V28.
-// Usa registros ya alineados por el lector y conserva fila real Excel.
+// Motor acumulativo V1-V35.
+// Corrige normalización de filas tipo objeto para encabezados reales.
 // =======================================================
 
 (function () {
@@ -38,9 +38,46 @@
     return CACTipos.textoOriginal(valor);
   }
 
+  function copiarMetadatosFila(origen, destino) {
+    if (!origen || typeof origen !== 'object') return;
+
+    if (origen.__filaExcel) {
+      destino.__filaExcel = origen.__filaExcel;
+      destino.__fila = origen.__filaExcel;
+    }
+
+    if (origen.__fila) {
+      destino.__fila = origen.__fila;
+    }
+
+    if (origen.__hoja) {
+      destino.__hoja = origen.__hoja;
+    }
+  }
+
+  function normalizarFilaObjeto(fila) {
+    const registro = {};
+
+    copiarMetadatosFila(fila, registro);
+
+    Object.entries(fila || {}).forEach(([claveOriginal, valor]) => {
+      if (String(claveOriginal).startsWith('__')) {
+        return;
+      }
+
+      const claveNormalizada = normalizarEncabezado(claveOriginal);
+      registro[claveNormalizada] = normalizarValor(valor);
+    });
+
+    return registro;
+  }
+
   function normalizarFila(encabezados, fila) {
+    // Cuando excel.js entrega cada fila como objeto, también se deben normalizar
+    // las claves. Antes se devolvía {...fila}, lo que impedía reconocer encabezados
+    // largos como el de V29.
     if (!Array.isArray(fila) && typeof fila === 'object' && fila !== null) {
-      return { ...fila };
+      return normalizarFilaObjeto(fila);
     }
 
     const registro = {};
@@ -97,6 +134,43 @@
       typeof window.CACModulo3.validar === 'function'
     ) {
       hallazgos = hallazgos.concat(CACModulo3.validar(registro));
+    }
+
+    const archivoTraeBloque2C = tieneAlgunaColumna(registro, [
+      'V29'
+    ]);
+
+    if (
+      archivoTraeBloque2C &&
+      window.CACModulo4 &&
+      typeof window.CACModulo4.validar === 'function'
+    ) {
+      hallazgos = hallazgos.concat(CACModulo4.validar(registro));
+    }
+
+
+    const archivoTraeBloque2D = tieneAlgunaColumna(registro, [
+      'V30', 'V31', 'V32', 'V33'
+    ]);
+
+    if (
+      archivoTraeBloque2D &&
+      window.CACModulo5 &&
+      typeof window.CACModulo5.validar === 'function'
+    ) {
+      hallazgos = hallazgos.concat(CACModulo5.validar(registro));
+    }
+
+    const archivoTraeBloque2E = tieneAlgunaColumna(registro, [
+      'V34', 'V35'
+    ]);
+
+    if (
+      archivoTraeBloque2E &&
+      window.CACModulo6 &&
+      typeof window.CACModulo6.validar === 'function'
+    ) {
+      hallazgos = hallazgos.concat(CACModulo6.validar(registro));
     }
 
     return hallazgos;
@@ -162,8 +236,12 @@
 
   function construirResumen(resultados) {
     const totalPacientes = resultados.length;
+
+    // Las tarjetas del resumen deben contar pacientes por condición.
+    // Un mismo paciente puede tener errores y advertencias al mismo tiempo.
     const conErrores = resultados.filter((resultado) => resultado.errores > 0).length;
-    const conAdvertencias = resultados.filter(
+    const conAdvertencias = resultados.filter((resultado) => resultado.advertencias > 0).length;
+    const soloConAdvertencias = resultados.filter(
       (resultado) => resultado.errores === 0 && resultado.advertencias > 0
     ).length;
     const sinProblemas = resultados.filter(
@@ -182,6 +260,7 @@
       totalPacientes,
       conErrores,
       conAdvertencias,
+      soloConAdvertencias,
       sinProblemas,
       totalErrores,
       totalAdvertencias,
@@ -191,6 +270,7 @@
 
   window.CACEngine = {
     normalizarFila,
+    normalizarFilaObjeto,
     validarRegistroCompleto,
     validarDatosSprint1
   };
