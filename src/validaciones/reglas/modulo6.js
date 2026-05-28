@@ -1,10 +1,3 @@
-// =======================================================
-// Validador CAC - validaciones/reglas/modulo6.js
-// Sprint 2E: V34-V35
-// V34: Estadificación de Dukes para cáncer colorrectal
-// V35: Fecha en que se realizó la estadificación de Dukes
-// Versión con reglas completas y descripciones simplificadas
-// =======================================================
 
 (function () {
   'use strict';

@@ -1,8 +1,7 @@
-
 (function () {
   'use strict';
 
-  const VERSION_MODULO3 = 'sprint-2b-v1-v25-v28-fix-v27-error-005-01';
+  const VERSION_MODULO3 = 'sprint-2b-v2-v25-v28-reglas-v27-v28-01';
 
   const TIPO = {
     FORMATO: 'formato',
@@ -90,7 +89,7 @@
 
     // C34 corresponde a bronquios y pulmón. Se usa para validar la opción V27=21
     // "Célula pequeña (cáncer de pulmón)" sin inventar otros agrupadores.
-    return /^C34\d*$/.test(cie10);
+    return /^C34[A-Z0-9]*$/.test(cie10);
   }
 
   function crearHallazgo({
@@ -394,6 +393,26 @@
       return;
     }
 
+    if (v27 === '21' && !esCancerPulmonPorCIE10(v17)) {
+      agregarHallazgo(hallazgos, {
+        variable: 'V27',
+        codigo: 'V27-ERROR-006',
+        tipo: TIPO.DEPENDENCIA,
+        severidad: SEVERIDAD.ERROR,
+        valor: v27,
+        titulo: 'Histología no corresponde al diagnóstico',
+        mensaje: 'V27 está registrado como 21, pero V17 no corresponde a cáncer de pulmón.',
+        regla: 'En V27, el código 21 significa célula pequeña y se usa para cáncer de pulmón. Si V17 no corresponde a pulmón, puede estar mal registrada la histología o el diagnóstico.',
+        recomendacion: 'Revise el reporte de patología. Si el caso es cáncer de pulmón, corrija V17. Si no es cáncer de pulmón, cambie V27 por la histología correcta.',
+        columnasCorregir: ['V17', 'V27'],
+        datosRelacionados: [
+          { variable: 'V17', nombre: nombreVariable('V17'), valor: v17 || '(vacío)' },
+          { variable: 'V27', nombre: nombreVariable('V27'), valor: v27 }
+        ]
+      });
+      return;
+    }
+
     if (v27 === '99') {
       agregarHallazgo(hallazgos, {
         variable: 'V27',
@@ -409,130 +428,148 @@
     }
   }
 
-    function validarV28(registro, hallazgos) {
-      const v18 = obtenerValor(registro, 'V18');
-      const v21 = obtenerValor(registro, 'V21');
-      const v28 = obtenerValor(registro, 'V28');
+  function validarV28(registro, hallazgos) {
+    const v18 = obtenerValor(registro, 'V18');
+    const v21 = obtenerValor(registro, 'V21');
+    const v28 = obtenerValor(registro, 'V28');
 
-      if (!v28) {
-        agregarHallazgo(hallazgos, {
-          variable: 'V28',
-          codigo: 'V28-ERROR-001',
-          tipo: TIPO.FORMATO,
-          severidad: SEVERIDAD.ERROR,
-          valor: '(vacío)',
-          titulo: 'Falta registrar el grado de diferenciación del tumor',
-          mensaje: 'V28 está vacío. Debe registrar el código que corresponde al grado de diferenciación del tumor según la biopsia diagnóstica. Si ese dato no está en la biopsia, revise el informe de primera cirugía.',
-          regla: 'V28 debe usar un código válido del catálogo de grado de diferenciación: 1, 2, 3, 4, 94, 95, 98 o 99.',
-          recomendacion: 'Revise la biopsia diagnóstica o el informe de primera cirugía y registre uno de estos códigos: 1 si es bien diferenciado, 2 si es moderadamente diferenciado, 3 si es mal diferenciado, 4 si es anaplásico o indiferenciado, 94 si es tumor sólido pero el reporte no describe diferenciación, 95 si no es tumor sólido, 98 si no se realizó histopatología y V21=7, o 99 si no hay información en la historia clínica.',
-          columnasCorregir: ['V28'],
-          datosRelacionados: [
-            {
-              variable: 'V28',
-              nombre: nombreVariable('V28'),
-              valor: '(vacío)'
-            }
-          ]
-        });
-        return;
-      }
-
-      if (!esEnteroTexto(v28)) {
-        agregarHallazgo(hallazgos, {
-          variable: 'V28',
-          codigo: 'V28-ERROR-002',
-          tipo: TIPO.FORMATO,
-          severidad: SEVERIDAD.ERROR,
-          valor: v28,
-          titulo: 'Grado de diferenciación con formato inválido',
-          mensaje: 'V28 debe ser numérica. No se aceptan textos, letras, puntos, guiones ni descripciones escritas.',
-          regla: 'El instructivo define un catálogo cerrado numérico para V28.',
-          recomendacion: 'Reemplace el texto por el código correspondiente: 1, 2, 3, 4, 94, 95, 98 o 99.'
-        });
-        return;
-      }
-
-      if (!CATALOGO_V28.has(v28)) {
-        agregarHallazgo(hallazgos, {
-          variable: 'V28',
-          codigo: 'V28-ERROR-003',
-          tipo: TIPO.CATALOGO,
-          severidad: SEVERIDAD.ERROR,
-          valor: v28,
-          titulo: 'Código de grado de diferenciación fuera de catálogo',
-          mensaje: 'V28 tiene un código que no existe en el catálogo definido por el instructivo.',
-          regla: 'V28 solo permite: 1, 2, 3, 4, 94, 95, 98 y 99.',
-          recomendacion: 'Revise el grado de diferenciación reportado y seleccione una opción válida.'
-        });
-        return;
-      }
-
-      if (v21 === '7' && v28 !== '98') {
-        agregarHallazgo(hallazgos, {
-          variable: 'V28',
-          codigo: 'V28-ERROR-004',
-          tipo: TIPO.DEPENDENCIA,
-          severidad: SEVERIDAD.ERROR,
-          valor: v28,
-          titulo: 'V28 debe ser 98 cuando el diagnóstico fue clínico exclusivamente',
-          mensaje: 'V21=7 indica diagnóstico clínico exclusivamente. En ese caso V28 debe reportar 98 porque no se realizó estudio histopatológico.',
-          regla: 'La opción 98 de V28 aplica cuando no se realizó estudio histopatológico y en V21 se registró 7.',
-          recomendacion: 'Cambie V28 a 98 o revise si V21 fue digitado correctamente.',
-          columnasCorregir: ['V21', 'V28'],
-          datosRelacionados: [
-            { variable: 'V21', nombre: nombreVariable('V21'), valor: v21 },
-            { variable: 'V28', nombre: nombreVariable('V28'), valor: v28 }
-          ]
-        });
-        return;
-      }
-
-      if (v21 !== '7' && v28 === '98') {
-        agregarHallazgo(hallazgos, {
-          variable: 'V28',
-          codigo: 'V28-ERROR-005',
-          tipo: TIPO.DEPENDENCIA,
-          severidad: SEVERIDAD.ERROR,
-          valor: v28,
-          titulo: 'V28 usa 98 pero V21 no indica diagnóstico clínico exclusivamente',
-          mensaje: 'V28=98 significa que no se realizó estudio histopatológico. Ese valor solo corresponde cuando V21=7.',
-          regla: 'Si hubo histopatología o un estudio diagnóstico diferente a clínica exclusivamente, V28 no debe ser 98.',
-          recomendacion: 'Revise V21 y V28. Si sí hubo patología pero no describe diferenciación, evalúe si corresponde 94 o 99 según el caso.',
-          columnasCorregir: ['V21', 'V28'],
-          datosRelacionados: [
-            { variable: 'V21', nombre: nombreVariable('V21'), valor: v21 || '(vacío)' },
-            { variable: 'V28', nombre: nombreVariable('V28'), valor: v28 }
-          ]
-        });
-        return;
-      }
-
-
+    if (!v28) {
+      agregarHallazgo(hallazgos, {
+        variable: 'V28',
+        codigo: 'V28-ERROR-001',
+        tipo: TIPO.FORMATO,
+        severidad: SEVERIDAD.ERROR,
+        valor: '(vacío)',
+        titulo: 'Falta registrar el grado de diferenciación del tumor',
+        mensaje: 'V28 está vacío. Debe registrar el código que corresponde al grado de diferenciación del tumor según la biopsia diagnóstica. Si ese dato no está en la biopsia, revise el informe de primera cirugía.',
+        regla: 'V28 debe usar un código válido del catálogo de grado de diferenciación: 1, 2, 3, 4, 94, 95, 98 o 99.',
+        recomendacion: 'Revise la biopsia diagnóstica o el informe de primera cirugía y registre uno de estos códigos: 1 si es bien diferenciado, 2 si es moderadamente diferenciado, 3 si es mal diferenciado, 4 si es anaplásico o indiferenciado, 94 si es tumor sólido pero el reporte no describe diferenciación, 95 si no es tumor sólido, 98 si no se realizó histopatología y V21=7, o 99 si no hay información en la historia clínica.',
+        columnasCorregir: ['V28'],
+        datosRelacionados: [
+          {
+            variable: 'V28',
+            nombre: nombreVariable('V28'),
+            valor: '(vacío)'
+          }
+        ]
+      });
+      return;
     }
 
-    function validar(registro, catalogos) {
-      const hallazgos = [];
-
-      validarV25(registro, hallazgos);
-      validarV26(registro, hallazgos);
-      validarV27(registro, hallazgos);
-      validarV28(registro, hallazgos);
-
-      return hallazgos;
+    if (!esEnteroTexto(v28)) {
+      agregarHallazgo(hallazgos, {
+        variable: 'V28',
+        codigo: 'V28-ERROR-002',
+        tipo: TIPO.FORMATO,
+        severidad: SEVERIDAD.ERROR,
+        valor: v28,
+        titulo: 'Grado de diferenciación con formato inválido',
+        mensaje: 'V28 debe ser numérica. No se aceptan textos, letras, puntos, guiones ni descripciones escritas.',
+        regla: 'El instructivo define un catálogo cerrado numérico para V28.',
+        recomendacion: 'Reemplace el texto por el código correspondiente: 1, 2, 3, 4, 94, 95, 98 o 99.'
+      });
+      return;
     }
 
-    const modulo = {
-      VERSION_MODULO3,
-      validar,
-      _interno: {
-        esFechaReal,
-        esFechaComparable,
-        esCancerPulmonPorCIE10
-      }
-    };
-
-    if (typeof window !== 'undefined') {
-      window.Modulo3 = modulo;
-      window.CACModulo3 = modulo;
+    if (!CATALOGO_V28.has(v28)) {
+      agregarHallazgo(hallazgos, {
+        variable: 'V28',
+        codigo: 'V28-ERROR-003',
+        tipo: TIPO.CATALOGO,
+        severidad: SEVERIDAD.ERROR,
+        valor: v28,
+        titulo: 'Código de grado de diferenciación fuera de catálogo',
+        mensaje: 'V28 tiene un código que no existe en el catálogo definido por el instructivo.',
+        regla: 'V28 solo permite: 1, 2, 3, 4, 94, 95, 98 y 99.',
+        recomendacion: 'Revise el grado de diferenciación reportado y seleccione una opción válida.'
+      });
+      return;
     }
+
+    if (v21 === '7' && v28 !== '98') {
+      agregarHallazgo(hallazgos, {
+        variable: 'V28',
+        codigo: 'V28-ERROR-004',
+        tipo: TIPO.DEPENDENCIA,
+        severidad: SEVERIDAD.ERROR,
+        valor: v28,
+        titulo: 'V28 debe ser 98 cuando el diagnóstico fue clínico exclusivamente',
+        mensaje: 'V21=7 indica diagnóstico clínico exclusivamente. En ese caso V28 debe reportar 98 porque no se realizó estudio histopatológico.',
+        regla: 'La opción 98 de V28 aplica cuando no se realizó estudio histopatológico y en V21 se registró 7.',
+        recomendacion: 'Cambie V28 a 98 o revise si V21 fue digitado correctamente.',
+        columnasCorregir: ['V21', 'V28'],
+        datosRelacionados: [
+          { variable: 'V21', nombre: nombreVariable('V21'), valor: v21 },
+          { variable: 'V28', nombre: nombreVariable('V28'), valor: v28 }
+        ]
+      });
+      return;
+    }
+
+    if (v21 !== '7' && v28 === '98') {
+      agregarHallazgo(hallazgos, {
+        variable: 'V28',
+        codigo: 'V28-ERROR-005',
+        tipo: TIPO.DEPENDENCIA,
+        severidad: SEVERIDAD.ERROR,
+        valor: v28,
+        titulo: 'V28 usa 98 pero V21 no indica diagnóstico clínico exclusivamente',
+        mensaje: 'V28=98 significa que no se realizó estudio histopatológico. Ese valor solo corresponde cuando V21=7.',
+        regla: 'Si hubo histopatología o un estudio diagnóstico diferente a clínica exclusivamente, V28 no debe ser 98.',
+        recomendacion: 'Revise V21 y V28. Si sí hubo patología pero no describe diferenciación, evalúe si corresponde 94 o 99 según el caso.',
+        columnasCorregir: ['V21', 'V28'],
+        datosRelacionados: [
+          { variable: 'V21', nombre: nombreVariable('V21'), valor: v21 || '(vacío)' },
+          { variable: 'V28', nombre: nombreVariable('V28'), valor: v28 }
+        ]
+      });
+      return;
+    }
+
+    if (v28 === '99' && esFechaComparable(v18) && compararFechas(v18, '2015-01-01') >= 0) {
+      agregarHallazgo(hallazgos, {
+        variable: 'V28',
+        codigo: 'V28-ERROR-006',
+        tipo: TIPO.DEPENDENCIA,
+        severidad: SEVERIDAD.ERROR,
+        valor: v28,
+        titulo: 'Grado del tumor reportado como desconocido',
+        mensaje: 'V28 tiene el valor 99, que significa grado desconocido, pero V18 tiene una fecha de diagnóstico desde 2015-01-01 en adelante.',
+        regla: 'Para diagnósticos desde 2015-01-01 en adelante, el grado del tumor debe revisarse en los soportes clínicos cuando aplique. Si se deja en 99, el reporte queda como si no se conociera el grado.',
+        recomendacion: 'Revise el reporte de patología. Si el grado está descrito, registre el código correcto en V28. Si la fecha de diagnóstico está mal, corrija V18.',
+        columnasCorregir: ['V18', 'V28'],
+        datosRelacionados: [
+          { variable: 'V18', nombre: nombreVariable('V18'), valor: v18 },
+          { variable: 'V28', nombre: nombreVariable('V28'), valor: v28 }
+        ]
+      });
+      return;
+    }
+  }
+
+  function validar(registro, catalogos) {
+    const hallazgos = [];
+
+    validarV25(registro, hallazgos);
+    validarV26(registro, hallazgos);
+    validarV27(registro, hallazgos);
+    validarV28(registro, hallazgos);
+
+    return hallazgos;
+  }
+
+  const modulo = {
+    VERSION_MODULO3,
+    validar,
+    _interno: {
+      esFechaReal,
+      esFechaComparable,
+      esCancerPulmonPorCIE10
+    }
+  };
+
+  if (typeof window !== 'undefined') {
+    window.Modulo3 = modulo;
+    window.CACModulo3 = modulo;
+  }
 })();

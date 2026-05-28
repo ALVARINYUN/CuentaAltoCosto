@@ -1,7 +1,7 @@
 // =======================================================
 // Validador CAC - lector/estructura.js
-// Estructura acumulativa V1-V35
-// Sprint 2E: V34-V35
+// Estructura acumulativa V1-V40
+// Sprint 3A: V36-V40
 // =======================================================
 
 (function () {
@@ -33,6 +33,10 @@
     'V34', 'V35'
   ];
 
+  const VARIABLES_SPRINT_3A = [
+    'V36', 'V37', 'V38', 'V39', 'V40'
+  ];
+
   const VARIABLES_HASTA_2A = [
     ...VARIABLES_SPRINT_1,
     ...VARIABLES_SPRINT_2A
@@ -56,10 +60,17 @@
     ...VARIABLES_SPRINT_2D
   ];
 
-  const VARIABLES_ESPERADAS = [
+  const VARIABLES_HASTA_2E = [
     ...VARIABLES_HASTA_2D,
     ...VARIABLES_SPRINT_2E
   ];
+
+  const VARIABLES_HASTA_3A = [
+    ...VARIABLES_HASTA_2E,
+    ...VARIABLES_SPRINT_3A
+  ];
+
+  const VARIABLES_ESPERADAS = VARIABLES_HASTA_3A;
 
   const MAPA_ENCABEZADOS = {
     v1: 'V1',
@@ -304,7 +315,44 @@
     v35fechaestadificaciondukes: 'V35',
     v35fechaestadificaciondedukes: 'V35',
     v35fechaenqueserealizolaestadificaciondedukes: 'V35',
-    fechaenqueserealizolaestadificaciondedukes: 'V35'
+    fechaenqueserealizolaestadificaciondedukes: 'V35',
+
+    v36: 'V36',
+    v36annarbor: 'V36',
+    v36lugano: 'V36',
+    v36estadificacionclinica: 'V36',
+    v36estadificacionclinicaannarborlugano: 'V36',
+    v36estadificacionclinicaenlinfomanohodgkinlinfomahodgkinadultoypediatricoannaborlugano: 'V36',
+    estadificacionclinicaenlinfomanohodgkinlinfomahodgkinadultoypediatricoannarborlugano: 'V36',
+
+    v37: 'V37',
+    v37gleason: 'V37',
+    v37clasificaciongleason: 'V37',
+    v37valordeclasificaciongleason: 'V37',
+    v37paracancerdeprostatavalordeclasificaciondelaescalagleason: 'V37',
+    paracancerdeprostatavalordeclasificaciondelaescalagleason: 'V37',
+
+    v38: 'V38',
+    v38riesgo: 'V38',
+    v38clasificacionriesgo: 'V38',
+    v38clasificaciondelriesgo: 'V38',
+    v38clasificaciondelriesgoleucemiaslinfomasmielomamultiple: 'V38',
+    clasificaciondelriesgoleucemiaslinfomasmielomamultiple: 'V38',
+
+    v39: 'V39',
+    v39fechariesgo: 'V39',
+    v39fechaclasificacionriesgo: 'V39',
+    v39fechadeclasificacionderiesgo: 'V39',
+    fechadeclasificacionderiesgo: 'V39',
+
+    v40: 'V40',
+    v40objetivo: 'V40',
+    v40objetivotratamiento: 'V40',
+    v40objetivodeltratamiento: 'V40',
+    v40objetivointenciontratamiento: 'V40',
+    v40objetivointenciondeltratamientomedicoinicial: 'V40',
+    objetivointenciondeltratamientomedicoinicial: 'V40'
+
   };
 
   const MAPA_ENCABEZADOS_SPRINT_1 = MAPA_ENCABEZADOS;
@@ -371,6 +419,37 @@
     return limpio.includes('fecha') && limpio.includes('dukes');
   }
 
+
+  function esEncabezadoV36(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v36' || limpio === '36') return true;
+    return (limpio.includes('annarbor') || limpio.includes('lugano')) && (limpio.includes('linfoma') || limpio.includes('mieloma') || limpio.includes('estadificacion'));
+  }
+
+  function esEncabezadoV37(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v37' || limpio === '37') return true;
+    return limpio.includes('gleason') && (limpio.includes('prostata') || limpio.includes('clasificacion') || limpio.includes('escala'));
+  }
+
+  function esEncabezadoV38(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v38' || limpio === '38') return true;
+    return limpio.includes('clasificacion') && limpio.includes('riesgo');
+  }
+
+  function esEncabezadoV39(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v39' || limpio === '39') return true;
+    return limpio.includes('fecha') && limpio.includes('clasificacion') && limpio.includes('riesgo');
+  }
+
+  function esEncabezadoV40(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v40' || limpio === '40') return true;
+    return (limpio.includes('objetivo') || limpio.includes('intencion')) && limpio.includes('tratamiento');
+  }
+
   function extraerVariableDesdeEncabezado(valor) {
     const limpio = limpiarEncabezado(valor);
     const coincidencia = limpio.match(/^v(\d{1,3})/);
@@ -379,7 +458,7 @@
 
     const numero = Number(coincidencia[1]);
 
-    if (!Number.isInteger(numero) || numero < 1 || numero > 35) {
+    if (!Number.isInteger(numero) || numero < 1 || numero > 40) {
       return null;
     }
 
@@ -399,6 +478,11 @@
     if (esEncabezadoV33(valor)) return 'V33';
     if (esEncabezadoV34(valor)) return 'V34';
     if (esEncabezadoV35(valor)) return 'V35';
+    if (esEncabezadoV36(valor)) return 'V36';
+    if (esEncabezadoV37(valor)) return 'V37';
+    if (esEncabezadoV38(valor)) return 'V38';
+    if (esEncabezadoV39(valor)) return 'V39';
+    if (esEncabezadoV40(valor)) return 'V40';
 
     const claveLimpia = limpiarEncabezado(valor);
 
@@ -414,16 +498,24 @@
       VARIABLES_ESPERADAS.includes(variable)
     );
 
+    const tiene3A = VARIABLES_SPRINT_3A.some((variable) => presentes.includes(variable));
     const tiene2E = VARIABLES_SPRINT_2E.some((variable) => presentes.includes(variable));
     const tiene2D = VARIABLES_SPRINT_2D.some((variable) => presentes.includes(variable));
     const tiene2C = VARIABLES_SPRINT_2C.some((variable) => presentes.includes(variable));
     const tiene2B = VARIABLES_SPRINT_2B.some((variable) => presentes.includes(variable));
     const tiene2A = VARIABLES_SPRINT_2A.some((variable) => presentes.includes(variable));
 
+    if (tiene3A) {
+      return {
+        modo: 'ACUMULATIVO_V1_V40',
+        variables: VARIABLES_HASTA_3A
+      };
+    }
+
     if (tiene2E) {
       return {
         modo: 'ACUMULATIVO_V1_V35',
-        variables: VARIABLES_ESPERADAS
+        variables: VARIABLES_HASTA_2E
       };
     }
 
@@ -506,6 +598,10 @@
     return validarEstructura(encabezados);
   }
 
+  function validarEstructuraSprint3A(encabezados) {
+    return validarEstructura(encabezados);
+  }
+
   window.CACEstructura = {
     VARIABLES_SPRINT_1,
     VARIABLES_SPRINT_2A,
@@ -513,10 +609,13 @@
     VARIABLES_SPRINT_2C,
     VARIABLES_SPRINT_2D,
     VARIABLES_SPRINT_2E,
+    VARIABLES_SPRINT_3A,
     VARIABLES_HASTA_2A,
     VARIABLES_HASTA_2B,
     VARIABLES_HASTA_2C,
     VARIABLES_HASTA_2D,
+    VARIABLES_HASTA_2E,
+    VARIABLES_HASTA_3A,
     VARIABLES_ESPERADAS,
     MAPA_ENCABEZADOS,
     MAPA_ENCABEZADOS_SPRINT_1,
@@ -528,6 +627,11 @@
     esEncabezadoV33,
     esEncabezadoV34,
     esEncabezadoV35,
+    esEncabezadoV36,
+    esEncabezadoV37,
+    esEncabezadoV38,
+    esEncabezadoV39,
+    esEncabezadoV40,
     extraerVariableDesdeEncabezado,
     normalizarEncabezado,
     resolverVariablesEsperadasDinamicas,
@@ -537,6 +641,7 @@
     validarEstructuraSprint2B,
     validarEstructuraSprint2C,
     validarEstructuraSprint2D,
-    validarEstructuraSprint2E
+    validarEstructuraSprint2E,
+    validarEstructuraSprint3A
   };
 })();

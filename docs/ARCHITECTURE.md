@@ -1,6 +1,6 @@
 # Arquitectura del sistema — Validador CAC
 
-**Proyecto:** Validador CAC para reporte de cohorte cáncer
+**Proyecto:** Validador CAC 
 **Normativa base:** Resolución 0247/2014 · Instructivo CAC-IEP1-I01 · Medición enero 2025
 **Versión:** 1.0
 **Fecha:** Mayo 2026

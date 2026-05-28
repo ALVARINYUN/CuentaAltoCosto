@@ -3,7 +3,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-2d-v30-v33-descripciones-ajustadas-01';
+  const VERSION = 'sprint-2d-v30-v33-advertencias-01';
 
   const TIPO = {
     FORMATO: 'formato',
@@ -525,6 +525,7 @@
     const v17 = textoMayuscula(registro.V17);
     const v31 = texto(registro.V31);
     const v32 = texto(registro.V32);
+    const v18 = texto(registro.V18);
     const mama = esCancerMama(v17);
     const mamaInSitu = esCancerMamaInSitu(v17);
 
@@ -662,6 +663,29 @@
         columnasCorregir: ['V31', 'V32']
       }));
     }
+
+
+    if (esFechaISO(v32) && !esFechaEspecialV32(v32) && esFechaRealNoComodin(v18)) {
+      const comparacion = CACTipos.compararFechas(v32, v18);
+
+      if (comparacion === -1) {
+        hallazgos.push(crearHallazgoRegistro(registro, {
+          codigo: 'V32-ADVERTENCIA-008',
+          variable: 'V32',
+          titulo: 'Fecha HER2 anterior al diagnóstico',
+          mensaje: 'V32 tiene una fecha anterior a V18.',
+          regla: 'La fecha de HER2 normalmente debe estar relacionada con el proceso diagnóstico o de tratamiento del cáncer reportado. Si aparece antes del diagnóstico, puede haber una fecha mal registrada o un soporte que debe revisarse.',
+          recomendacion: 'Revise la fecha de diagnóstico y la fecha de HER2 en los soportes clínicos. Si V32 está mal digitada, corríjala. Si V18 está mal registrada, corrija V18. Si ambas fechas son correctas y están soportadas, conserve el dato.',
+          severidad: SEVERIDAD.ADVERTENCIA,
+          tipo: TIPO.COHERENCIA,
+          datosRelacionados: [
+            dato(registro, 'V18', 'Fecha de diagnóstico del cáncer reportado.'),
+            dato(registro, 'V32', 'Fecha de realización de HER2.')
+          ],
+          columnasCorregir: ['V18', 'V32']
+        }));
+      }
+    }
   }
 
   function validarV33(registro, hallazgos) {
@@ -750,6 +774,25 @@
         recomendacion: 'Use 1, 2, 3 o 4 según el resultado HER2. Use 99 si el resultado no aparece en soportes. No use 97 ni 98 cuando V31=1.',
         tipo: TIPO.DEPENDENCIA,
         datosRelacionados: [dato(registro, 'V31'), dato(registro, 'V33')],
+        columnasCorregir: ['V31', 'V33']
+      }));
+    }
+
+
+    if (mama && v31 === '1' && v33 === '99') {
+      hallazgos.push(crearHallazgoRegistro(registro, {
+        codigo: 'V33-ADVERTENCIA-007',
+        variable: 'V33',
+        titulo: 'Resultado HER2 desconocido aunque la prueba fue realizada',
+        mensaje: 'V31 tiene el valor 1, que indica que HER2 sí se realizó antes del tratamiento, pero V33 tiene el valor 99, que significa resultado desconocido.',
+        regla: 'Si HER2 sí fue realizado, normalmente debería existir un resultado en los soportes clínicos. Usar 99 deja el resultado como desconocido y puede afectar la calidad del reporte.',
+        recomendacion: 'Revise el soporte de HER2 o el reporte de patología. Si encuentra el resultado, cambie V33 por el código correspondiente. Mantenga 99 solo si el resultado no aparece en los soportes.',
+        severidad: SEVERIDAD.ADVERTENCIA,
+        tipo: TIPO.COHERENCIA,
+        datosRelacionados: [
+          dato(registro, 'V31', 'Indica si HER2 se realizó antes del inicio del tratamiento.'),
+          dato(registro, 'V33', 'Resultado HER2 reportado.')
+        ],
         columnasCorregir: ['V31', 'V33']
       }));
     }

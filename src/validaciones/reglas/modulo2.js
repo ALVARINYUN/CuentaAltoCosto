@@ -454,8 +454,22 @@
       return hallazgos;
     }
 
-    // V21 = 99 es permitido por instructivo como desconocido.
-    // No genera hallazgo en modo normal.
+    if (estudio === '99') {
+      agregar(hallazgos, crearHallazgoCampoSimple({
+        registro,
+        variable: 'V21',
+        codigo: 'V21-ADVERTENCIA-005',
+        titulo: 'Tipo de estudio diagnóstico desconocido',
+        mensaje: 'V21 está registrado como 99. Esto significa que el tipo de estudio diagnóstico no está descrito en los soportes clínicos.',
+        regla: 'V21 identifica el primer estudio que permitió confirmar el diagnóstico del cáncer. Aunque 99 es un valor permitido, debe usarse solo cuando el dato realmente no aparece en los soportes clínicos.',
+        recomendacion: 'Revise los soportes clínicos. Si encuentra el estudio diagnóstico, cambie V21 por el código correspondiente. Si el dato no está documentado, conserve V21=99.',
+        severidad: CACTipos.SEVERIDAD.ADVERTENCIA,
+        datosRelacionados: [
+          dato(registro, 'V21')
+        ],
+        columnasCorregir: ['V21']
+      }));
+    }
 
     return hallazgos;
   }
@@ -557,8 +571,23 @@
       }));
     }
 
-    // V22 = 99 es permitido por instructivo como desconocido.
-    // No genera hallazgo en modo normal.
+    if (estudio === '7' && motivo === '99') {
+      agregar(hallazgos, crearHallazgoCampoSimple({
+        registro,
+        variable: 'V22',
+        codigo: 'V22-ADVERTENCIA-007',
+        titulo: 'Motivo sin histopatología desconocido',
+        mensaje: 'V21=7 indica diagnóstico clínico exclusivamente, pero V22 está registrado como 99. Esto significa que no se encontró en los soportes el motivo por el cual no hubo histopatología.',
+        regla: 'Cuando el diagnóstico fue clínico exclusivamente, V22 debe explicar la razón por la que no se realizó histopatología. El valor 99 es permitido, pero debe usarse solo si el motivo realmente no está documentado.',
+        recomendacion: 'Revise la historia clínica y los soportes del diagnóstico. Si encuentra el motivo, cambie V22 por el código correspondiente. Si no está documentado, conserve V22=99.',
+        severidad: CACTipos.SEVERIDAD.ADVERTENCIA,
+        datosRelacionados: [
+          dato(registro, 'V21'),
+          dato(registro, 'V22')
+        ],
+        columnasCorregir: ['V21', 'V22']
+      }));
+    }
 
     return hallazgos;
   }
@@ -806,7 +835,7 @@
   }
 
   window.CACModulo2 = {
-    VERSION_MODULO2: 'sprint-2a-v11-comodines-claros',
+    VERSION_MODULO2: 'sprint-2a-v12-advertencias-v21-v22-99',
     TIPOS_ESTUDIO_NUEVOS,
     MOTIVOS_SIN_HISTOPATOLOGIA,
     COMODIN_DESCONOCIDO,

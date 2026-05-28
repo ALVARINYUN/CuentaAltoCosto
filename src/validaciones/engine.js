@@ -1,6 +1,6 @@
 // =======================================================
 // Validador CAC - validaciones/engine.js
-// Motor acumulativo V1-V35.
+// Motor acumulativo V1-V40.
 // Corrige normalización de filas tipo objeto para encabezados reales.
 // =======================================================
 
@@ -171,6 +171,18 @@
       typeof window.CACModulo6.validar === 'function'
     ) {
       hallazgos = hallazgos.concat(CACModulo6.validar(registro));
+    }
+
+    const archivoTraeBloque3A = tieneAlgunaColumna(registro, [
+      'V36', 'V37', 'V38', 'V39', 'V40'
+    ]);
+
+    if (
+      archivoTraeBloque3A &&
+      window.CACModulo7 &&
+      typeof window.CACModulo7.validar === 'function'
+    ) {
+      hallazgos = hallazgos.concat(CACModulo7.validar(registro));
     }
 
     return hallazgos;

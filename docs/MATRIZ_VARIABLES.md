@@ -1,4 +1,4 @@
-# Matriz Maestra de Variables CAC
+# Matriz de Variables CAC
 
 **Documento técnico fundamental del sistema.**
 

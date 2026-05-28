@@ -1,8 +1,8 @@
-# Arquitectura Funcional de Variables V1-V35 — Validador CAC Cohorte Cáncer
+# Arquitectura Funcional de Variables V1-V44 — Validador CAC Cohorte Cáncer
 
 **Proyecto:** Validador CAC — Cohorte Cáncer  
 **Documento:** Arquitectura funcional de variables y trazabilidad  
-**Alcance actual:** Variables V1 a V35  
+**Alcance actual:** Variables V1 a V44  
 **Estado:** Base arquitectónica para auditoría de reglas de negocio  
 **Tecnología del validador:** HTML, CSS y JavaScript local  
 **Propósito:** Documentar cómo se organizan las variables, qué módulos las validan y qué dependencias existen entre ellas.
@@ -11,7 +11,7 @@
 
 ## 1. Objetivo del documento
 
-Este documento define la arquitectura funcional de las variables implementadas hasta la V35 en el Validador CAC.
+Este documento define la arquitectura funcional de las variables implementadas hasta la V44 en el Validador CAC.
 
 Su objetivo no es reemplazar el instructivo oficial de la Cuenta de Alto Costo, sino servir como mapa técnico-funcional para:
 
@@ -50,6 +50,8 @@ La arquitectura se basa en tres niveles:
 | Módulo 4 | V29 | `src/validaciones/reglas/modulo4.js` | Primera estadificación TNM, FIGO u otras compatibles. |
 | Módulo 5 | V30-V33 | `src/validaciones/reglas/modulo5.js` | Fecha de estadificación y bloque HER2. |
 | Módulo 6 | V34-V35 | `src/validaciones/reglas/modulo6.js` | Estadificación de Dukes y fecha de Dukes para cáncer colorrectal. |
+| Módulo 7 | V36-V40 | `src/validaciones/reglas/modulo7.js` | Ann Arbor/Lugano, Gleason, clasificación de riesgo, fecha de riesgo y objetivo del tratamiento inicial. |
+| Módulo 8 | V41-V44 | `src/validaciones/reglas/modulo8.js` | Intervención médica durante el periodo y antecedentes de otro cáncer primario. |
 
 ---
 
@@ -63,6 +65,8 @@ V29      → Estadificación inicial según diagnóstico.
 V30      → Fecha de la estadificación inicial.
 V31-V33  → HER2 según diagnóstico de cáncer de mama.
 V34-V35  → Dukes según diagnóstico de cáncer colorrectal.
+V36-V40  → Ann Arbor/Lugano, Gleason, riesgo, fecha de riesgo y objetivo inicial.
+V41-V44  → Intervención médica y antecedente/concurrencia de otro cáncer primario.
 ```
 
 Las variables no deben validarse de forma aislada cuando el instructivo define relaciones clínicas o administrativas entre ellas.
@@ -344,7 +348,164 @@ Por decisión funcional registrada en el módulo, no se incluye C21 anal dentro 
 
 ---
 
-# 11. Variables núcleo de trazabilidad
+
+
+---
+
+# 11. Módulo 7 — Estadificación especial, riesgo y objetivo inicial: V36-V40
+
+## 11.1 Propósito
+
+Este módulo valida variables clínicas posteriores a la estadificación general: Ann Arbor/Lugano, Gleason, clasificación de riesgo, fecha de clasificación de riesgo y objetivo o intención del tratamiento médico inicial.
+
+## 11.2 Variables
+
+| Variable | Nombre funcional | Tipo | Regla principal |
+|---|---|---|---|
+| V36 | Estadificación clínica Ann Arbor/Lugano | Catálogo | Aplica para Linfoma Hodgkin, Linfoma No Hodgkin y Mieloma múltiple. |
+| V37 | Clasificación Gleason | Catálogo | Aplica para cáncer de próstata. |
+| V38 | Clasificación del riesgo | Catálogo | Depende del diagnóstico en V17 y tiene subcatálogos por tipo de cáncer. |
+| V39 | Fecha de clasificación de riesgo | Fecha | Depende de V38 y se cruza con V18. |
+| V40 | Objetivo o intención del tratamiento médico inicial | Catálogo | Catálogo cerrado 1, 2, 3, 99. |
+
+## 11.3 Cruces principales
+
+| Cruce | Regla funcional | Severidad |
+|---|---|---|
+| V17 ↔ V36 | Si V17 corresponde a linfoma o mieloma múltiple, V36 debe tener estadio real o 99. | Error/Advertencia |
+| V17 ↔ V37 | Si V17 corresponde a próstata, V37 debe tener Gleason, diagnóstico clínico o 99 según soporte. | Error/Advertencia |
+| V21 ↔ V37 | Si V21=7 diagnóstico clínico exclusivamente, V37 debe ser 97. | Error |
+| V17 ↔ V38 | El catálogo de riesgo depende del diagnóstico. | Error |
+| V7/V18 ↔ V38 | La edad al diagnóstico permite identificar advertencias pediátricas pendientes de catálogo operativo. | Advertencia |
+| V38 ↔ V39 | Si V38=98, V39 debe ser 1845-01-01. Si V38 aplica, V39 no debe ser 1845-01-01. | Error |
+| V18 ↔ V39 | La fecha de clasificación de riesgo no debe ser anterior a la fecha de diagnóstico cuando ambas son reales. | Error |
+
+## 11.4 Estado funcional cerrado
+
+| Variable | Estado | Versión validada |
+|---|---|---|
+| V36 | Cerrada | Sprint 3A Módulo 7 |
+| V37 | Cerrada | Sprint 3A Módulo 7 |
+| V38 | Cerrada | `sprint-3a-v38-riesgo-subcatalogos-03` |
+| V39 | Probada/cerrada | `sprint-3a-v39-fecha-riesgo-01` |
+| V40 | Cerrada | `sprint-3a-v40-objetivo-tratamiento-01` |
+
+## 11.5 Decisiones funcionales aprobadas
+
+| Tema | Decisión |
+|---|---|
+| V38 pediátrica | No convertir en error fuerte cuando el catálogo pediátrico no está parametrizado; manejar como advertencia profesional. |
+| V39 y V128 futura | Si V39=1800-01-01 con V18 desde 2024-11-01, dejar advertencia porque la validación completa depende de V128, aún no implementada. |
+| Variables futuras | Si una regla depende de una variable futura no implementada, no forzar error prematuro. Usar advertencia o trazabilidad pendiente. |
+
+---
+
+# 12. Módulo 8 — Intervención médica y antecedentes de otro cáncer primario: V41-V44
+
+## 12.1 Propósito
+
+Este módulo valida la intervención médica durante el periodo de reporte y la existencia de antecedente o concurrencia de otro cáncer primario.
+
+## 12.2 Variables
+
+| Variable | Nombre funcional | Tipo | Regla principal |
+|---|---|---|---|
+| V41 | Intervención médica durante el periodo de reporte | Catálogo cerrado | Debe estar en catálogo 1,2,3,4,5,6,99. |
+| V42 | Antecedente de otro cáncer primario | Catálogo cerrado | 1=sí, 2=no, 99=desconocido. |
+| V43 | Fecha de diagnóstico del otro cáncer primario | Fecha | Depende de V42. |
+| V44 | Tipo CIE-10 del cáncer antecedente o concurrente | Código CIE-10 / 99 | Depende de V42 y se cruza con V17. |
+
+## 12.3 V41 — Intervención médica durante el periodo de reporte
+
+Catálogo:
+
+| Código | Significado |
+|---|---|
+| 1 | Observación previa a tratamiento. |
+| 2 | Tratamiento curativo o paliativo dirigido al cáncer inicial o por recaída. |
+| 3 | Observación o seguimiento oncológico luego de tratamiento inicial. |
+| 4 | Opciones 1 y 2 únicamente. |
+| 5 | Opciones 2 y 3 únicamente. |
+| 6 | Opciones 1, 2 y 3. |
+| 99 | Sin intervención en el periodo. |
+
+Reglas base:
+
+| Código sugerido | Regla | Severidad |
+|---|---|---|
+| V41-ERROR-001 | V41 vacía. | Error |
+| V41-ERROR-002 | V41 fuera del catálogo permitido. | Error |
+| V41-ADVERTENCIA-001 | V41=99 en paciente con evidencia de atención/intervención en el periodo, si esa evidencia existe en variables posteriores. | Advertencia pendiente |
+
+Nota: V41=99 no significa desconocido. Significa sin intervención en el periodo. No debe tratarse como advertencia por defecto.
+
+## 12.4 V42 — Antecedente de otro cáncer primario
+
+Catálogo:
+
+| Código | Significado |
+|---|---|
+| 1 | Sí tiene o tuvo otro cáncer primario diferente al reportado. |
+| 2 | No. |
+| 99 | Desconocido. |
+
+Reglas base:
+
+| Código sugerido | Regla | Severidad |
+|---|---|---|
+| V42-ERROR-001 | V42 vacía. | Error |
+| V42-ERROR-002 | V42 fuera del catálogo permitido. | Error |
+| V42-ADVERTENCIA-001 | V42=99, antecedente desconocido. | Advertencia |
+
+## 12.5 V43 — Fecha de diagnóstico del otro cáncer primario
+
+Comodines:
+
+| Valor | Significado |
+|---|---|
+| 1800-01-01 | Desconocido. |
+| 1845-01-01 | No aplica: no ha tenido otro cáncer primario. |
+
+Cruces:
+
+| Cruce | Regla funcional | Severidad |
+|---|---|---|
+| V42=1 ↔ V43 | Si hay otro cáncer primario, V43 debe ser fecha real o 1800-01-01. | Error/Advertencia |
+| V42=2 ↔ V43 | Si no hay otro cáncer primario, V43 debe ser 1845-01-01. | Error |
+| V42=99 ↔ V43 | Si el antecedente es desconocido, V43 no debe forzarse como error fuerte salvo vacío o formato inválido. | Advertencia/pendiente |
+| V43 | No debe ser fecha futura. | Error |
+| V43 ↔ V18 | V43 puede ser anterior, igual o posterior a V18 porque puede ser antecedente o concurrente. | No error |
+
+## 12.6 V44 — Tipo CIE-10 del cáncer antecedente o concurrente
+
+Comodín:
+
+| Valor | Significado |
+|---|---|
+| 99 | No aplica: no hay antecedente ni concurrencia de otro cáncer primario. |
+
+Cruces:
+
+| Cruce | Regla funcional | Severidad |
+|---|---|---|
+| V42=1 ↔ V44 | Si hay otro cáncer primario, V44 debe contener un CIE-10 válido. | Error |
+| V42=2 ↔ V44 | Si no hay otro cáncer primario, V44 debe ser 99. | Error |
+| V42=99 ↔ V44 | Si el antecedente es desconocido, V44 debería ser 99 o generar advertencia si trae dato inconsistente. | Advertencia |
+| V44 ↔ Catálogo CIE-10 | V44 debe existir en el catálogo operativo CIE-10 SISCAC cuando no sea 99. | Error |
+| V44 ↔ V17 | Si V44 es igual a V17, puede requerir revisión por posible segundo primario del mismo agrupador, pero no debe ser error automático si el instructivo permite casos como mama bilateral. | Advertencia |
+
+## 12.7 Decisiones funcionales preliminares para V41-V44
+
+| Tema | Decisión recomendada |
+|---|---|
+| V41=99 | No es desconocido; es sin intervención. No marcar como advertencia salvo que variables posteriores evidencien tratamiento. |
+| V42=99 | Advertencia, no error, porque el instructivo permite desconocido. |
+| V43 con V42=99 | No forzar error fuerte mientras no se defina criterio más específico; priorizar advertencia si hay inconsistencia. |
+| V44 igual a V17 | No error automático. Puede ser advertencia si se requiere revisar soporte de segundo primario del mismo agrupador. |
+| CIE-10 completo | Validar contra catálogo operativo local si está cargado. Si el catálogo no está completo, no convertir ausencias en error fuerte sin confirmación. |
+
+
+# 13. Variables núcleo de trazabilidad
 
 ## 11.1 V17 como variable pivote
 
@@ -384,7 +545,7 @@ V21 define si hubo histopatología o si el diagnóstico fue clínico exclusivame
 | V27 | Si V21=7, debe ser 98. |
 | V28 | Si V21=7, debe ser 98. |
 
-## 11.4 V29 como variable pivote de estadificación
+## 13.4 V29 como variable pivote de estadificación
 
 V29 define la primera estadificación y alimenta:
 
@@ -392,9 +553,26 @@ V29 define la primera estadificación y alimenta:
 |---|---|
 | V30 | Fecha en que se realizó o documentó la estadificación. |
 
+## 13.5 V38 como variable pivote de clasificación de riesgo
+
+V38 define si V39 debe registrar una fecha real, fecha desconocida o no aplica.
+
+| Variable dependiente | Relación |
+|---|---|
+| V39 | Si V38=98, V39 debe ser 1845-01-01; si V38 aplica, V39 no debe ser 1845-01-01. |
+
+## 13.6 V42 como variable pivote de antecedente de otro cáncer primario
+
+V42 define cómo deben diligenciarse V43 y V44.
+
+| Variable dependiente | Relación |
+|---|---|
+| V43 | Si V42=2, V43 debe ser 1845-01-01; si V42=1, debe ser fecha real o 1800-01-01. |
+| V44 | Si V42=2, V44 debe ser 99; si V42=1, debe ser CIE-10 válido. |
+
 ---
 
-# 12. Catálogos externos y validaciones pendientes
+# 14. Catálogos externos y validaciones pendientes
 
 Algunas variables no deben bloquearse completamente hasta tener catálogos oficiales cargados.
 
@@ -408,7 +586,7 @@ Algunas variables no deben bloquearse completamente hasta tener catálogos ofici
 
 ---
 
-# 13. Reglas excluidas por decisión funcional
+# 15. Reglas excluidas por decisión funcional
 
 | Regla | Estado |
 |---|---|
@@ -417,7 +595,7 @@ Algunas variables no deben bloquearse completamente hasta tener catálogos ofici
 
 ---
 
-# 14. Uso recomendado de esta arquitectura
+# 16. Uso recomendado de esta arquitectura
 
 Este documento debe usarse antes de modificar reglas en cualquier módulo.
 
@@ -441,7 +619,7 @@ Flujo recomendado:
 
 ---
 
-# 15. Estado actual de arquitectura V1-V35
+# 17. Estado actual de arquitectura V1-V35
 
 | Bloque | Estado |
 |---|---|
@@ -451,10 +629,12 @@ Flujo recomendado:
 | V29 | Arquitectura definida; pendiente revisión de compatibilidad completa por agrupadores. |
 | V30-V33 | Arquitectura definida; pendiente auditoría completa de reglas faltantes. |
 | V34-V35 | Arquitectura definida; reglas principales ya trabajadas. |
+| V36-V40 | Arquitectura definida; variables cerradas/probadas en Sprint 3A Módulo 7. |
+| V41-V44 | Arquitectura ampliada; pendiente implementación y validación en Módulo 8. |
 
 ---
 
-## 16. Nota final
+## 18. Nota final
 
 Esta arquitectura no significa que todas las reglas de negocio faltantes ya estén identificadas.
 
