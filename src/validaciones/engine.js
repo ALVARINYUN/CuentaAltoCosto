@@ -1,11 +1,16 @@
 // =======================================================
 // Validador CAC - validaciones/engine.js
-// Motor acumulativo V1-V40.
-// Corrige normalización de filas tipo objeto para encabezados reales.
+// Motor acumulativo V1-V41.
+// Actualización: Sprint 3B · Módulo 8 · V41.
+// - Mantiene normalización de encabezados reales.
+// - Ejecuta módulos acumulativos solo cuando el archivo trae sus variables.
+// - Agrega ejecución de CACModulo8 para V41 en adelante.
 // =======================================================
 
 (function () {
   'use strict';
+
+  const VERSION = 'sprint-3b-v41-engine-modulo8-01';
 
   function obtenerDocumento(registro) {
     const tipo = CACTipos.textoMayuscula(registro.V5);
@@ -73,9 +78,8 @@
   }
 
   function normalizarFila(encabezados, fila) {
-    // Cuando excel.js entrega cada fila como objeto, también se deben normalizar
-    // las claves. Antes se devolvía {...fila}, lo que impedía reconocer encabezados
-    // largos como el de V29.
+    // Cuando excel.js entrega cada fila como objeto, también se normalizan las claves.
+    // Esto permite reconocer encabezados reales largos como V29, V36-V41, etc.
     if (!Array.isArray(fila) && typeof fila === 'object' && fila !== null) {
       return normalizarFilaObjeto(fila);
     }
@@ -105,13 +109,28 @@
     );
   }
 
+  function concatenarHallazgos(hallazgos, nuevosHallazgos, nombreModulo) {
+    if (Array.isArray(nuevosHallazgos)) {
+      return hallazgos.concat(nuevosHallazgos);
+    }
+
+    console.warn(`[CACEngine] ${nombreModulo} no retornó un arreglo de hallazgos.`);
+    return hallazgos;
+  }
+
   function validarRegistroCompleto(registro) {
     let hallazgos = [];
 
+    // Módulo 1 · V1-V16
     if (window.CACModulo1 && typeof window.CACModulo1.validarRegistroModulo1 === 'function') {
-      hallazgos = hallazgos.concat(CACModulo1.validarRegistroModulo1(registro));
+      hallazgos = concatenarHallazgos(
+        hallazgos,
+        window.CACModulo1.validarRegistroModulo1(registro),
+        'CACModulo1'
+      );
     }
 
+    // Módulo 2 · V17-V24
     const archivoTraeBloque2A = tieneAlgunaColumna(registro, [
       'V17', 'V18', 'V19', 'V20', 'V21', 'V22', 'V23', 'V24'
     ]);
@@ -121,9 +140,14 @@
       window.CACModulo2 &&
       typeof window.CACModulo2.validarRegistroModulo2 === 'function'
     ) {
-      hallazgos = hallazgos.concat(CACModulo2.validarRegistroModulo2(registro));
+      hallazgos = concatenarHallazgos(
+        hallazgos,
+        window.CACModulo2.validarRegistroModulo2(registro),
+        'CACModulo2'
+      );
     }
 
+    // Módulo 3 · V25-V28
     const archivoTraeBloque2B = tieneAlgunaColumna(registro, [
       'V25', 'V26', 'V27', 'V28'
     ]);
@@ -133,22 +157,29 @@
       window.CACModulo3 &&
       typeof window.CACModulo3.validar === 'function'
     ) {
-      hallazgos = hallazgos.concat(CACModulo3.validar(registro));
+      hallazgos = concatenarHallazgos(
+        hallazgos,
+        window.CACModulo3.validar(registro),
+        'CACModulo3'
+      );
     }
 
-    const archivoTraeBloque2C = tieneAlgunaColumna(registro, [
-      'V29'
-    ]);
+    // Módulo 4 · V29
+    const archivoTraeBloque2C = tieneAlgunaColumna(registro, ['V29']);
 
     if (
       archivoTraeBloque2C &&
       window.CACModulo4 &&
       typeof window.CACModulo4.validar === 'function'
     ) {
-      hallazgos = hallazgos.concat(CACModulo4.validar(registro));
+      hallazgos = concatenarHallazgos(
+        hallazgos,
+        window.CACModulo4.validar(registro),
+        'CACModulo4'
+      );
     }
 
-
+    // Módulo 5 · V30-V33
     const archivoTraeBloque2D = tieneAlgunaColumna(registro, [
       'V30', 'V31', 'V32', 'V33'
     ]);
@@ -158,9 +189,14 @@
       window.CACModulo5 &&
       typeof window.CACModulo5.validar === 'function'
     ) {
-      hallazgos = hallazgos.concat(CACModulo5.validar(registro));
+      hallazgos = concatenarHallazgos(
+        hallazgos,
+        window.CACModulo5.validar(registro),
+        'CACModulo5'
+      );
     }
 
+    // Módulo 6 · V34-V35
     const archivoTraeBloque2E = tieneAlgunaColumna(registro, [
       'V34', 'V35'
     ]);
@@ -170,9 +206,14 @@
       window.CACModulo6 &&
       typeof window.CACModulo6.validar === 'function'
     ) {
-      hallazgos = hallazgos.concat(CACModulo6.validar(registro));
+      hallazgos = concatenarHallazgos(
+        hallazgos,
+        window.CACModulo6.validar(registro),
+        'CACModulo6'
+      );
     }
 
+    // Módulo 7 · V36-V40
     const archivoTraeBloque3A = tieneAlgunaColumna(registro, [
       'V36', 'V37', 'V38', 'V39', 'V40'
     ]);
@@ -182,7 +223,29 @@
       window.CACModulo7 &&
       typeof window.CACModulo7.validar === 'function'
     ) {
-      hallazgos = hallazgos.concat(CACModulo7.validar(registro));
+      hallazgos = concatenarHallazgos(
+        hallazgos,
+        window.CACModulo7.validar(registro),
+        'CACModulo7'
+      );
+    }
+
+    // Módulo 8 · V41-V44
+    // Por ahora el módulo 8 inicia con V41. Se deja listo para V42-V44.
+    const archivoTraeBloque3B = tieneAlgunaColumna(registro, [
+      'V41', 'V42', 'V43', 'V44'
+    ]);
+
+    if (
+      archivoTraeBloque3B &&
+      window.CACModulo8 &&
+      typeof window.CACModulo8.validar === 'function'
+    ) {
+      hallazgos = concatenarHallazgos(
+        hallazgos,
+        window.CACModulo8.validar(registro),
+        'CACModulo8'
+      );
     }
 
     return hallazgos;
@@ -248,12 +311,8 @@
 
   function construirResumen(resultados) {
     const totalPacientes = resultados.length;
-
-    // Las tarjetas del resumen deben contar pacientes por condición.
-    // Un mismo paciente puede tener errores y advertencias al mismo tiempo.
     const conErrores = resultados.filter((resultado) => resultado.errores > 0).length;
-    const conAdvertencias = resultados.filter((resultado) => resultado.advertencias > 0).length;
-    const soloConAdvertencias = resultados.filter(
+    const conAdvertencias = resultados.filter(
       (resultado) => resultado.errores === 0 && resultado.advertencias > 0
     ).length;
     const sinProblemas = resultados.filter(
@@ -272,7 +331,6 @@
       totalPacientes,
       conErrores,
       conAdvertencias,
-      soloConAdvertencias,
       sinProblemas,
       totalErrores,
       totalAdvertencias,
@@ -281,6 +339,7 @@
   }
 
   window.CACEngine = {
+    version: VERSION,
     normalizarFila,
     normalizarFilaObjeto,
     validarRegistroCompleto,
