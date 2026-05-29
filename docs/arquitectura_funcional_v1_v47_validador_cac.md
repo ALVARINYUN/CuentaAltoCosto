@@ -1,8 +1,8 @@
-# Arquitectura Funcional de Variables V1-V44 — Validador CAC Cohorte Cáncer
+# Arquitectura Funcional de Variables V1-V47 — Validador CAC Cohorte Cáncer
 
 **Proyecto:** Validador CAC — Cohorte Cáncer  
 **Documento:** Arquitectura funcional de variables y trazabilidad  
-**Alcance actual:** Variables V1 a V44  
+**Alcance actual:** Variables V1 a V47  
 **Estado:** Base arquitectónica para auditoría de reglas de negocio  
 **Tecnología del validador:** HTML, CSS y JavaScript local  
 **Propósito:** Documentar cómo se organizan las variables, qué módulos las validan y qué dependencias existen entre ellas.
@@ -11,7 +11,7 @@
 
 ## 1. Objetivo del documento
 
-Este documento define la arquitectura funcional de las variables implementadas hasta la V44 en el Validador CAC.
+Este documento define la arquitectura funcional de las variables implementadas hasta la V44 y la arquitectura funcional inicial del bloque V45-V47 en el Validador CAC.
 
 Su objetivo no es reemplazar el instructivo oficial de la Cuenta de Alto Costo, sino servir como mapa técnico-funcional para:
 
@@ -52,6 +52,7 @@ La arquitectura se basa en tres niveles:
 | Módulo 6 | V34-V35 | `src/validaciones/reglas/modulo6.js` | Estadificación de Dukes y fecha de Dukes para cáncer colorrectal. |
 | Módulo 7 | V36-V40 | `src/validaciones/reglas/modulo7.js` | Ann Arbor/Lugano, Gleason, clasificación de riesgo, fecha de riesgo y objetivo del tratamiento inicial. |
 | Módulo 8 | V41-V44 | `src/validaciones/reglas/modulo8.js` | Intervención médica durante el periodo y antecedentes de otro cáncer primario. |
+| Módulo 9 | V45-V47 | `src/validaciones/reglas/modulo9.js` | Terapia sistémica e intratecal en el periodo de reporte; variable de control V45, fases de quimioterapia V46 y ciclos V47. |
 
 ---
 
@@ -67,6 +68,7 @@ V31-V33  → HER2 según diagnóstico de cáncer de mama.
 V34-V35  → Dukes según diagnóstico de cáncer colorrectal.
 V36-V40  → Ann Arbor/Lugano, Gleason, riesgo, fecha de riesgo y objetivo inicial.
 V41-V44  → Intervención médica y antecedente/concurrencia de otro cáncer primario.
+V45-V47  → Terapia sistémica e intratecal en el periodo de reporte: control de terapia, fases de quimioterapia y ciclos administrados.
 ```
 
 Las variables no deben validarse de forma aislada cuando el instructivo define relaciones clínicas o administrativas entre ellas.
@@ -505,7 +507,210 @@ Cruces:
 | CIE-10 completo | Validar contra catálogo operativo local si está cargado. Si el catálogo no está completo, no convertir ausencias en error fuerte sin confirmación. |
 
 
-# 13. Variables núcleo de trazabilidad
+
+---
+
+# 13. Módulo 9 — Terapia sistémica e intratecal en el periodo de reporte: V45-V47
+
+## 13.1 Propósito
+
+Este módulo inicia el bloque de información específica de terapia sistémica e intratecal en el periodo de reporte actual.
+
+Su propósito es validar si el usuario recibió quimioterapia u otra terapia sistémica, cuántas fases de quimioterapia aplican en cánceres hematolinfáticos específicos y cuántos ciclos fueron iniciados y administrados durante el periodo.
+
+Este bloque debe implementarse con especial cuidado porque V45 actúa como variable de control para las variables V46 a V73. Si V45 es `98`, las variables posteriores del bloque deben registrar No Aplica según el comodín definido para cada variable. Sin embargo, mientras V48-V73 no estén implementadas, no deben generarse errores prematuros sobre variables futuras.
+
+## 13.2 Variables
+
+| Variable | Nombre funcional | Tipo | Regla principal |
+|---|---|---|---|
+| V45 | Recibió quimioterapia u otra terapia sistémica en el periodo | Catálogo cerrado | Debe ser `1` o `98`. Controla el bloque V46-V73. |
+| V46 | Número de fases de quimioterapia recibidas en el periodo | Numérico / comodín | Aplica solo para CIE-10 hematolinfáticos específicos: C835, C910, C920, C924, C925. |
+| V46.1 | Prefase o citorreducción inicial | Catálogo cerrado | Aplica solo para C910 y C835. |
+| V46.2 | Inducción | Catálogo cerrado | Aplica para C835, C910, C920, C924 y C925. |
+| V46.3 | Intensificación | Catálogo cerrado | Aplica para C835, C910, C920, C924 y C925. |
+| V46.4 | Consolidación | Catálogo cerrado | Aplica para C835, C910, C920, C924 y C925. |
+| V46.5 | Reinducción | Catálogo cerrado | Aplica solo para C910 y C835. |
+| V46.6 | Mantenimiento | Catálogo cerrado | Aplica para C835, C910, C920, C924 y C925. |
+| V46.7 | Mantenimiento largo o final | Catálogo cerrado | Aplica para C835, C910, C920, C924 y C925. |
+| V46.8 | Otra fase de quimioterapia diferente | Catálogo cerrado | Aplica para C835, C910, C920, C924 y C925. |
+| V47 | Número de ciclos iniciados y administrados en el periodo | Numérico / comodín | Aplica para todos los cánceres cuando V45=1. |
+
+## 13.3 V45 — Recibió quimioterapia u otra terapia sistémica
+
+Catálogo:
+
+| Código | Significado |
+|---|---|
+| 1 | Sí recibió quimioterapia u otra terapia sistémica dentro del periodo de reporte. |
+| 98 | No aplica: no está indicada esta terapia. |
+
+Alcance funcional:
+
+- La terapia sistémica incluye quimioterapia, hormonoterapia, inmunoterapia y terapia dirigida.
+- Solo aplican tratamientos suministrados dentro del periodo de reporte.
+- No aplican tratamientos propuestos pero no administrados.
+- Si el paciente tiene dos o más cánceres primarios, se debe registrar la terapia correspondiente al cáncer reportado en V17 o a sus metástasis.
+- Si V45=`98`, se debe verificar que las variables V46 a V73 registren No Aplica según corresponda.
+
+Reglas base:
+
+| Código sugerido | Regla | Severidad |
+|---|---|---|
+| V45-ERROR-001 | V45 vacía. | Error |
+| V45-ERROR-002 | V45 fuera del catálogo permitido `1`, `98`. | Error |
+| V45-ADVERTENCIA-001 | V45=98, pero variables posteriores o soportes del periodo evidencian administración de terapia sistémica. | Advertencia pendiente hasta implementar variables posteriores del bloque. |
+
+Cruces:
+
+| Cruce | Regla funcional | Severidad |
+|---|---|---|
+| V45 ↔ V17 | La terapia registrada debe corresponder al cáncer reportado en V17 o a sus metástasis. | Trazabilidad / advertencia cuando exista evidencia posterior. |
+| V45=98 ↔ V46-V73 | Las variables posteriores del bloque deben registrar No Aplica según el comodín de cada variable. | Error cuando la variable posterior esté implementada. |
+
+Decisión operativa:
+
+Mientras solo esté implementada V45 o parte del bloque, no se deben generar errores contra variables futuras no implementadas. La coherencia V45 ↔ V46-V73 debe activarse progresivamente a medida que existan esas variables en el validador.
+
+## 13.4 V46 — Número de fases de quimioterapia recibidas
+
+Aplica únicamente para cánceres hematolinfáticos con los siguientes CIE-10:
+
+| CIE-10 | Diagnóstico |
+|---|---|
+| C835 | Linfoma no Hodgkin linfoblástico difuso. |
+| C910 | Leucemia linfoblástica aguda. |
+| C920 | Leucemia mieloide aguda. |
+| C924 | Leucemia promielocítica aguda. |
+| C925 | Leucemia mielomonocítica aguda. |
+
+Comodines:
+
+| Valor | Cuándo aplica |
+|---|---|
+| 0 | Es uno de los cánceres hematolinfáticos enunciados y en V45 se respondió `98`. |
+| 98 | No aplica: es tumor sólido o cáncer diferente a los CIE-10 enunciados. |
+
+Reglas base:
+
+| Código sugerido | Regla | Severidad |
+|---|---|---|
+| V46-ERROR-001 | V46 vacía. | Error |
+| V46-ERROR-002 | V46 no es numérica ni corresponde a comodín permitido. | Error |
+| V46-ERROR-003 | V46=98 en CIE-10 hematolinfático enunciado con V45=1. | Error |
+| V46-ERROR-004 | V46 diferente de 98 cuando V17 no pertenece a C835, C910, C920, C924 o C925. | Error |
+| V46-ERROR-005 | V45=98 y V46 no corresponde a `0` para hematolinfático aplicable o `98` para no aplicable. | Error |
+
+Cruces:
+
+| Cruce | Regla funcional | Severidad |
+|---|---|---|
+| V17 ↔ V46 | V17 define si V46 aplica como número de fases o debe ser 98. | Error |
+| V45 ↔ V46 | Si V45=98, V46 debe usar el comodín correspondiente. | Error |
+| V46 ↔ V46.1-V46.8 | El número de fases debe ser coherente con las fases específicas registradas. | Pendiente / progresivo. |
+
+## 13.5 V46.1 a V46.8 — Fases específicas de quimioterapia
+
+Catálogo común:
+
+| Código | Significado |
+|---|---|
+| 1 | Sí recibió esta fase. |
+| 2 | No recibió esta fase; aplica solo para los CIE-10 enunciados. |
+| 97 | No aplica: no es leucemia linfoide o mieloide aguda ni linfoma linfoblástico. |
+
+Subfases:
+
+| Variable | Fase | Restricción adicional |
+|---|---|---|
+| V46.1 | Prefase o citorreducción inicial | Solo C910 y C835. |
+| V46.2 | Inducción | C835, C910, C920, C924 y C925. |
+| V46.3 | Intensificación | C835, C910, C920, C924 y C925. |
+| V46.4 | Consolidación | C835, C910, C920, C924 y C925. |
+| V46.5 | Reinducción | Solo C910 y C835. |
+| V46.6 | Mantenimiento | C835, C910, C920, C924 y C925. |
+| V46.7 | Mantenimiento largo o final | C835, C910, C920, C924 y C925. |
+| V46.8 | Otra fase diferente a las anteriores | C835, C910, C920, C924 y C925. |
+
+Reglas base:
+
+| Código sugerido | Regla | Severidad |
+|---|---|---|
+| V46X-ERROR-001 | Subfase vacía. | Error |
+| V46X-ERROR-002 | Subfase fuera del catálogo `1`, `2`, `97`. | Error |
+| V46X-ERROR-003 | Subfase con `1` o `2` cuando V17 no pertenece a los CIE-10 aplicables. | Error |
+| V46X-ERROR-004 | V46.1 o V46.5 usadas como `1` en C920, C924 o C925, donde no aplican por restricción adicional. | Error |
+| V46X-ADVERTENCIA-001 | Todas las fases están en `2` cuando V45=1. | Advertencia |
+
+Decisión funcional:
+
+El paciente puede haber recibido más de una fase durante el mismo periodo, por lo tanto no debe imponerse exclusividad entre V46.1 a V46.8.
+
+## 13.6 V47 — Número de ciclos iniciados y administrados en el periodo
+
+Aplica para todos los cánceres cuando V45=`1`.
+
+Comodín:
+
+| Valor | Cuándo aplica |
+|---|---|
+| 98 | No aplica o no recibió terapia, aunque fue formulada; en V45 se seleccionó `98`. |
+
+Reglas funcionales:
+
+- Registrar el número de ciclos iniciados en el periodo de reporte actual.
+- Pueden ser ciclos en diferentes esquemas de manejo.
+- Para tumores sólidos, el ciclo corresponde a administraciones del esquema con periodo de descanso según historia clínica.
+- Para cánceres hematolinfáticos, el ciclo se define por el protocolo que recibe el paciente.
+- Para hormonoterapias orales sin periodos de descanso, registrar `1`.
+- Para terapias hormonales intramusculares o subcutáneas, cada aplicación cuenta como un ciclo.
+- Cada administración de medicamento vía intratecal cuenta como un ciclo.
+
+Reglas base:
+
+| Código sugerido | Regla | Severidad |
+|---|---|---|
+| V47-ERROR-001 | V47 vacía. | Error |
+| V47-ERROR-002 | V47 no es numérica ni corresponde al comodín `98`. | Error |
+| V47-ERROR-003 | V47=98 cuando V45=1. | Error |
+| V47-ERROR-004 | V47 tiene valor negativo. | Error |
+| V47-ADVERTENCIA-001 | Número de ciclos inusualmente alto o bajo para el tipo de cáncer y esquema, cuando existan criterios clínicos parametrizados. | Advertencia pendiente. |
+
+Cruces:
+
+| Cruce | Regla funcional | Severidad |
+|---|---|---|
+| V45 ↔ V47 | Si V45=1, V47 debe registrar número de ciclos. Si V45=98, V47 debe ser 98. | Error |
+| V17 ↔ V47 | La interpretación de ciclo puede cambiar por tumor sólido, hematolinfático o tipo de terapia. | Trazabilidad. |
+
+## 13.7 Dependencias del Módulo 9
+
+| Variable pivote | Variables dependientes | Uso |
+|---|---|---|
+| V17 | V46, V46.1-V46.8, V47 | Define aplicabilidad hematolinfática y contexto clínico. |
+| V45 | V46-V73 | Controla si el bloque debe registrar terapia real o No Aplica. |
+| V46 | V46.1-V46.8 | Resume número de fases y debe ser coherente con fases específicas. |
+
+## 13.8 Estado funcional del Módulo 9
+
+| Bloque | Estado recomendado |
+|---|---|
+| V45 | Implementar primero como Sprint 3C · Módulo 9A. |
+| V46-V46.8 | Implementar después como Sprint 3C · Módulo 9B. |
+| V47 | Implementar después de V46 como Sprint 3C · Módulo 9C o junto con V48-V49 si se decide ampliar el bloque. |
+| V48-V73 | Pendiente de lectura y arquitectura específica. |
+
+## 13.9 Decisiones funcionales preliminares para V45-V47
+
+| Tema | Decisión recomendada |
+|---|---|
+| V45=98 contra V46-V73 | No forzar contra variables futuras aún no implementadas. Activar progresivamente. |
+| V46 hematolinfáticos | Usar CIE-10 C835, C910, C920, C924 y C925 como catálogo operativo cerrado para aplicabilidad. |
+| V46.1 y V46.5 | Solo aplican para C910 y C835; no para C920, C924 ni C925. |
+| Todas las fases en 2 con V45=1 | Advertencia, no error, porque puede requerir revisión clínica y soporte. |
+| V47 ciclos altos/bajos | No parametrizar todavía sin umbrales clínicos confiables. Dejar como advertencia pendiente. |
+
+# 14. Variables núcleo de trazabilidad
 
 ## 11.1 V17 como variable pivote
 
@@ -572,7 +777,7 @@ V42 define cómo deben diligenciarse V43 y V44.
 
 ---
 
-# 14. Catálogos externos y validaciones pendientes
+# 15. Catálogos externos y validaciones pendientes
 
 Algunas variables no deben bloquearse completamente hasta tener catálogos oficiales cargados.
 
@@ -586,7 +791,7 @@ Algunas variables no deben bloquearse completamente hasta tener catálogos ofici
 
 ---
 
-# 15. Reglas excluidas por decisión funcional
+# 16. Reglas excluidas por decisión funcional
 
 | Regla | Estado |
 |---|---|
@@ -595,7 +800,7 @@ Algunas variables no deben bloquearse completamente hasta tener catálogos ofici
 
 ---
 
-# 16. Uso recomendado de esta arquitectura
+# 17. Uso recomendado de esta arquitectura
 
 Este documento debe usarse antes de modificar reglas en cualquier módulo.
 
@@ -619,7 +824,7 @@ Flujo recomendado:
 
 ---
 
-# 17. Estado actual de arquitectura V1-V35
+# 18. Estado actual de arquitectura V1-V47
 
 | Bloque | Estado |
 |---|---|
@@ -630,11 +835,12 @@ Flujo recomendado:
 | V30-V33 | Arquitectura definida; pendiente auditoría completa de reglas faltantes. |
 | V34-V35 | Arquitectura definida; reglas principales ya trabajadas. |
 | V36-V40 | Arquitectura definida; variables cerradas/probadas en Sprint 3A Módulo 7. |
-| V41-V44 | Arquitectura ampliada; pendiente implementación y validación en Módulo 8. |
+| V41-V44 | Implementadas y validadas en Módulo 8. |
+| V45-V47 | Arquitectura inicial definida para Módulo 9; pendiente implementación progresiva. |
 
 ---
 
-## 18. Nota final
+## 19. Nota final
 
 Esta arquitectura no significa que todas las reglas de negocio faltantes ya estén identificadas.
 
