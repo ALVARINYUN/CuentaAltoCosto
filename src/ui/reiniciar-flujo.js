@@ -1,12 +1,9 @@
-// =======================================================
-// Validador CAC - ui/reiniciar-flujo.js
-// Acciones separadas y sincronización del indicador de pasos para:
+
+
 // 1) Validar otra hoja del mismo Excel.
 // 2) Cargar otro archivo Excel diferente.
-//
-// No toca las reglas de validación. Solo limpia la vista y
-// devuelve al usuario al paso correcto del flujo.
-// =======================================================
+
+
 
 (function () {
   'use strict';

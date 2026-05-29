@@ -1,8 +1,3 @@
-// =======================================================
-// Validador CAC - src/catalogos/cargador.js
-// Utilidades de consulta para catálogos cargados localmente
-// Sprint 2A.2 - CIE-10 CAC
-// =======================================================
 
 (function () {
   'use strict';

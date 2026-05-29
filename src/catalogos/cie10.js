@@ -1,8 +1,4 @@
-// =======================================================
-// Validador CAC - src/catalogos/cie10.js
-// Catálogo operativo CIE-10 CAC 2025 cargado localmente
-// Generado desde 241212 CIE10_2025 (1) (1).xlsx
-// =======================================================
+
 
 (function () {
   'use strict';

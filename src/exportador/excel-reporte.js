@@ -1,8 +1,4 @@
-// =======================================================
-// Validador CAC - exportador/excel-reporte.js
-// Exporta reporte y genera MATRIZ_MARCADA con celdas exactas resaltadas.
-// v2.4 · Exporta la matriz original y marca solo las celdas con hallazgos.
-// =======================================================
+
 
 (function () {
   'use strict';

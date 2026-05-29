@@ -1,7 +1,4 @@
-// =======================================================
-// Validador CAC - ui/carga.js
-// Conecta botón, input file y zona de arrastre
-// =======================================================
+
 
 (function () {
   'use strict';

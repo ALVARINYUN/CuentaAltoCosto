@@ -1,7 +1,4 @@
-// =======================================================
-// Validador CAC - ui/progreso.js
-// Manejo visual de progreso
-// =======================================================
+
 
 (function () {
   'use strict';

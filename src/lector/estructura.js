@@ -1,13 +1,13 @@
 // =======================================================
 // Validador CAC - lector/estructura.js
-// Estructura acumulativa V1-V42
-// Sprint 3B: V41-V42
+// Estructura acumulativa V1-V44
+// Sprint 3B: V41-V44
 // =======================================================
 
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3b-v42-estructura-01';
+  const VERSION = 'sprint-3b-v44-estructura-02';
 
   const VARIABLES_SPRINT_1 = [
     'V1', 'V2', 'V3', 'V4',
@@ -40,7 +40,7 @@
   ];
 
   const VARIABLES_SPRINT_3B = [
-    'V41', 'V42'
+    'V41', 'V42', 'V43', 'V44'
   ];
 
   const VARIABLES_HASTA_2A = [
@@ -73,12 +73,30 @@
     ...VARIABLES_SPRINT_3A
   ];
 
-  const VARIABLES_HASTA_3B = [
+  const VARIABLES_HASTA_3B_V41 = [
     ...VARIABLES_HASTA_3A,
-    ...VARIABLES_SPRINT_3B
+    'V41'
   ];
 
-  const VARIABLES_ESPERADAS = VARIABLES_HASTA_3B;
+  const VARIABLES_HASTA_3B_V42 = [
+    ...VARIABLES_HASTA_3B_V41,
+    'V42'
+  ];
+
+  const VARIABLES_HASTA_3B_V43 = [
+    ...VARIABLES_HASTA_3B_V42,
+    'V43'
+  ];
+
+  const VARIABLES_HASTA_3B_V44 = [
+    ...VARIABLES_HASTA_3B_V43,
+    'V44'
+  ];
+
+  // Alias de compatibilidad para el bloque completo V41-V44.
+  const VARIABLES_HASTA_3B = VARIABLES_HASTA_3B_V44;
+
+  const VARIABLES_ESPERADAS = VARIABLES_HASTA_3B_V44;
 
   const MAPA_ENCABEZADOS = {
     v1: 'V1', primernombre: 'V1', v1primernombre: 'V1',
@@ -122,7 +140,9 @@
     v39: 'V39', fechariesgo: 'V39', fechaclasificacionriesgo: 'V39', fechadeclasificacionderiesgo: 'V39', v39fechariesgo: 'V39',
     v40: 'V40', objetivo: 'V40', objetivotratamiento: 'V40', objetivodeltratamiento: 'V40', objetivointenciontratamiento: 'V40', objetivointenciondeltratamientomedicoinicial: 'V40', v40objetivo: 'V40',
     v41: 'V41', intervencion: 'V41', intervencionmedica: 'V41', intervencionduranteperiodo: 'V41', intervencionduranteelperiododereporte: 'V41', intervencionmedicaduranteperiododereporte: 'V41', intervencionmedicaduranteelperiododereporte: 'V41', v41intervencion: 'V41', v41intervencionmedica: 'V41', v41intervencionmedicaduranteelperiododereporte: 'V41',
-    v42: 'V42', antecedente: 'V42', otrocancerprimario: 'V42', antecedenteotrocancerprimario: 'V42', antecedentedeotrocancerprimario: 'V42', tienecancerprimario: 'V42', tieneantecedenteotrocancerprimario: 'V42', tieneantecedenteopadeceotrocancerprimario: 'V42', v42antecedente: 'V42', v42otrocancerprimario: 'V42', v42antecedentedeotrocancerprimario: 'V42', v42tieneantecedenteopadeceotrocancerprimario: 'V42'
+    v42: 'V42', antecedente: 'V42', otrocancerprimario: 'V42', antecedenteotrocancerprimario: 'V42', antecedentedeotrocancerprimario: 'V42', tienecancerprimario: 'V42', tieneantecedenteotrocancerprimario: 'V42', tieneantecedenteopadeceotrocancerprimario: 'V42', v42antecedente: 'V42', v42otrocancerprimario: 'V42', v42antecedentedeotrocancerprimario: 'V42', v42tieneantecedenteopadeceotrocancerprimario: 'V42',
+    v43: 'V43', fechaotrocancerprimario: 'V43', fechadiagnosticootrocancerprimario: 'V43', fechadediagnosticodelotrocancerprimario: 'V43', fechadedianosticodelotrocancerprimario: 'V43', fechadelotrocancerprimario: 'V43', v43fecha: 'V43', v43fechaotrocancerprimario: 'V43', v43fechadiagnosticootrocancerprimario: 'V43', v43fechadediagnosticodelotrocancerprimario: 'V43',
+    v44: 'V44', cie10otrocancerprimario: 'V44', tipootrocancerprimario: 'V44', tipocie10otrocancerprimario: 'V44', cancerantecedente: 'V44', cancerconcurrente: 'V44', cie10cancerantecedente: 'V44', cie10cancerconcurrente: 'V44', tipocie10delcancerantecedenteoconcurrente: 'V44', v44tipo: 'V44', v44cie10: 'V44', v44tipocie10: 'V44', v44tipocie10delcancerantecedenteoconcurrente: 'V44'
   };
 
   const MAPA_ENCABEZADOS_SPRINT_1 = MAPA_ENCABEZADOS;
@@ -225,6 +245,19 @@
     return (limpio.includes('antecedente') || limpio.includes('padece') || limpio.includes('tuvo')) && limpio.includes('cancer') && limpio.includes('primario');
   }
 
+  function esEncabezadoV43(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v43' || limpio === '43') return true;
+    return limpio.includes('fecha') && limpio.includes('diagnostico') && limpio.includes('otro') && limpio.includes('cancer') && limpio.includes('primario');
+  }
+
+  function esEncabezadoV44(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v44' || limpio === '44') return true;
+    return (limpio.includes('cie10') || limpio.includes('tipo') || limpio.includes('codigo')) &&
+      (limpio.includes('antecedente') || limpio.includes('concurrente') || (limpio.includes('otro') && limpio.includes('cancer')));
+  }
+
   function extraerVariableDesdeEncabezado(valor) {
     const limpio = limpiarEncabezado(valor);
     const coincidencia = limpio.match(/^v(\d{1,3})/);
@@ -233,7 +266,7 @@
 
     const numero = Number(coincidencia[1]);
 
-    if (!Number.isInteger(numero) || numero < 1 || numero > 42) {
+    if (!Number.isInteger(numero) || numero < 1 || numero > 44) {
       return null;
     }
 
@@ -260,6 +293,8 @@
     if (esEncabezadoV40(valor)) return 'V40';
     if (esEncabezadoV41(valor)) return 'V41';
     if (esEncabezadoV42(valor)) return 'V42';
+    if (esEncabezadoV43(valor)) return 'V43';
+    if (esEncabezadoV44(valor)) return 'V44';
 
     const claveLimpia = limpiarEncabezado(valor);
 
@@ -275,7 +310,6 @@
       VARIABLES_ESPERADAS.includes(variable)
     );
 
-    const tiene3B = VARIABLES_SPRINT_3B.some((variable) => presentes.includes(variable));
     const tiene3A = VARIABLES_SPRINT_3A.some((variable) => presentes.includes(variable));
     const tiene2E = VARIABLES_SPRINT_2E.some((variable) => presentes.includes(variable));
     const tiene2D = VARIABLES_SPRINT_2D.some((variable) => presentes.includes(variable));
@@ -283,10 +317,33 @@
     const tiene2B = VARIABLES_SPRINT_2B.some((variable) => presentes.includes(variable));
     const tiene2A = VARIABLES_SPRINT_2A.some((variable) => presentes.includes(variable));
 
-    if (tiene3B) {
+    // Sprint 3B se resuelve por última variable presente.
+    // Esto permite cargar archivos de prueba V41, V42, V43 o V44 sin exigir variables futuras.
+    if (presentes.includes('V44')) {
+      return {
+        modo: 'ACUMULATIVO_V1_V44',
+        variables: VARIABLES_HASTA_3B_V44
+      };
+    }
+
+    if (presentes.includes('V43')) {
+      return {
+        modo: 'ACUMULATIVO_V1_V43',
+        variables: VARIABLES_HASTA_3B_V43
+      };
+    }
+
+    if (presentes.includes('V42')) {
       return {
         modo: 'ACUMULATIVO_V1_V42',
-        variables: VARIABLES_HASTA_3B
+        variables: VARIABLES_HASTA_3B_V42
+      };
+    }
+
+    if (presentes.includes('V41')) {
+      return {
+        modo: 'ACUMULATIVO_V1_V41',
+        variables: VARIABLES_HASTA_3B_V41
       };
     }
 
@@ -384,6 +441,10 @@
     VARIABLES_HASTA_2D,
     VARIABLES_HASTA_2E,
     VARIABLES_HASTA_3A,
+    VARIABLES_HASTA_3B_V41,
+    VARIABLES_HASTA_3B_V42,
+    VARIABLES_HASTA_3B_V43,
+    VARIABLES_HASTA_3B_V44,
     VARIABLES_HASTA_3B,
     VARIABLES_ESPERADAS,
     MAPA_ENCABEZADOS,
@@ -403,6 +464,8 @@
     esEncabezadoV40,
     esEncabezadoV41,
     esEncabezadoV42,
+    esEncabezadoV43,
+    esEncabezadoV44,
     extraerVariableDesdeEncabezado,
     normalizarEncabezado,
     resolverVariablesEsperadasDinamicas,
