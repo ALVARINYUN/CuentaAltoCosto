@@ -8,9 +8,9 @@
     'V30', 'V32', 'V35', 'V39', 'V43'
   ];
 
-  // Variables válidas acumuladas hasta Sprint 3B.
-  // V1-V44: incluye V41-V44 para que el lector no las descarte.
-  const VARIABLES_VALIDABLES = Array.from({ length: 44 }, (_, i) => `V${i + 1}`);
+  // Variables válidas acumuladas hasta Sprint 3C.
+  // V1-V45: incluye V45 para que el lector no la descarte.
+  const VARIABLES_VALIDABLES = Array.from({ length: 45 }, (_, i) => `V${i + 1}`);
 
   function texto(valor) {
     return String(valor ?? '').trim();
@@ -63,13 +63,13 @@
 
     // Fallback seguro si estructura.js no cargara:
     // captura el número completo después de "v".
-    // Permite V1-V44.
+    // Permite V1-V45.
     const match = limpio.match(/^v(\d{1,3})/);
 
     if (match) {
       const numero = Number(match[1]);
 
-      if (Number.isInteger(numero) && numero >= 1 && numero <= 44) {
+      if (Number.isInteger(numero) && numero >= 1 && numero <= 45) {
         return `V${numero}`;
       }
     }
@@ -121,7 +121,7 @@
 
     let consecutivasDesdeV1 = 0;
 
-    for (let n = 1; n <= 44; n += 1) {
+    for (let n = 1; n <= 45; n += 1) {
       if (numeros.includes(n)) consecutivasDesdeV1 = n;
       else break;
     }
@@ -155,7 +155,8 @@
       (variables.includes('V41') ? 30 : 0) +
       (variables.includes('V42') ? 30 : 0) +
       (variables.includes('V43') ? 30 : 0) +
-      (variables.includes('V44') ? 30 : 0);
+      (variables.includes('V44') ? 30 : 0) +
+      (variables.includes('V45') ? 30 : 0);
 
     return {
       esCandidata,

@@ -1,16 +1,16 @@
 // =======================================================
 // Validador CAC - validaciones/engine.js
-// Motor acumulativo V1-V41.
-// Actualización: Sprint 3B · Módulo 8 · V41.
+// Motor acumulativo V1-V45.
+// Actualización: Sprint 3C · Módulo 9 · V45.
 // - Mantiene normalización de encabezados reales.
 // - Ejecuta módulos acumulativos solo cuando el archivo trae sus variables.
-// - Agrega ejecución de CACModulo8 para V41 en adelante.
+// - Agrega ejecución de CACModulo9 para V45 en adelante.
 // =======================================================
 
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3b-v41-engine-modulo8-01';
+  const VERSION = 'sprint-3c-v45-engine-modulo9-01';
 
   function obtenerDocumento(registro) {
     const tipo = CACTipos.textoMayuscula(registro.V5);
@@ -247,6 +247,26 @@
         'CACModulo8'
       );
     }
+
+    // Módulo 9 · V45
+    // V45 inicia el bloque de terapia sistémica. Por ahora solo se ejecuta
+    // cuando el archivo trae V45; no exige V46-V73 porque son variables futuras.
+    const archivoTraeBloque3C = tieneAlgunaColumna(registro, [
+      'V45'
+    ]);
+
+    if (
+      archivoTraeBloque3C &&
+      window.CACModulo9 &&
+      typeof window.CACModulo9.validar === 'function'
+    ) {
+      hallazgos = concatenarHallazgos(
+        hallazgos,
+        window.CACModulo9.validar(registro),
+        'CACModulo9'
+      );
+    }
+
 
     return hallazgos;
   }

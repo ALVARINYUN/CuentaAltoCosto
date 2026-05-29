@@ -1,13 +1,13 @@
 // =======================================================
 // Validador CAC - lector/estructura.js
-// Estructura acumulativa V1-V44
-// Sprint 3B: V41-V44
+// Estructura acumulativa V1-V45
+// Sprint 3C: V45
 // =======================================================
 
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3b-v44-estructura-02';
+  const VERSION = 'sprint-3c-v45-estructura-01';
 
   const VARIABLES_SPRINT_1 = [
     'V1', 'V2', 'V3', 'V4',
@@ -41,6 +41,10 @@
 
   const VARIABLES_SPRINT_3B = [
     'V41', 'V42', 'V43', 'V44'
+  ];
+
+  const VARIABLES_SPRINT_3C = [
+    'V45'
   ];
 
   const VARIABLES_HASTA_2A = [
@@ -96,7 +100,15 @@
   // Alias de compatibilidad para el bloque completo V41-V44.
   const VARIABLES_HASTA_3B = VARIABLES_HASTA_3B_V44;
 
-  const VARIABLES_ESPERADAS = VARIABLES_HASTA_3B_V44;
+  const VARIABLES_HASTA_3C_V45 = [
+    ...VARIABLES_HASTA_3B_V44,
+    'V45'
+  ];
+
+  // Alias de compatibilidad para el bloque actual V45.
+  const VARIABLES_HASTA_3C = VARIABLES_HASTA_3C_V45;
+
+  const VARIABLES_ESPERADAS = VARIABLES_HASTA_3C_V45;
 
   const MAPA_ENCABEZADOS = {
     v1: 'V1', primernombre: 'V1', v1primernombre: 'V1',
@@ -142,7 +154,8 @@
     v41: 'V41', intervencion: 'V41', intervencionmedica: 'V41', intervencionduranteperiodo: 'V41', intervencionduranteelperiododereporte: 'V41', intervencionmedicaduranteperiododereporte: 'V41', intervencionmedicaduranteelperiododereporte: 'V41', v41intervencion: 'V41', v41intervencionmedica: 'V41', v41intervencionmedicaduranteelperiododereporte: 'V41',
     v42: 'V42', antecedente: 'V42', otrocancerprimario: 'V42', antecedenteotrocancerprimario: 'V42', antecedentedeotrocancerprimario: 'V42', tienecancerprimario: 'V42', tieneantecedenteotrocancerprimario: 'V42', tieneantecedenteopadeceotrocancerprimario: 'V42', v42antecedente: 'V42', v42otrocancerprimario: 'V42', v42antecedentedeotrocancerprimario: 'V42', v42tieneantecedenteopadeceotrocancerprimario: 'V42',
     v43: 'V43', fechaotrocancerprimario: 'V43', fechadiagnosticootrocancerprimario: 'V43', fechadediagnosticodelotrocancerprimario: 'V43', fechadedianosticodelotrocancerprimario: 'V43', fechadelotrocancerprimario: 'V43', v43fecha: 'V43', v43fechaotrocancerprimario: 'V43', v43fechadiagnosticootrocancerprimario: 'V43', v43fechadediagnosticodelotrocancerprimario: 'V43',
-    v44: 'V44', cie10otrocancerprimario: 'V44', tipootrocancerprimario: 'V44', tipocie10otrocancerprimario: 'V44', cancerantecedente: 'V44', cancerconcurrente: 'V44', cie10cancerantecedente: 'V44', cie10cancerconcurrente: 'V44', tipocie10delcancerantecedenteoconcurrente: 'V44', v44tipo: 'V44', v44cie10: 'V44', v44tipocie10: 'V44', v44tipocie10delcancerantecedenteoconcurrente: 'V44'
+    v44: 'V44', cie10otrocancerprimario: 'V44', tipootrocancerprimario: 'V44', tipocie10otrocancerprimario: 'V44', cancerantecedente: 'V44', cancerconcurrente: 'V44', cie10cancerantecedente: 'V44', cie10cancerconcurrente: 'V44', tipocie10delcancerantecedenteoconcurrente: 'V44', v44tipo: 'V44', v44cie10: 'V44', v44tipocie10: 'V44', v44tipocie10delcancerantecedenteoconcurrente: 'V44',
+    v45: 'V45', quimioterapia: 'V45', terapiasistemica: 'V45', terapia: 'V45', quimioterapiaterapiasistemica: 'V45', recibioquimioterapia: 'V45', recibiousuarioquimioterapia: 'V45', recibioelusuarioquimioterapia: 'V45', recibioquimioterapiauotraterapiasistemica: 'V45', recibioelusuarioquimioterapiauotraterapiasistemica: 'V45', recibiousuarioquimioterapiauotraterapiasistemica: 'V45', v45quimioterapia: 'V45', v45terapiasistemica: 'V45', v45recibioquimioterapia: 'V45', v45recibioquimioterapiauotraterapiasistemica: 'V45'
   };
 
   const MAPA_ENCABEZADOS_SPRINT_1 = MAPA_ENCABEZADOS;
@@ -258,6 +271,14 @@
       (limpio.includes('antecedente') || limpio.includes('concurrente') || (limpio.includes('otro') && limpio.includes('cancer')));
   }
 
+  function esEncabezadoV45(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v45' || limpio === '45') return true;
+
+    return (limpio.includes('quimioterapia') || limpio.includes('terapiasistemica')) &&
+      (limpio.includes('recibio') || limpio.includes('usuario') || limpio.includes('periodo') || limpio.includes('reporte'));
+  }
+
   function extraerVariableDesdeEncabezado(valor) {
     const limpio = limpiarEncabezado(valor);
     const coincidencia = limpio.match(/^v(\d{1,3})/);
@@ -266,7 +287,7 @@
 
     const numero = Number(coincidencia[1]);
 
-    if (!Number.isInteger(numero) || numero < 1 || numero > 44) {
+    if (!Number.isInteger(numero) || numero < 1 || numero > 45) {
       return null;
     }
 
@@ -295,6 +316,7 @@
     if (esEncabezadoV42(valor)) return 'V42';
     if (esEncabezadoV43(valor)) return 'V43';
     if (esEncabezadoV44(valor)) return 'V44';
+    if (esEncabezadoV45(valor)) return 'V45';
 
     const claveLimpia = limpiarEncabezado(valor);
 
@@ -316,6 +338,15 @@
     const tiene2C = VARIABLES_SPRINT_2C.some((variable) => presentes.includes(variable));
     const tiene2B = VARIABLES_SPRINT_2B.some((variable) => presentes.includes(variable));
     const tiene2A = VARIABLES_SPRINT_2A.some((variable) => presentes.includes(variable));
+
+    // Sprint 3C se resuelve por última variable presente.
+    // Esto permite cargar archivos de prueba V45 sin exigir V46-V73.
+    if (presentes.includes('V45')) {
+      return {
+        modo: 'ACUMULATIVO_V1_V45',
+        variables: VARIABLES_HASTA_3C_V45
+      };
+    }
 
     // Sprint 3B se resuelve por última variable presente.
     // Esto permite cargar archivos de prueba V41, V42, V43 o V44 sin exigir variables futuras.
@@ -424,6 +455,7 @@
   function validarEstructuraSprint2E(encabezados) { return validarEstructura(encabezados); }
   function validarEstructuraSprint3A(encabezados) { return validarEstructura(encabezados); }
   function validarEstructuraSprint3B(encabezados) { return validarEstructura(encabezados); }
+  function validarEstructuraSprint3C(encabezados) { return validarEstructura(encabezados); }
 
   window.CACEstructura = {
     version: VERSION,
@@ -435,6 +467,7 @@
     VARIABLES_SPRINT_2E,
     VARIABLES_SPRINT_3A,
     VARIABLES_SPRINT_3B,
+    VARIABLES_SPRINT_3C,
     VARIABLES_HASTA_2A,
     VARIABLES_HASTA_2B,
     VARIABLES_HASTA_2C,
@@ -446,6 +479,8 @@
     VARIABLES_HASTA_3B_V43,
     VARIABLES_HASTA_3B_V44,
     VARIABLES_HASTA_3B,
+    VARIABLES_HASTA_3C_V45,
+    VARIABLES_HASTA_3C,
     VARIABLES_ESPERADAS,
     MAPA_ENCABEZADOS,
     MAPA_ENCABEZADOS_SPRINT_1,
@@ -466,6 +501,7 @@
     esEncabezadoV42,
     esEncabezadoV43,
     esEncabezadoV44,
+    esEncabezadoV45,
     extraerVariableDesdeEncabezado,
     normalizarEncabezado,
     resolverVariablesEsperadasDinamicas,
@@ -477,6 +513,7 @@
     validarEstructuraSprint2D,
     validarEstructuraSprint2E,
     validarEstructuraSprint3A,
-    validarEstructuraSprint3B
+    validarEstructuraSprint3B,
+    validarEstructuraSprint3C
   };
 })();
