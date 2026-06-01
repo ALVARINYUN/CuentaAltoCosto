@@ -1,9 +1,4 @@
-// =======================================================
-// Validador CAC - validaciones/reglas/modulo1.js
-// Reglas Sprint 1: Identificación V1 a V16
-// Hallazgos con títulos claros, datos relacionados y columnas a revisar
-// v33 · Sin regla fija de periodo; edad referencial con fecha de validación
-// =======================================================
+//v1-v16
 
 (function () {
   'use strict';

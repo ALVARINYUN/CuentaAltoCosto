@@ -1,8 +1,4 @@
-// =======================================================
-// Validador CAC - main.js
-// Orquestador principal acumulativo V1-V35.
-// Selector de hoja, cambio de hoja y exportación Excel.
-// =======================================================
+
 
 (function () {
   'use strict';

@@ -1,9 +1,4 @@
-// =======================================================
-// Validador CAC - validaciones/reglas/modulo4.js
-// Sprint 2C: V29
-// V29: Primera estadificación basada en TNM, FIGO u otras compatibles
-// Ajuste: descripciones claras, catálogos hacia abajo y sin reglas nuevas
-// =======================================================
+// v29
 
 (function () {
   'use strict';

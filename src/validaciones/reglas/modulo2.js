@@ -1,9 +1,4 @@
-// =======================================================
-// Validador CAC - validaciones/reglas/modulo2.js
-// Reglas Sprint 2A: Diagnóstico del cáncer V17 a V24
-// Valida V17 contra catálogo operativo CIE-10 CAC 2025 local
-// Versión: Sprint 2A v1.5 - descripciones claras y ayuda de comodines
-// =======================================================
+//v17-v24
 
 (function () {
   'use strict';

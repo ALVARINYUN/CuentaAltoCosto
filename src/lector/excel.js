@@ -9,8 +9,18 @@
   ];
 
   // Variables válidas acumuladas hasta Sprint 3C.
-  // V1-V45: incluye V45 para que el lector no la descarte.
-  const VARIABLES_VALIDABLES = Array.from({ length: 45 }, (_, i) => `V${i + 1}`);
+  // V1-V46 + V46_1-V46_8: incluye subfases reales V46.1, V46.2, V46.3, V46.4, V46.5, V46.6, V46.7 y V46.8.
+  const VARIABLES_VALIDABLES = [
+    ...Array.from({ length: 46 }, (_, i) => `V${i + 1}`),
+    'V46_1',
+    'V46_2',
+    'V46_3',
+    'V46_4',
+    'V46_5',
+    'V46_6',
+    'V46_7',
+    'V46_8'
+  ];
 
   function texto(valor) {
     return String(valor ?? '').trim();
@@ -63,13 +73,46 @@
 
     // Fallback seguro si estructura.js no cargara:
     // captura el número completo después de "v".
-    // Permite V1-V45.
+    // Permite reconocer subfases reales V46.x aunque estructura.js no cargara.
+    if (limpio === 'v468' || limpio.startsWith('v468recibilafasedequimioterapiao')) {
+      return 'V46_8';
+    }
+
+    if (limpio === 'v467' || limpio.startsWith('v467recibilafasedequimioterapiam')) {
+      return 'V46_7';
+    }
+
+    if (limpio === 'v466' || limpio.startsWith('v466recibilafasedequimioterapiam')) {
+      return 'V46_6';
+    }
+
+    if (limpio === 'v465' || limpio.startsWith('v465recibilafasedequimioterapiar')) {
+      return 'V46_5';
+    }
+
+    if (limpio === 'v464' || limpio.startsWith('v464recibilafasedequimioterapiac')) {
+      return 'V46_4';
+    }
+
+    if (limpio === 'v463' || limpio.startsWith('v463recibilafasedequimioterapiai')) {
+      return 'V46_3';
+    }
+
+    if (limpio === 'v462' || limpio.startsWith('v462recibilafasedequimioterapiai')) {
+      return 'V46_2';
+    }
+
+    if (limpio === 'v461' || limpio.startsWith('v461recibilafasedequimioterapiap')) {
+      return 'V46_1';
+    }
+
+    // Permite V1-V46.
     const match = limpio.match(/^v(\d{1,3})/);
 
     if (match) {
       const numero = Number(match[1]);
 
-      if (Number.isInteger(numero) && numero >= 1 && numero <= 45) {
+      if (Number.isInteger(numero) && numero >= 1 && numero <= 46) {
         return `V${numero}`;
       }
     }
@@ -82,6 +125,15 @@
   }
 
   function numeroVariable(variable) {
+    if (texto(variable) === 'V46_1') return 46.1;
+    if (texto(variable) === 'V46_2') return 46.2;
+    if (texto(variable) === 'V46_3') return 46.3;
+    if (texto(variable) === 'V46_4') return 46.4;
+    if (texto(variable) === 'V46_5') return 46.5;
+    if (texto(variable) === 'V46_6') return 46.6;
+    if (texto(variable) === 'V46_7') return 46.7;
+    if (texto(variable) === 'V46_8') return 46.8;
+
     const match = texto(variable).match(/^V(\d+)$/);
     return match ? Number(match[1]) : null;
   }
@@ -121,7 +173,7 @@
 
     let consecutivasDesdeV1 = 0;
 
-    for (let n = 1; n <= 45; n += 1) {
+    for (let n = 1; n <= 46; n += 1) {
       if (numeros.includes(n)) consecutivasDesdeV1 = n;
       else break;
     }
@@ -156,7 +208,16 @@
       (variables.includes('V42') ? 30 : 0) +
       (variables.includes('V43') ? 30 : 0) +
       (variables.includes('V44') ? 30 : 0) +
-      (variables.includes('V45') ? 30 : 0);
+      (variables.includes('V45') ? 30 : 0) +
+      (variables.includes('V46') ? 30 : 0) +
+      (variables.includes('V46_1') ? 30 : 0) +
+      (variables.includes('V46_2') ? 30 : 0) +
+      (variables.includes('V46_3') ? 30 : 0) +
+      (variables.includes('V46_4') ? 30 : 0) +
+      (variables.includes('V46_5') ? 30 : 0) +
+      (variables.includes('V46_6') ? 30 : 0) +
+      (variables.includes('V46_7') ? 30 : 0) +
+      (variables.includes('V46_8') ? 30 : 0);
 
     return {
       esCandidata,

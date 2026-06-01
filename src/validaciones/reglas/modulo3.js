@@ -533,11 +533,11 @@
         tipo: TIPO.DEPENDENCIA,
         severidad: SEVERIDAD.ERROR,
         valor: v28,
-        titulo: 'Grado del tumor reportado como desconocido',
-        mensaje: 'V28 tiene el valor 99, que significa grado desconocido, pero V18 tiene una fecha de diagnóstico desde 2015-01-01 en adelante.',
-        regla: 'Para diagnósticos desde 2015-01-01 en adelante, el grado del tumor debe revisarse en los soportes clínicos cuando aplique. Si se deja en 99, el reporte queda como si no se conociera el grado.',
-        recomendacion: 'Revise el reporte de patología. Si el grado está descrito, registre el código correcto en V28. Si la fecha de diagnóstico está mal, corrija V18.',
-        columnasCorregir: ['V18', 'V28'],
+        titulo: 'Grado del tumor reportado como desconocido en diagnóstico desde 2015',
+        mensaje: 'V28 tiene el valor 99, que significa que no hay información del grado de diferenciación en la historia clínica. Sin embargo, V18 registra una fecha de diagnóstico desde 2015-01-01 en adelante, y para esos diagnósticos la opción 99 no es válida.',
+        regla: 'La opción 99 está reservada para cánceres que deberían tener grado de diferenciación, pero cuyo dato no está descrito en los soportes. Según el instructivo, 99 solo es válido cuando el diagnóstico fue antes de 2015-01-01. Para diagnósticos desde esa fecha en adelante, se debe revisar primero la biopsia diagnóstica y, si allí no está el dato, el informe de primera cirugía.',
+        recomendacion: 'Revise primero la biopsia diagnóstica del cáncer. Si allí aparece el grado de diferenciación, registre 1, 2, 3 o 4 según corresponda. Si no está en la biopsia, revise el informe de primera cirugía. Si se trata de un cáncer sólido cuyo reporte de patología no incluye diferenciación celular, use 94. Si no es un cáncer sólido, use 95. Si no se realizó estudio histopatológico y V21 tiene la opción 7, use 98. Si el problema está en la fecha de diagnóstico, corrija V18.',
+        columnasCorregir: ['V28'],
         datosRelacionados: [
           { variable: 'V18', nombre: nombreVariable('V18'), valor: v18 },
           { variable: 'V28', nombre: nombreVariable('V28'), valor: v28 }

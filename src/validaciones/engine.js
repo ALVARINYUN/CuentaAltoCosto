@@ -1,16 +1,8 @@
-// =======================================================
-// Validador CAC - validaciones/engine.js
-// Motor acumulativo V1-V45.
-// Actualización: Sprint 3C · Módulo 9 · V45.
-// - Mantiene normalización de encabezados reales.
-// - Ejecuta módulos acumulativos solo cuando el archivo trae sus variables.
-// - Agrega ejecución de CACModulo9 para V45 en adelante.
-// =======================================================
 
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3c-v45-engine-modulo9-01';
+  const VERSION = 'sprint-3c-v46-8-engine-modulo9-01';
 
   function obtenerDocumento(registro) {
     const tipo = CACTipos.textoMayuscula(registro.V5);
@@ -248,11 +240,12 @@
       );
     }
 
-    // Módulo 9 · V45
-    // V45 inicia el bloque de terapia sistémica. Por ahora solo se ejecuta
-    // cuando el archivo trae V45; no exige V46-V73 porque son variables futuras.
+    // Módulo 9 · V45-V46.8
+    // V45 inicia el bloque de terapia sistémica, V46 valida número/valor de fases
+    // y V46.1-V46.8 validan subfases con las reglas explícitas del instructivo.
+    // No exige V47-V73 porque son variables futuras.
     const archivoTraeBloque3C = tieneAlgunaColumna(registro, [
-      'V45'
+      'V45', 'V46', 'V46_1', 'V46_2', 'V46_3', 'V46_4', 'V46_5', 'V46_6', 'V46_7', 'V46_8'
     ]);
 
     if (
