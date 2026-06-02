@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3c-v46-8-estructura-01';
+  const VERSION = 'sprint-3c-v47-estructura-01';
 
   const VARIABLES_SPRINT_1 = [
     'V1', 'V2', 'V3', 'V4',
@@ -39,7 +39,7 @@
   ];
 
   const VARIABLES_SPRINT_3C = [
-    'V45', 'V46', 'V46_1', 'V46_2', 'V46_3', 'V46_4', 'V46_5', 'V46_6', 'V46_7', 'V46_8'
+    'V45', 'V46', 'V46_1', 'V46_2', 'V46_3', 'V46_4', 'V46_5', 'V46_6', 'V46_7', 'V46_8', 'V47'
   ];
 
   const VARIABLES_HASTA_2A = [
@@ -145,10 +145,15 @@
     'V46_8'
   ];
 
-  // Alias de compatibilidad para el bloque actual V45-V46.8.
-  const VARIABLES_HASTA_3C = VARIABLES_HASTA_3C_V46_8;
+  const VARIABLES_HASTA_3C_V47 = [
+    ...VARIABLES_HASTA_3C_V46_8,
+    'V47'
+  ];
 
-  const VARIABLES_ESPERADAS = VARIABLES_HASTA_3C_V46_8;
+  // Alias de compatibilidad para el bloque actual V45-V47.
+  const VARIABLES_HASTA_3C = VARIABLES_HASTA_3C_V47;
+
+  const VARIABLES_ESPERADAS = VARIABLES_HASTA_3C_V47;
 
   const MAPA_ENCABEZADOS = {
     v1: 'V1', primernombre: 'V1', v1primernombre: 'V1',
@@ -204,7 +209,8 @@
     v465: 'V46_5', v465recibilafasedequimioterapiar: 'V46_5', v465reinduccion: 'V46_5', v465fasedereinduccion: 'V46_5',
     v466: 'V46_6', v466recibilafasedequimioterapiam: 'V46_6', v466mantenimiento: 'V46_6', v466fasedemantenimiento: 'V46_6',
     v467: 'V46_7', v467recibilafasedequimioterapiam: 'V46_7', v467mantenimientolargoofinal: 'V46_7', v467fasedemantenimientolargoofinal: 'V46_7',
-    v468: 'V46_8', v468recibilafasedequimioterapiao: 'V46_8', v468otrafase: 'V46_8', v468otrafasediferente: 'V46_8', v468otrafasediferentealasanteriores: 'V46_8'
+    v468: 'V46_8', v468recibilafasedequimioterapiao: 'V46_8', v468otrafase: 'V46_8', v468otrafasediferente: 'V46_8', v468otrafasediferentealasanteriores: 'V46_8',
+    v47: 'V47', ciclos: 'V47', numerociclos: 'V47', numerodeciclos: 'V47', ciclosiniciados: 'V47', ciclosadministrados: 'V47', numerodeciclosiniciadosyadministrados: 'V47', v47numerodeciclos: 'V47', v47numerodeciclosiniciadosyadministrados: 'V47', v47numerodeciclosiniciadosyadministradosenelperiododereporte: 'V47'
   };
 
   const MAPA_ENCABEZADOS_SPRINT_1 = MAPA_ENCABEZADOS;
@@ -432,6 +438,15 @@
       limpio.includes('quimioterapia');
   }
 
+  function esEncabezadoV47(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v47' || limpio === '47') return true;
+
+    return limpio.startsWith('v47') &&
+      limpio.includes('ciclos') &&
+      (limpio.includes('iniciados') || limpio.includes('administrados') || limpio.includes('periodo'));
+  }
+
   function extraerVariableDesdeEncabezado(valor) {
     const limpio = limpiarEncabezado(valor);
     const coincidencia = limpio.match(/^v(\d{1,3})/);
@@ -440,7 +455,7 @@
 
     const numero = Number(coincidencia[1]);
 
-    if (!Number.isInteger(numero) || numero < 1 || numero > 46) {
+    if (!Number.isInteger(numero) || numero < 1 || numero > 47) {
       return null;
     }
 
@@ -470,6 +485,7 @@
     if (esEncabezadoV43(valor)) return 'V43';
     if (esEncabezadoV44(valor)) return 'V44';
     if (esEncabezadoV45(valor)) return 'V45';
+    if (esEncabezadoV47(valor)) return 'V47';
     if (esEncabezadoV46_8(valor)) return 'V46_8';
     if (esEncabezadoV46_7(valor)) return 'V46_7';
     if (esEncabezadoV46_6(valor)) return 'V46_6';
@@ -502,7 +518,14 @@
     const tiene2A = VARIABLES_SPRINT_2A.some((variable) => presentes.includes(variable));
 
     // Sprint 3C se resuelve por última variable presente.
-    // Esto permite cargar archivos de prueba V45, V46, V46.1, V46.2, V46.3, V46.4, V46.5, V46.6, V46.7 o V46.8 sin exigir V47-V73.
+    // Esto permite cargar archivos de prueba V45, V46, V46.1, V46.2, V46.3, V46.4, V46.5, V46.6, V46.7, V46.8 o V47 sin exigir V48-V73.
+    if (presentes.includes('V47')) {
+      return {
+        modo: 'ACUMULATIVO_V1_V47',
+        variables: VARIABLES_HASTA_3C_V47
+      };
+    }
+
     if (presentes.includes('V46_8')) {
       return {
         modo: 'ACUMULATIVO_V1_V46_8',
@@ -714,6 +737,7 @@
     VARIABLES_HASTA_3C_V46_6,
     VARIABLES_HASTA_3C_V46_7,
     VARIABLES_HASTA_3C_V46_8,
+    VARIABLES_HASTA_3C_V47,
     VARIABLES_HASTA_3C,
     VARIABLES_ESPERADAS,
     MAPA_ENCABEZADOS,
@@ -745,6 +769,7 @@
     esEncabezadoV46_6,
     esEncabezadoV46_7,
     esEncabezadoV46_8,
+    esEncabezadoV47,
     extraerVariableDesdeEncabezado,
     normalizarEncabezado,
     resolverVariablesEsperadasDinamicas,

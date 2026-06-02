@@ -1,8 +1,8 @@
-# Arquitectura Funcional de Variables V1-V47 — Validador CAC Cohorte Cáncer
+# Arquitectura Funcional de Variables V1-V52 — Validador CAC Cohorte Cáncer
 
 **Proyecto:** Validador CAC — Cohorte Cáncer  
 **Documento:** Arquitectura funcional de variables y trazabilidad  
-**Alcance actual:** Variables V1 a V47  
+**Alcance actual:** Variables V1 a V52  
 **Estado:** Base arquitectónica para auditoría de reglas de negocio  
 **Tecnología del validador:** HTML, CSS y JavaScript local  
 **Propósito:** Documentar cómo se organizan las variables, qué módulos las validan y qué dependencias existen entre ellas.
@@ -11,7 +11,7 @@
 
 ## 1. Objetivo del documento
 
-Este documento define la arquitectura funcional de las variables implementadas hasta la V44 y la arquitectura funcional inicial del bloque V45-V47 en el Validador CAC.
+Este documento define la arquitectura funcional de las variables implementadas hasta la V47 y la arquitectura funcional inicial del bloque V48-V52 en el Validador CAC.
 
 Su objetivo no es reemplazar el instructivo oficial de la Cuenta de Alto Costo, sino servir como mapa técnico-funcional para:
 
@@ -27,6 +27,8 @@ Su objetivo no es reemplazar el instructivo oficial de la Cuenta de Alto Costo, 
 ## 2. Principio arquitectónico del validador
 
 El validador se construye de forma acumulativa.
+
+El avance también debe ser progresivo en las pruebas: cada nueva variable debe agregarse sin impedir que se carguen y validen los archivos de prueba de variables anteriores. Los archivos acumulativos antiguos deben seguir funcionando con el alcance que traen; por ejemplo, un Excel hasta V47 no debe exigir V48-V52, y un Excel hasta V52 debe incluir V1-V52 limpias y coherentes.
 
 Cada sprint o módulo agrega nuevas variables, pero las variables anteriores deben permanecer activas y no deben deshabilitarse ni alterarse salvo que exista un bug real o una decisión funcional aprobada.
 
@@ -53,6 +55,7 @@ La arquitectura se basa en tres niveles:
 | Módulo 7 | V36-V40 | `src/validaciones/reglas/modulo7.js` | Ann Arbor/Lugano, Gleason, clasificación de riesgo, fecha de riesgo y objetivo del tratamiento inicial. |
 | Módulo 8 | V41-V44 | `src/validaciones/reglas/modulo8.js` | Intervención médica durante el periodo y antecedentes de otro cáncer primario. |
 | Módulo 9 | V45-V47 | `src/validaciones/reglas/modulo9.js` | Terapia sistémica e intratecal en el periodo de reporte; variable de control V45, fases de quimioterapia V46 y ciclos V47. |
+| Módulo 10 | V48-V52 | `src/validaciones/reglas/modulo10.js` | Primer o único esquema de quimioterapia o terapia sistémica: ubicación temporal, fecha de inicio, número de IPS e IPS que suministran el esquema. |
 
 ---
 
@@ -69,6 +72,7 @@ V34-V35  → Dukes según diagnóstico de cáncer colorrectal.
 V36-V40  → Ann Arbor/Lugano, Gleason, riesgo, fecha de riesgo y objetivo inicial.
 V41-V44  → Intervención médica y antecedente/concurrencia de otro cáncer primario.
 V45-V47  → Terapia sistémica e intratecal en el periodo de reporte: control de terapia, fases de quimioterapia y ciclos administrados.
+V48-V52  → Primer o único esquema de terapia sistémica: ubicación temporal, fecha de inicio, número de IPS e IPS suministradoras.
 ```
 
 Las variables no deben validarse de forma aislada cuando el instructivo define relaciones clínicas o administrativas entre ellas.
@@ -518,7 +522,7 @@ Este módulo inicia el bloque de información específica de terapia sistémica 
 
 Su propósito es validar si el usuario recibió quimioterapia u otra terapia sistémica, cuántas fases de quimioterapia aplican en cánceres hematolinfáticos específicos y cuántos ciclos fueron iniciados y administrados durante el periodo.
 
-Este bloque debe implementarse con especial cuidado porque V45 actúa como variable de control para las variables V46 a V73. Si V45 es `98`, las variables posteriores del bloque deben registrar No Aplica según el comodín definido para cada variable. Sin embargo, mientras V48-V73 no estén implementadas, no deben generarse errores prematuros sobre variables futuras.
+Este bloque se cierra funcionalmente hasta V47. V45 actúa como variable de control para las variables posteriores de terapia sistémica. Si V45 es `98`, las variables posteriores del bloque deben registrar No Aplica según el comodín definido para cada variable. Sin embargo, las reglas contra variables futuras deben activarse progresivamente solo cuando esas variables estén implementadas.
 
 ## 13.2 Variables
 
@@ -673,8 +677,9 @@ Reglas base:
 | V47-ERROR-001 | V47 vacía. | Error |
 | V47-ERROR-002 | V47 no es numérica ni corresponde al comodín `98`. | Error |
 | V47-ERROR-003 | V47=98 cuando V45=1. | Error |
-| V47-ERROR-004 | V47 tiene valor negativo. | Error |
-| V47-ADVERTENCIA-001 | Número de ciclos inusualmente alto o bajo para el tipo de cáncer y esquema, cuando existan criterios clínicos parametrizados. | Advertencia pendiente. |
+| V47-ERROR-004 | V47 registra cero o un número negativo. | Error |
+| V47-ERROR-005 | V45=98, pero V47 registra un número de ciclos diferente de 98. | Error |
+| V47-ADVERTENCIA-001 | Número de ciclos inusualmente alto o bajo para el tipo de cáncer y esquema, cuando existan criterios clínicos parametrizados. | No implementada; pendiente de umbrales confiables. |
 
 Cruces:
 
@@ -695,22 +700,252 @@ Cruces:
 
 | Bloque | Estado recomendado |
 |---|---|
-| V45 | Implementar primero como Sprint 3C · Módulo 9A. |
-| V46-V46.8 | Implementar después como Sprint 3C · Módulo 9B. |
-| V47 | Implementar después de V46 como Sprint 3C · Módulo 9C o junto con V48-V49 si se decide ampliar el bloque. |
-| V48-V73 | Pendiente de lectura y arquitectura específica. |
+| V45 | Cerrada funcionalmente en Sprint 3C · Módulo 9. |
+| V46-V46.8 | Cerradas funcionalmente en Sprint 3C · Módulo 9. |
+| V47 | Cerrada funcionalmente en Sprint 3C · Módulo 9. |
+| V48-V52 | Pasa a Sprint 3D · Módulo 10. |
+| V53-V53.9 | Pendiente de lectura y arquitectura específica en un módulo posterior. |
 
 ## 13.9 Decisiones funcionales preliminares para V45-V47
 
 | Tema | Decisión recomendada |
 |---|---|
-| V45=98 contra V46-V73 | No forzar contra variables futuras aún no implementadas. Activar progresivamente. |
+| V45=98 contra variables posteriores | No forzar contra variables futuras aún no implementadas. Activar progresivamente por módulo. |
 | V46 hematolinfáticos | Usar CIE-10 C835, C910, C920, C924 y C925 como catálogo operativo cerrado para aplicabilidad. |
 | V46.1 y V46.5 | Solo aplican para C910 y C835; no para C920, C924 ni C925. |
 | Todas las fases en 2 con V45=1 | Advertencia, no error, porque puede requerir revisión clínica y soporte. |
 | V47 ciclos altos/bajos | No parametrizar todavía sin umbrales clínicos confiables. Dejar como advertencia pendiente. |
 
-# 14. Variables núcleo de trazabilidad
+
+# 14. Módulo 10 — Primer o único esquema de quimioterapia o terapia sistémica: V48-V52
+
+## 14.1 Propósito
+
+Este módulo continúa el bloque de terapia sistémica después de V47 y documenta la información del primer o único esquema de quimioterapia o terapia sistémica recibido en el periodo de reporte.
+
+El bloque cubre:
+
+- La ubicación temporal del esquema dentro del manejo oncológico.
+- La fecha de inicio del esquema.
+- El número de IPS que suministran el esquema.
+- El código de la IPS1 y de la IPS2 que suministran el esquema.
+
+La variable de control principal sigue siendo V45.
+
+Si V45=`1`, el paciente recibió quimioterapia u otra terapia sistémica en el periodo y las variables V48-V52 deben diligenciarse con datos reales según corresponda.
+
+Si V45=`98`, las variables V48-V52 deben usar el comodín No Aplica definido por el instructivo.
+
+## 14.2 Variables
+
+| Variable | Nombre funcional | Tipo | Regla principal |
+|---|---|---|---|
+| V48 | Ubicación temporal del primer o único esquema en relación con el manejo oncológico | Catálogo cerrado / comodín | Depende de V45. Si V45=1, debe registrar una ubicación temporal válida. Si V45=98, debe ser 98. |
+| V49 | Fecha de inicio del primer o único esquema | Fecha / comodín | Formato `AAAA-MM-DD`. Si solo se conoce año y mes, usar día 15. Si V45=98, debe ser `1845-01-01`. |
+| V50 | Número de IPS que suministran el primer o único esquema | Numérico / comodín | Si V45=1, debe registrar el número de IPS que suministran el esquema. Si V45=98, debe ser 98. |
+| V51 | Código de la IPS1 que suministra el primer o único esquema | Código REPS / comodín | Código de habilitación de IPS de 12 dígitos, `96` si fue suministrada fuera del país o `98` si no aplica por V45=98. |
+| V52 | Código de la IPS2 que suministra el primer o único esquema | Código REPS / comodín | Código de habilitación de IPS de 12 dígitos o `98` si no aplica. |
+
+## 14.3 V48 — Ubicación temporal del primer o único esquema
+
+Catálogo:
+
+| Código | Significado |
+|---|---|
+| 1 | Neoadyuvancia: manejo inicial prequirúrgico. |
+| 2 | Tratamiento inicial curativo sin cirugía sugerida. |
+| 3 | Adyuvancia: manejo inicial postquirúrgico. |
+| 11 | Manejo de recaída. |
+| 12 | Manejo de enfermedad metastásica. |
+| 13 | Manejo paliativo, sin manejo de recaída ni enfermedad metastásica. |
+| 98 | No aplica: en V45 se seleccionó 98. |
+
+Reglas base:
+
+| Código sugerido | Regla | Severidad |
+|---|---|---|
+| V48-ERROR-001 | V48 vacía. | Error |
+| V48-ERROR-002 | V48 fuera del catálogo permitido. | Error |
+| V48-ERROR-003 | V45=1, pero V48=98. | Error |
+| V48-ERROR-004 | V45=98, pero V48 registra una ubicación temporal diferente de 98. | Error |
+
+Cruces:
+
+| Cruce | Regla funcional | Severidad |
+|---|---|---|
+| V45 ↔ V48 | Si V45=1, V48 debe registrar una ubicación temporal real del esquema. Si V45=98, V48 debe ser 98. | Error |
+| V48 ↔ soporte clínico | La opción seleccionada debe corresponder al contexto del manejo oncológico descrito en historia clínica. | Trazabilidad. |
+
+Decisión funcional:
+
+No se deben inferir errores por V17 sin reglas explícitas adicionales. Por ejemplo, V48=2 puede ser frecuente en leucemias o linfomas, pero el instructivo lo presenta como ejemplo, no como restricción exclusiva.
+
+## 14.4 V49 — Fecha de inicio del primer o único esquema
+
+Comodines:
+
+| Valor | Significado |
+|---|---|
+| `1845-01-01` | No aplica: en V45 se seleccionó 98. |
+
+Reglas funcionales:
+
+- Registrar la fecha de inicio del primer o único esquema de quimioterapia o terapia sistémica.
+- El esquema pudo haber iniciado antes del periodo de reporte.
+- Si solo se conoce el año y el mes, registrar el día 15.
+- No se debe marcar como error que V49 sea anterior al periodo de reporte, porque el instructivo lo permite.
+
+Reglas base:
+
+| Código sugerido | Regla | Severidad |
+|---|---|---|
+| V49-ERROR-001 | V49 vacía. | Error |
+| V49-ERROR-002 | V49 no tiene formato válido `AAAA-MM-DD` o no corresponde a una fecha real. | Error |
+| V49-ERROR-003 | V45=1, pero V49=`1845-01-01`. | Error |
+| V49-ERROR-004 | V45=98, pero V49 es diferente de `1845-01-01`. | Error |
+| V49-ADVERTENCIA-001 | V49 es anterior a V18. | Advertencia pendiente; puede ser clínicamente posible solo si hay soporte, no convertir en error sin criterio oficial. |
+
+Cruces:
+
+| Cruce | Regla funcional | Severidad |
+|---|---|---|
+| V45 ↔ V49 | Si recibió terapia sistémica, V49 debe registrar fecha real. Si V45=98, V49 debe ser `1845-01-01`. | Error |
+| V49 ↔ periodo de reporte | Puede ser anterior al periodo si el esquema inició antes y continúa en el periodo actual. | No error. |
+| V18 ↔ V49 | La fecha de inicio del esquema normalmente debe ser posterior o igual al diagnóstico; revisar como advertencia solo si se define criterio operativo. | Pendiente. |
+
+Decisión funcional:
+
+No usar `1800-01-01` para V49 salvo que el instructivo oficial lo indique en una versión posterior. En el texto disponible solo se define `1845-01-01` como No Aplica.
+
+## 14.5 V50 — Número de IPS que suministran el primer o único esquema
+
+Comodines:
+
+| Valor | Significado |
+|---|---|
+| 98 | No aplica: en V45 se seleccionó 98. |
+
+Reglas base:
+
+| Código sugerido | Regla | Severidad |
+|---|---|---|
+| V50-ERROR-001 | V50 vacía. | Error |
+| V50-ERROR-002 | V50 no es numérica ni corresponde al comodín 98. | Error |
+| V50-ERROR-003 | V45=1, pero V50=98. | Error |
+| V50-ERROR-004 | V50 registra cero o un número negativo. | Error |
+| V50-ERROR-005 | V45=98, pero V50 registra un número de IPS diferente de 98. | Error |
+
+Cruces:
+
+| Cruce | Regla funcional | Severidad |
+|---|---|---|
+| V45 ↔ V50 | Si recibió terapia sistémica, V50 debe registrar el número de IPS que suministran el esquema. Si V45=98, debe ser 98. | Error |
+| V50 ↔ V51/V52 | El número de IPS debe orientar si se diligencia IPS1 e IPS2 o si IPS2 queda como 98. | Error progresivo cuando V51 y V52 estén implementadas. |
+
+Decisión funcional:
+
+No definir un máximo de IPS sin confirmación del instructivo completo o de la estructura posterior. Si operativamente solo existen V51 e V52 para este esquema, puede validarse la coherencia con IPS1 e IPS2, pero no se debe inventar un límite clínico no soportado.
+
+## 14.6 V51 — Código de la IPS1 que suministra el primer o único esquema
+
+Valores permitidos:
+
+| Valor | Significado |
+|---|---|
+| Código REPS de 12 dígitos | IPS que suministra el primer o único esquema. |
+| 96 | Terapia sistémica suministrada fuera del país. |
+| 98 | No aplica: en V45 se seleccionó 98. |
+
+Aclaración operativa:
+
+Para tratamientos orales, se debe consignar el código de habilitación de la IPS que prescribió el tratamiento, no el código del operador logístico que realiza la entrega.
+
+Reglas base:
+
+| Código sugerido | Regla | Severidad |
+|---|---|---|
+| V51-ERROR-001 | V51 vacía. | Error |
+| V51-ERROR-002 | V51 no es código REPS de 12 dígitos ni corresponde a 96 o 98. | Error |
+| V51-ERROR-003 | V45=1, pero V51=98. | Error |
+| V51-ERROR-004 | V45=98, pero V51 es diferente de 98. | Error |
+| V51-ADVERTENCIA-001 | Código REPS con formato válido pero pendiente de verificación contra base REPS oficial. | Advertencia o pendiente según disponibilidad del catálogo. |
+
+Cruces:
+
+| Cruce | Regla funcional | Severidad |
+|---|---|---|
+| V45 ↔ V51 | Si recibió terapia sistémica, V51 debe registrar IPS real o 96 si fue fuera del país. Si V45=98, V51 debe ser 98. | Error |
+| V50 ↔ V51 | Si V50 registra una o más IPS, V51 debe estar diligenciada con código válido o 96. | Error |
+| V51 ↔ REPS | La validación de existencia y habilitación depende del catálogo externo REPS. | Pendiente / advertencia. |
+
+## 14.7 V52 — Código de la IPS2 que suministra el primer o único esquema
+
+Valores permitidos:
+
+| Valor | Significado |
+|---|---|
+| Código REPS de 12 dígitos | Segunda IPS que suministra el esquema. |
+| 98 | No aplica. |
+
+Aclaración operativa:
+
+Para tratamientos orales, se debe consignar el código de habilitación de la IPS que prescribió el tratamiento, no el código del operador logístico que realiza la entrega.
+
+Reglas base:
+
+| Código sugerido | Regla | Severidad |
+|---|---|---|
+| V52-ERROR-001 | V52 vacía. | Error |
+| V52-ERROR-002 | V52 no es código REPS de 12 dígitos ni corresponde a 98. | Error |
+| V52-ERROR-003 | V50=1, pero V52 es diferente de 98. | Error |
+| V52-ERROR-004 | V50 indica dos IPS o más, pero V52=98. | Error pendiente de confirmar según catálogo/estructura completa. |
+| V52-ERROR-005 | V45=98, pero V52 es diferente de 98. | Error |
+| V52-ADVERTENCIA-001 | Código REPS con formato válido pero pendiente de verificación contra base REPS oficial. | Advertencia o pendiente según disponibilidad del catálogo. |
+
+Cruces:
+
+| Cruce | Regla funcional | Severidad |
+|---|---|---|
+| V45 ↔ V52 | Si V45=98, V52 debe ser 98. | Error |
+| V50 ↔ V52 | Si solo una IPS suministra el esquema, V52 debe ser 98. Si hay segunda IPS, V52 debe tener código válido. | Error / pendiente según confirmación funcional. |
+| V52 ↔ REPS | La validación de existencia y habilitación depende del catálogo externo REPS. | Pendiente / advertencia. |
+
+Decisión funcional:
+
+No permitir 96 en V52 hasta que el instructivo lo indique expresamente. El valor 96 está descrito para V51.
+
+## 14.8 Dependencias del Módulo 10
+
+| Variable pivote | Variables dependientes | Uso |
+|---|---|---|
+| V45 | V48-V52 | Controla si el bloque debe registrar datos reales del esquema o No Aplica. |
+| V48 | V49 | Contextualiza la ubicación temporal del esquema cuya fecha se reporta. |
+| V50 | V51-V52 | Define cuántas IPS suministradoras deben estar documentadas. |
+| V51/V52 | REPS | Requieren validación de formato y, cuando exista catálogo oficial, verificación contra habilitación REPS. |
+
+## 14.9 Estado funcional del Módulo 10
+
+| Bloque | Estado recomendado |
+|---|---|
+| V48 | Implementar primero como Sprint 3D · Módulo 10A. |
+| V49 | Implementar después de V48 como Sprint 3D · Módulo 10B. |
+| V50-V52 | Implementar como Sprint 3D · Módulo 10C, por su relación interna con IPS suministradoras. |
+| V53-V53.9 | Separar en Sprint 3E · Módulo 11, porque corresponde a un bloque diferente y más amplio. |
+
+## 14.10 Decisiones funcionales preliminares para V48-V52
+
+| Tema | Decisión recomendada |
+|---|---|
+| V45 como control | Mantener V45 como cruce principal de No Aplica para V48-V52. |
+| V48 con V17 | No usar V17 como error fuerte. El instructivo da ejemplos, no restricciones exclusivas. |
+| V49 anterior al periodo | No generar error. El instructivo permite que el esquema haya iniciado antes del periodo y continúe durante el reporte. |
+| V49 con 1800-01-01 | No permitir como regla activa salvo que el instructivo oficial lo indique. |
+| V50 máximo de IPS | No inventar máximo sin revisar estructura completa. Validar solo coherencia básica con V51/V52. |
+| V51/V52 contra REPS | Validar formato. La existencia/habilitación queda pendiente de catálogo oficial. |
+| V52 con 96 | No permitir 96 en V52 por ahora; el instructivo solo menciona 96 en V51. |
+
+
+# 15. Variables núcleo de trazabilidad
 
 ## 11.1 V17 como variable pivote
 
@@ -777,7 +1012,7 @@ V42 define cómo deben diligenciarse V43 y V44.
 
 ---
 
-# 15. Catálogos externos y validaciones pendientes
+# 16. Catálogos externos y validaciones pendientes
 
 Algunas variables no deben bloquearse completamente hasta tener catálogos oficiales cargados.
 
@@ -787,11 +1022,13 @@ Algunas variables no deben bloquearse completamente hasta tener catálogos ofici
 | V11 | EAPB / DANE | Obligatorio; existencia pendiente. |
 | V14 | DIVIPOLA | Numérico de 5 dígitos; existencia pendiente. |
 | V25 | REPS | Formato y longitud; existencia/habilitación pendiente. |
+| V51 | REPS | Formato de 12 dígitos, 96 o 98; existencia/habilitación pendiente. |
+| V52 | REPS | Formato de 12 dígitos o 98; existencia/habilitación pendiente. |
 | V17 | CIE-10 CAC | Validar contra catálogo operativo local cuando esté cargado. |
 
 ---
 
-# 16. Reglas excluidas por decisión funcional
+# 17. Reglas excluidas por decisión funcional
 
 | Regla | Estado |
 |---|---|
@@ -800,7 +1037,7 @@ Algunas variables no deben bloquearse completamente hasta tener catálogos ofici
 
 ---
 
-# 17. Uso recomendado de esta arquitectura
+# 18. Uso recomendado de esta arquitectura
 
 Este documento debe usarse antes de modificar reglas en cualquier módulo.
 
@@ -824,7 +1061,7 @@ Flujo recomendado:
 
 ---
 
-# 18. Estado actual de arquitectura V1-V47
+# 19. Estado actual de arquitectura V1-V52
 
 | Bloque | Estado |
 |---|---|
@@ -836,11 +1073,12 @@ Flujo recomendado:
 | V34-V35 | Arquitectura definida; reglas principales ya trabajadas. |
 | V36-V40 | Arquitectura definida; variables cerradas/probadas en Sprint 3A Módulo 7. |
 | V41-V44 | Implementadas y validadas en Módulo 8. |
-| V45-V47 | Arquitectura inicial definida para Módulo 9; pendiente implementación progresiva. |
+| V45-V47 | Módulo 9 cerrado funcionalmente en Sprint 3C. |
+| V48-V52 | Arquitectura inicial definida para Sprint 3D · Módulo 10; pendiente implementación progresiva. |
 
 ---
 
-## 19. Nota final
+## 20. Nota final
 
 Esta arquitectura no significa que todas las reglas de negocio faltantes ya estén identificadas.
 

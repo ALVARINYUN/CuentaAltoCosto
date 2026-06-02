@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3c-v46-8-otra-fase-01';
+  const VERSION = 'sprint-3c-v47-ciclos-01';
 
   const TIPO = {
     FORMATO: 'formato',
@@ -28,7 +28,8 @@
     V46_5: 'V46.5 · Reinducción',
     V46_6: 'V46.6 · Mantenimiento',
     V46_7: 'V46.7 · Mantenimiento largo o final',
-    V46_8: 'V46.8 · Otra fase diferente a las anteriores'
+    V46_8: 'V46.8 · Otra fase diferente a las anteriores',
+    V47: 'Número de ciclos iniciados y administrados en el periodo de reporte'
   };
 
   const CATALOGO_V45 = ['1', '98'];
@@ -69,6 +70,16 @@
   function esEnteroNoNegativo(valor) {
     const limpio = texto(valor);
     return /^\d+$/.test(limpio);
+  }
+
+  function esEnteroConSigno(valor) {
+    const limpio = texto(valor);
+    return /^-?\d+$/.test(limpio);
+  }
+
+  function esEnteroPositivo(valor) {
+    const limpio = texto(valor);
+    return /^\d+$/.test(limpio) && Number(limpio) >= 1;
   }
 
   function obtenerDiagnosticoCIE10(valor) {
@@ -329,6 +340,24 @@
     return 'V46.8 está vacía.';
   }
 
+  function descripcionV47(registro) {
+    const v47 = texto(registro ? registro.V47 : '');
+
+    if (v47 === '98') {
+      return 'V47 tiene el valor 98; indica que no aplica o que no recibió terapia sistémica, de acuerdo con V45.';
+    }
+
+    if (esEnteroPositivo(v47)) {
+      return `V47 tiene el valor ${v47}; registra el número de ciclos iniciados y administrados en el periodo de reporte.`;
+    }
+
+    if (v47) {
+      return `${v47} es el valor registrado en V47.`;
+    }
+
+    return 'V47 está vacía.';
+  }
+
   function dato(registro, variable, nota = '') {
     const valor = texto(registro ? registro[variable] : '');
 
@@ -424,6 +453,13 @@
     ];
   }
 
+  function datosContextoV47(registro, notaV47) {
+    return [
+      dato(registro, 'V45', descripcionV45(registro)),
+      dato(registro, 'V47', notaV47 || descripcionV47(registro))
+    ];
+  }
+
   function catalogoPermitidoV45() {
     return [
       'Catálogo permitido V45:',
@@ -514,6 +550,14 @@
       '1 = Sí recibió otra fase de quimioterapia diferente a las anteriores.',
       '2 = No recibió otra fase de quimioterapia diferente a las anteriores.',
       '97 = No aplica; no es leucemia linfoide o mieloide aguda ni linfoma linfoblástico.'
+    ].join('\n');
+  }
+
+  function catalogoPermitidoV47() {
+    return [
+      'Valores permitidos para V47:',
+      'Número entero mayor o igual a 1 = número de ciclos iniciados y administrados durante el periodo de reporte.',
+      '98 = No aplica o no recibió terapia sistémica, aunque fue formulada; corresponde cuando V45=98.'
     ].join('\n');
   }
 
@@ -888,6 +932,107 @@
     });
   }
 
+  function validarV47(registro, hallazgos) {
+    if (!Object.prototype.hasOwnProperty.call(registro, 'V47')) return;
+
+    const v45 = texto(registro.V45);
+    const v47 = texto(registro.V47);
+
+    if (estaVacio(v47)) {
+      hallazgos.push(crearHallazgoRegistro(registro, {
+        codigo: 'V47-ERROR-001',
+        variable: 'V47',
+        titulo: 'Número de ciclos vacío',
+        mensaje: 'V47 está vacía. Debe registrar el número de ciclos iniciados y administrados durante el periodo de reporte, o 98 cuando no aplica según V45.',
+        regla: [
+          'V47 aplica para todos los cánceres. Si el paciente recibió terapia sistémica en el periodo, debe registrarse el número de ciclos iniciados y administrados, incluyendo el ciclo que aún recibe al cierre del periodo.',
+          '',
+          catalogoPermitidoV47()
+        ].join('\n'),
+        recomendacion: 'Revise la historia clínica y los registros de administración de medicamentos. Registre el número de ciclos correspondiente, o registre 98 si no aplica y V45 está en 98.',
+        tipo: TIPO.FORMATO,
+        datosRelacionados: datosContextoV47(registro, 'V47 está vacía.'),
+        columnasCorregir: ['V47']
+      }));
+      return;
+    }
+
+    if (v47 !== '98' && !esEnteroConSigno(v47)) {
+      hallazgos.push(crearHallazgoRegistro(registro, {
+        codigo: 'V47-ERROR-002',
+        variable: 'V47',
+        titulo: 'Número de ciclos con formato inválido',
+        mensaje: `V47 tiene el valor ${v47}. Debe ser un número entero de ciclos o el comodín 98 cuando no aplica.`,
+        regla: [
+          'La variable V47 registra el número de ciclos iniciados y administrados en el periodo de reporte. Solo se acepta un número entero válido o 98 cuando V45 indica que no aplica.',
+          '',
+          catalogoPermitidoV47()
+        ].join('\n'),
+        recomendacion: 'Corrija V47. Registre un número entero mayor o igual a 1 si recibió terapia sistémica, o 98 si no aplica según V45.',
+        tipo: TIPO.FORMATO,
+        datosRelacionados: datosContextoV47(registro, `${v47} no es un valor permitido para V47.`),
+        columnasCorregir: ['V47']
+      }));
+      return;
+    }
+
+    if (v45 === '1' && v47 === '98') {
+      hallazgos.push(crearHallazgoRegistro(registro, {
+        codigo: 'V47-ERROR-003',
+        variable: 'V47',
+        titulo: 'V47 reportada como no aplica aunque recibió terapia sistémica',
+        mensaje: 'V45 indica que el paciente sí recibió terapia sistémica en el periodo, pero V47 está en 98.',
+        regla: [
+          'Cuando V45 tiene valor 1, V47 debe registrar el número de ciclos iniciados y administrados durante el periodo de reporte. El valor 98 solo corresponde cuando no aplica o no recibió terapia sistémica según V45.',
+          '',
+          catalogoPermitidoV47()
+        ].join('\n'),
+        recomendacion: 'Revise la historia clínica y los registros de administración. Registre en V47 el número de ciclos administrados, incluyendo el ciclo que el paciente aún recibe al cierre del periodo si corresponde.',
+        tipo: TIPO.COHERENCIA,
+        datosRelacionados: datosContextoV47(registro, 'V47=98 no corresponde cuando V45=1.'),
+        columnasCorregir: ['V47']
+      }));
+      return;
+    }
+
+    if (esEnteroConSigno(v47) && Number(v47) < 1) {
+      hallazgos.push(crearHallazgoRegistro(registro, {
+        codigo: 'V47-ERROR-004',
+        variable: 'V47',
+        titulo: 'Número de ciclos menor que uno',
+        mensaje: 'V47 registra cero o un número negativo como número de ciclos.',
+        regla: [
+          'Si el paciente recibió terapia sistémica, V47 debe registrar el número de ciclos iniciados y administrados en el periodo. El valor debe ser un entero mayor o igual a 1.',
+          '',
+          catalogoPermitidoV47()
+        ].join('\n'),
+        recomendacion: 'Corrija V47. Registre el número real de ciclos iniciados y administrados según la historia clínica o los registros de administración de medicamentos. Si no recibió terapia y V45 está en 98, registre 98.',
+        tipo: TIPO.FORMATO,
+        datosRelacionados: datosContextoV47(registro, `${v47} no representa un número válido de ciclos administrados.`),
+        columnasCorregir: ['V47']
+      }));
+      return;
+    }
+
+    if (v45 === '98' && v47 !== '98') {
+      hallazgos.push(crearHallazgoRegistro(registro, {
+        codigo: 'V47-ERROR-005',
+        variable: 'V47',
+        titulo: 'V47 registra ciclos aunque V45 indica que no aplica',
+        mensaje: 'V45 está en 98, pero V47 registra un número de ciclos.',
+        regla: [
+          'Cuando V45 indica que no aplica o que no recibió terapia sistémica, V47 debe registrarse como 98.',
+          '',
+          catalogoPermitidoV47()
+        ].join('\n'),
+        recomendacion: 'Revise la coherencia entre V45 y V47. Si el paciente no recibió terapia sistémica, deje V45 y V47 en 98. Si sí recibió terapia, corrija V45 y registre en V47 el número de ciclos correspondiente.',
+        tipo: TIPO.COHERENCIA,
+        datosRelacionados: datosContextoV47(registro, `${v47} no corresponde cuando V45=98.`),
+        columnasCorregir: ['V45', 'V47']
+      }));
+    }
+  }
+
   function validar(registro) {
     const hallazgos = [];
     const fila = registro || {};
@@ -902,6 +1047,7 @@
     validarV46_6(fila, hallazgos);
     validarV46_7(fila, hallazgos);
     validarV46_8(fila, hallazgos);
+    validarV47(fila, hallazgos);
 
     return hallazgos;
   }
@@ -930,6 +1076,7 @@
       catalogoPermitidoV46_6,
       catalogoPermitidoV46_7,
       catalogoPermitidoV46_8,
+      catalogoPermitidoV47,
       obtenerDiagnosticoCIE10,
       esCIE10V46Hematolinfatico
     }

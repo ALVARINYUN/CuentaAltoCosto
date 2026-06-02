@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3c-v46-8-engine-modulo9-01';
+  const VERSION = 'sprint-3c-v47-engine-modulo9-01';
 
   function obtenerDocumento(registro) {
     const tipo = CACTipos.textoMayuscula(registro.V5);
@@ -240,12 +240,12 @@
       );
     }
 
-    // Módulo 9 · V45-V46.8
-    // V45 inicia el bloque de terapia sistémica, V46 valida número/valor de fases
-    // y V46.1-V46.8 validan subfases con las reglas explícitas del instructivo.
-    // No exige V47-V73 porque son variables futuras.
+    // Módulo 9 · V45-V47
+    // V45 inicia el bloque de terapia sistémica, V46 valida número/valor de fases,
+    // V46.1-V46.8 validan subfases y V47 valida número de ciclos.
+    // No exige V48-V73 porque son variables futuras.
     const archivoTraeBloque3C = tieneAlgunaColumna(registro, [
-      'V45', 'V46', 'V46_1', 'V46_2', 'V46_3', 'V46_4', 'V46_5', 'V46_6', 'V46_7', 'V46_8'
+      'V45', 'V46', 'V46_1', 'V46_2', 'V46_3', 'V46_4', 'V46_5', 'V46_6', 'V46_7', 'V46_8', 'V47'
     ]);
 
     if (

@@ -9,7 +9,7 @@
   ];
 
   // Variables válidas acumuladas hasta Sprint 3C.
-  // V1-V46 + V46_1-V46_8: incluye subfases reales V46.1, V46.2, V46.3, V46.4, V46.5, V46.6, V46.7 y V46.8.
+  // V1-V47 + V46_1-V46_8: incluye subfases reales V46.1, V46.2, V46.3, V46.4, V46.5, V46.6, V46.7 y V46.8.
   const VARIABLES_VALIDABLES = [
     ...Array.from({ length: 46 }, (_, i) => `V${i + 1}`),
     'V46_1',
@@ -19,7 +19,8 @@
     'V46_5',
     'V46_6',
     'V46_7',
-    'V46_8'
+    'V46_8',
+    'V47'
   ];
 
   function texto(valor) {
@@ -74,6 +75,10 @@
     // Fallback seguro si estructura.js no cargara:
     // captura el número completo después de "v".
     // Permite reconocer subfases reales V46.x aunque estructura.js no cargara.
+    if (limpio === 'v47' || limpio.startsWith('v47numerodeciclosiniciadosyadministrados')) {
+      return 'V47';
+    }
+
     if (limpio === 'v468' || limpio.startsWith('v468recibilafasedequimioterapiao')) {
       return 'V46_8';
     }
@@ -112,7 +117,7 @@
     if (match) {
       const numero = Number(match[1]);
 
-      if (Number.isInteger(numero) && numero >= 1 && numero <= 46) {
+      if (Number.isInteger(numero) && numero >= 1 && numero <= 47) {
         return `V${numero}`;
       }
     }
@@ -173,7 +178,7 @@
 
     let consecutivasDesdeV1 = 0;
 
-    for (let n = 1; n <= 46; n += 1) {
+    for (let n = 1; n <= 47; n += 1) {
       if (numeros.includes(n)) consecutivasDesdeV1 = n;
       else break;
     }
@@ -217,7 +222,8 @@
       (variables.includes('V46_5') ? 30 : 0) +
       (variables.includes('V46_6') ? 30 : 0) +
       (variables.includes('V46_7') ? 30 : 0) +
-      (variables.includes('V46_8') ? 30 : 0);
+      (variables.includes('V46_8') ? 30 : 0) +
+      (variables.includes('V47') ? 30 : 0);
 
     return {
       esCandidata,
