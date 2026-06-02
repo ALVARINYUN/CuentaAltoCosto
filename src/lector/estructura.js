@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3c-v47-estructura-01';
+  const VERSION = 'sprint-3d-v52-estructura-02-v46-8-opcional';
 
   const VARIABLES_SPRINT_1 = [
     'V1', 'V2', 'V3', 'V4',
@@ -40,6 +40,10 @@
 
   const VARIABLES_SPRINT_3C = [
     'V45', 'V46', 'V46_1', 'V46_2', 'V46_3', 'V46_4', 'V46_5', 'V46_6', 'V46_7', 'V46_8', 'V47'
+  ];
+
+  const VARIABLES_SPRINT_3D = [
+    'V48', 'V49', 'V50', 'V51', 'V52'
   ];
 
   const VARIABLES_HASTA_2A = [
@@ -150,10 +154,38 @@
     'V47'
   ];
 
-  // Alias de compatibilidad para el bloque actual V45-V47.
+  // Alias de compatibilidad para el bloque cerrado V45-V47.
   const VARIABLES_HASTA_3C = VARIABLES_HASTA_3C_V47;
 
-  const VARIABLES_ESPERADAS = VARIABLES_HASTA_3C_V47;
+  const VARIABLES_HASTA_3D_V48 = [
+    ...VARIABLES_HASTA_3C_V47,
+    'V48'
+  ];
+
+  const VARIABLES_HASTA_3D_V49 = [
+    ...VARIABLES_HASTA_3D_V48,
+    'V49'
+  ];
+
+  const VARIABLES_HASTA_3D_V50 = [
+    ...VARIABLES_HASTA_3D_V49,
+    'V50'
+  ];
+
+  const VARIABLES_HASTA_3D_V51 = [
+    ...VARIABLES_HASTA_3D_V50,
+    'V51'
+  ];
+
+  const VARIABLES_HASTA_3D_V52 = [
+    ...VARIABLES_HASTA_3D_V51,
+    'V52'
+  ];
+
+  // Alias de compatibilidad para el bloque actual iniciado en V48.
+  const VARIABLES_HASTA_3D = VARIABLES_HASTA_3D_V52;
+
+  const VARIABLES_ESPERADAS = VARIABLES_HASTA_3D_V52;
 
   const MAPA_ENCABEZADOS = {
     v1: 'V1', primernombre: 'V1', v1primernombre: 'V1',
@@ -210,7 +242,12 @@
     v466: 'V46_6', v466recibilafasedequimioterapiam: 'V46_6', v466mantenimiento: 'V46_6', v466fasedemantenimiento: 'V46_6',
     v467: 'V46_7', v467recibilafasedequimioterapiam: 'V46_7', v467mantenimientolargoofinal: 'V46_7', v467fasedemantenimientolargoofinal: 'V46_7',
     v468: 'V46_8', v468recibilafasedequimioterapiao: 'V46_8', v468otrafase: 'V46_8', v468otrafasediferente: 'V46_8', v468otrafasediferentealasanteriores: 'V46_8',
-    v47: 'V47', ciclos: 'V47', numerociclos: 'V47', numerodeciclos: 'V47', ciclosiniciados: 'V47', ciclosadministrados: 'V47', numerodeciclosiniciadosyadministrados: 'V47', v47numerodeciclos: 'V47', v47numerodeciclosiniciadosyadministrados: 'V47', v47numerodeciclosiniciadosyadministradosenelperiododereporte: 'V47'
+    v47: 'V47', ciclos: 'V47', numerociclos: 'V47', numerodeciclos: 'V47', ciclosiniciados: 'V47', ciclosadministrados: 'V47', numerodeciclosiniciadosyadministrados: 'V47', v47numerodeciclos: 'V47', v47numerodeciclosiniciadosyadministrados: 'V47', v47numerodeciclosiniciadosyadministradosenelperiododereporte: 'V47',
+    v48: 'V48', ubicaciontemporal: 'V48', ubicaciontemporalesquema: 'V48', ubicaciontemporaldelesquema: 'V48', primerounicoesquema: 'V48', esquematerapiasistemica: 'V48', ubicaciontemporaldelprimerounicoesquema: 'V48', v48ubicaciontemporal: 'V48', v48ubicaciontemporaldelprimerounicoesquema: 'V48', v48ubicaciontemporaldelprimerounicoesquemadequimioterapiaoterapiasistemicaenelperiodo: 'V48',
+    v49: 'V49', fechainicioesquema: 'V49', fechadeinicioesquema: 'V49', fechadeiniciodelesquema: 'V49', fechadeiniciodelprimerounicoesquema: 'V49', fechainicioterapia: 'V49', fechainicioterapiasistemica: 'V49', fechadeiniciodelprimerounicoesquemadequimioterapia: 'V49', v49fechainicio: 'V49', v49fechainicioesquema: 'V49', v49fechadeinicioesquema: 'V49', v49fechadeiniciodelprimerounicoesquema: 'V49', v49fechadeiniciodelprimerciclode: 'V49', v49fechadeiniciodelprimerounicoesquemadequimioterapiaoterapiasistemicaquerecibioenesteperiodo: 'V49',
+    v50: 'V50', v50nmerodeipsquesuministranelpri: 'V50', v50numerodeipsquesuministranelpri: 'V50', v50numerodeipsquesuministranelprimerounicoesquema: 'V50', v50numerodeipsquesuministranelprimeresquema: 'V50',
+    v51: 'V51', v51cdigodelaips1quesuministraelp: 'V51', v51codigodelaips1quesuministraelp: 'V51', v51codigodelaips1quesuministraelprimerounicoesquema: 'V51',
+    v52: 'V52', v52cdigodelaips2quesuministraelp: 'V52', v52codigodelaips2quesuministraelp: 'V52', v52codigodelaips2quesuministraelprimerounicoesquema: 'V52'
   };
 
   const MAPA_ENCABEZADOS_SPRINT_1 = MAPA_ENCABEZADOS;
@@ -447,6 +484,57 @@
       (limpio.includes('iniciados') || limpio.includes('administrados') || limpio.includes('periodo'));
   }
 
+  function esEncabezadoV48(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v48' || limpio === '48') return true;
+
+    return limpio.startsWith('v48') &&
+      limpio.includes('ubicacion') &&
+      limpio.includes('temporal') &&
+      (limpio.includes('esquema') || limpio.includes('quimioterapia') || limpio.includes('terapiasistemica') || limpio.includes('periodo'));
+  }
+
+
+  function esEncabezadoV49(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v49' || limpio === '49') return true;
+
+    return limpio.startsWith('v49') &&
+      limpio.includes('fecha') &&
+      limpio.includes('inicio') &&
+      (limpio.includes('ciclo') || limpio.includes('esquema') || limpio.includes('quimioterapia') || limpio.includes('terapiasistemica') || limpio.includes('periodo'));
+  }
+
+  function esEncabezadoV52(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v52' || limpio === '52') return true;
+
+    return limpio.startsWith('v52') &&
+      (limpio.includes('codigo') || limpio.includes('cdigo')) &&
+      limpio.includes('ips2') &&
+      (limpio.includes('suministra') || limpio.includes('primer') || limpio.includes('esquema'));
+  }
+
+  function esEncabezadoV51(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v51' || limpio === '51') return true;
+
+    return limpio.startsWith('v51') &&
+      (limpio.includes('codigo') || limpio.includes('cdigo')) &&
+      limpio.includes('ips1') &&
+      (limpio.includes('suministra') || limpio.includes('primer') || limpio.includes('esquema'));
+  }
+
+  function esEncabezadoV50(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v50' || limpio === '50') return true;
+
+    return limpio.startsWith('v50') &&
+      (limpio.includes('numero') || limpio.includes('nmero') || limpio.includes('ips')) &&
+      limpio.includes('ips') &&
+      (limpio.includes('suministran') || limpio.includes('suministra') || limpio.includes('primer') || limpio.includes('esquema'));
+  }
+
   function extraerVariableDesdeEncabezado(valor) {
     const limpio = limpiarEncabezado(valor);
     const coincidencia = limpio.match(/^v(\d{1,3})/);
@@ -455,7 +543,7 @@
 
     const numero = Number(coincidencia[1]);
 
-    if (!Number.isInteger(numero) || numero < 1 || numero > 47) {
+    if (!Number.isInteger(numero) || numero < 1 || numero > 52) {
       return null;
     }
 
@@ -484,6 +572,13 @@
     if (esEncabezadoV42(valor)) return 'V42';
     if (esEncabezadoV43(valor)) return 'V43';
     if (esEncabezadoV44(valor)) return 'V44';
+    // V48, V49, V50, V51 y V52 deben evaluarse antes que V45 porque sus encabezados reales
+    // pueden compartir términos del bloque de quimioterapia o terapia sistémica.
+    if (esEncabezadoV52(valor)) return 'V52';
+    if (esEncabezadoV51(valor)) return 'V51';
+    if (esEncabezadoV50(valor)) return 'V50';
+    if (esEncabezadoV49(valor)) return 'V49';
+    if (esEncabezadoV48(valor)) return 'V48';
     if (esEncabezadoV45(valor)) return 'V45';
     if (esEncabezadoV47(valor)) return 'V47';
     if (esEncabezadoV46_8(valor)) return 'V46_8';
@@ -505,6 +600,18 @@
     return variableDetectada || original;
   }
 
+
+  function ajustarVariablesEsperadasPorPlantillaReal(variables, presentes) {
+    // Algunas plantillas reales de la CAC saltan de V46.7 a V47 y no traen V46.8.
+    // V46.8 sigue activa si la columna viene en el Excel, pero no debe bloquear
+    // archivos reales que no la incluyen.
+    if (!presentes.includes('V46_8')) {
+      return variables.filter((variable) => variable !== 'V46_8');
+    }
+
+    return variables;
+  }
+
   function resolverVariablesEsperadasDinamicas(encabezadosNormalizados) {
     const presentes = encabezadosNormalizados.filter((variable) =>
       VARIABLES_ESPERADAS.includes(variable)
@@ -517,19 +624,60 @@
     const tiene2B = VARIABLES_SPRINT_2B.some((variable) => presentes.includes(variable));
     const tiene2A = VARIABLES_SPRINT_2A.some((variable) => presentes.includes(variable));
 
+    // Sprint 3D se resuelve por última variable presente.
+    // Esto permite cargar archivos de prueba hasta V52 sin exigir variables futuras.
+    if (presentes.includes('V52')) {
+      return {
+        modo: 'ACUMULATIVO_V1_V52',
+        variables: ajustarVariablesEsperadasPorPlantillaReal(VARIABLES_HASTA_3D_V52, presentes)
+      };
+    }
+
+    // Esto permite cargar archivos de prueba hasta V51 sin exigir V52 ni variables futuras.
+    if (presentes.includes('V51')) {
+      return {
+        modo: 'ACUMULATIVO_V1_V51',
+        variables: ajustarVariablesEsperadasPorPlantillaReal(VARIABLES_HASTA_3D_V51, presentes)
+      };
+    }
+
+    // Esto permite cargar archivos de prueba hasta V50 sin exigir V51-V52 ni variables futuras.
+    if (presentes.includes('V50')) {
+      return {
+        modo: 'ACUMULATIVO_V1_V50',
+        variables: ajustarVariablesEsperadasPorPlantillaReal(VARIABLES_HASTA_3D_V50, presentes)
+      };
+    }
+
+    // Esto permite cargar archivos de prueba hasta V49 sin exigir V50-V52 ni variables futuras.
+    if (presentes.includes('V49')) {
+      return {
+        modo: 'ACUMULATIVO_V1_V49',
+        variables: ajustarVariablesEsperadasPorPlantillaReal(VARIABLES_HASTA_3D_V49, presentes)
+      };
+    }
+
+    // Esto permite cargar archivos de prueba hasta V48 sin exigir V49-V52 ni variables futuras.
+    if (presentes.includes('V48')) {
+      return {
+        modo: 'ACUMULATIVO_V1_V48',
+        variables: ajustarVariablesEsperadasPorPlantillaReal(VARIABLES_HASTA_3D_V48, presentes)
+      };
+    }
+
     // Sprint 3C se resuelve por última variable presente.
     // Esto permite cargar archivos de prueba V45, V46, V46.1, V46.2, V46.3, V46.4, V46.5, V46.6, V46.7, V46.8 o V47 sin exigir V48-V73.
     if (presentes.includes('V47')) {
       return {
         modo: 'ACUMULATIVO_V1_V47',
-        variables: VARIABLES_HASTA_3C_V47
+        variables: ajustarVariablesEsperadasPorPlantillaReal(VARIABLES_HASTA_3C_V47, presentes)
       };
     }
 
     if (presentes.includes('V46_8')) {
       return {
         modo: 'ACUMULATIVO_V1_V46_8',
-        variables: VARIABLES_HASTA_3C_V46_8
+        variables: ajustarVariablesEsperadasPorPlantillaReal(VARIABLES_HASTA_3C_V46_8, presentes)
       };
     }
 
@@ -704,6 +852,7 @@
   function validarEstructuraSprint3A(encabezados) { return validarEstructura(encabezados); }
   function validarEstructuraSprint3B(encabezados) { return validarEstructura(encabezados); }
   function validarEstructuraSprint3C(encabezados) { return validarEstructura(encabezados); }
+  function validarEstructuraSprint3D(encabezados) { return validarEstructura(encabezados); }
 
   window.CACEstructura = {
     version: VERSION,
@@ -716,6 +865,7 @@
     VARIABLES_SPRINT_3A,
     VARIABLES_SPRINT_3B,
     VARIABLES_SPRINT_3C,
+    VARIABLES_SPRINT_3D,
     VARIABLES_HASTA_2A,
     VARIABLES_HASTA_2B,
     VARIABLES_HASTA_2C,
@@ -739,6 +889,12 @@
     VARIABLES_HASTA_3C_V46_8,
     VARIABLES_HASTA_3C_V47,
     VARIABLES_HASTA_3C,
+    VARIABLES_HASTA_3D_V48,
+    VARIABLES_HASTA_3D_V49,
+    VARIABLES_HASTA_3D_V50,
+    VARIABLES_HASTA_3D_V51,
+    VARIABLES_HASTA_3D_V52,
+    VARIABLES_HASTA_3D,
     VARIABLES_ESPERADAS,
     MAPA_ENCABEZADOS,
     MAPA_ENCABEZADOS_SPRINT_1,
@@ -770,9 +926,15 @@
     esEncabezadoV46_7,
     esEncabezadoV46_8,
     esEncabezadoV47,
+    esEncabezadoV48,
+    esEncabezadoV49,
+    esEncabezadoV50,
+    esEncabezadoV51,
+    esEncabezadoV52,
     extraerVariableDesdeEncabezado,
     normalizarEncabezado,
     resolverVariablesEsperadasDinamicas,
+    ajustarVariablesEsperadasPorPlantillaReal,
     validarEstructura,
     validarEstructuraSprint1,
     validarEstructuraSprint2A,
@@ -782,6 +944,7 @@
     validarEstructuraSprint2E,
     validarEstructuraSprint3A,
     validarEstructuraSprint3B,
-    validarEstructuraSprint3C
+    validarEstructuraSprint3C,
+    validarEstructuraSprint3D
   };
 })();

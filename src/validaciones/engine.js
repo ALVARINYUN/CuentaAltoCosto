@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3c-v47-engine-modulo9-01';
+  const VERSION = 'sprint-3d-v52-engine-modulo10-01';
 
   function obtenerDocumento(registro) {
     const tipo = CACTipos.textoMayuscula(registro.V5);
@@ -260,6 +260,26 @@
       );
     }
 
+
+
+    // Módulo 10 · V48-V52
+    // V48 inicia el bloque del primer o único esquema de quimioterapia o terapia sistémica.
+    // El módulo se ejecuta de forma progresiva solo si el archivo trae V48, V49, V50, V51 o V52.
+    const archivoTraeBloque3D = tieneAlgunaColumna(registro, [
+      'V48', 'V49', 'V50', 'V51', 'V52'
+    ]);
+
+    if (
+      archivoTraeBloque3D &&
+      window.CACModulo10 &&
+      typeof window.CACModulo10.validar === 'function'
+    ) {
+      hallazgos = concatenarHallazgos(
+        hallazgos,
+        window.CACModulo10.validar(registro),
+        'CACModulo10'
+      );
+    }
 
     return hallazgos;
   }
