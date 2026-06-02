@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3d-v52-engine-modulo10-01';
+  const VERSION = 'sprint-3e-v53-engine-modulo11-01';
 
   function obtenerDocumento(registro) {
     const tipo = CACTipos.textoMayuscula(registro.V5);
@@ -278,6 +278,26 @@
         hallazgos,
         window.CACModulo10.validar(registro),
         'CACModulo10'
+      );
+    }
+
+    // Módulo 11 · V53
+    // V53 inicia el bloque de medicamentos antineoplásicos o terapia hormonal
+    // propuestos para el primer o único esquema. Por ahora se ejecuta solo si
+    // el archivo trae V53; V53.1-V53.9 se implementarán después.
+    const archivoTraeBloque3E = tieneAlgunaColumna(registro, [
+      'V53'
+    ]);
+
+    if (
+      archivoTraeBloque3E &&
+      window.CACModulo11 &&
+      typeof window.CACModulo11.validar === 'function'
+    ) {
+      hallazgos = concatenarHallazgos(
+        hallazgos,
+        window.CACModulo11.validar(registro),
+        'CACModulo11'
       );
     }
 

@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3d-v52-estructura-02-v46-8-opcional';
+  const VERSION = 'sprint-3e-v53-estructura-01';
 
   const VARIABLES_SPRINT_1 = [
     'V1', 'V2', 'V3', 'V4',
@@ -44,6 +44,12 @@
 
   const VARIABLES_SPRINT_3D = [
     'V48', 'V49', 'V50', 'V51', 'V52'
+  ];
+
+  // Sprint 3E · Módulo 11 inicia con V53.
+  // V53.1-V53.9 quedan para el siguiente paso; por ahora solo se exige V53.
+  const VARIABLES_SPRINT_3E = [
+    'V53'
   ];
 
   const VARIABLES_HASTA_2A = [
@@ -185,7 +191,15 @@
   // Alias de compatibilidad para el bloque actual iniciado en V48.
   const VARIABLES_HASTA_3D = VARIABLES_HASTA_3D_V52;
 
-  const VARIABLES_ESPERADAS = VARIABLES_HASTA_3D_V52;
+  const VARIABLES_HASTA_3E_V53 = [
+    ...VARIABLES_HASTA_3D_V52,
+    'V53'
+  ];
+
+  // Alias de compatibilidad para el nuevo bloque iniciado en V53.
+  const VARIABLES_HASTA_3E = VARIABLES_HASTA_3E_V53;
+
+  const VARIABLES_ESPERADAS = VARIABLES_HASTA_3E_V53;
 
   const MAPA_ENCABEZADOS = {
     v1: 'V1', primernombre: 'V1', v1primernombre: 'V1',
@@ -247,7 +261,8 @@
     v49: 'V49', fechainicioesquema: 'V49', fechadeinicioesquema: 'V49', fechadeiniciodelesquema: 'V49', fechadeiniciodelprimerounicoesquema: 'V49', fechainicioterapia: 'V49', fechainicioterapiasistemica: 'V49', fechadeiniciodelprimerounicoesquemadequimioterapia: 'V49', v49fechainicio: 'V49', v49fechainicioesquema: 'V49', v49fechadeinicioesquema: 'V49', v49fechadeiniciodelprimerounicoesquema: 'V49', v49fechadeiniciodelprimerciclode: 'V49', v49fechadeiniciodelprimerounicoesquemadequimioterapiaoterapiasistemicaquerecibioenesteperiodo: 'V49',
     v50: 'V50', v50nmerodeipsquesuministranelpri: 'V50', v50numerodeipsquesuministranelpri: 'V50', v50numerodeipsquesuministranelprimerounicoesquema: 'V50', v50numerodeipsquesuministranelprimeresquema: 'V50',
     v51: 'V51', v51cdigodelaips1quesuministraelp: 'V51', v51codigodelaips1quesuministraelp: 'V51', v51codigodelaips1quesuministraelprimerounicoesquema: 'V51',
-    v52: 'V52', v52cdigodelaips2quesuministraelp: 'V52', v52codigodelaips2quesuministraelp: 'V52', v52codigodelaips2quesuministraelprimerounicoesquema: 'V52'
+    v52: 'V52', v52cdigodelaips2quesuministraelp: 'V52', v52codigodelaips2quesuministraelp: 'V52', v52codigodelaips2quesuministraelprimerounicoesquema: 'V52',
+    v53: 'V53', v53cantidadmedictosantineoplasic: 'V53', v53cantidadmedicamentosantineoplasicos: 'V53', v53cantidadmedicamentosantineoplasicospropuestos: 'V53', v53numerodemedicamentosantineoplasicos: 'V53'
   };
 
   const MAPA_ENCABEZADOS_SPRINT_1 = MAPA_ENCABEZADOS;
@@ -535,6 +550,19 @@
       (limpio.includes('suministran') || limpio.includes('suministra') || limpio.includes('primer') || limpio.includes('esquema'));
   }
 
+
+  function esEncabezadoV53(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v53' || limpio === '53') return true;
+
+    // Encabezado real observado en la matriz original:
+    // v53cantidadmedictosantineoplasic
+    return limpio.startsWith('v53') &&
+      (limpio.includes('cantidad') || limpio.includes('numero') || limpio.includes('nmero')) &&
+      (limpio.includes('medicto') || limpio.includes('medicamento') || limpio.includes('medicamentos')) &&
+      (limpio.includes('antineoplasic') || limpio.includes('antineoplasico') || limpio.includes('terapiahormonal'));
+  }
+
   function extraerVariableDesdeEncabezado(valor) {
     const limpio = limpiarEncabezado(valor);
     const coincidencia = limpio.match(/^v(\d{1,3})/);
@@ -543,7 +571,7 @@
 
     const numero = Number(coincidencia[1]);
 
-    if (!Number.isInteger(numero) || numero < 1 || numero > 52) {
+    if (!Number.isInteger(numero) || numero < 1 || numero > 53) {
       return null;
     }
 
@@ -574,6 +602,7 @@
     if (esEncabezadoV44(valor)) return 'V44';
     // V48, V49, V50, V51 y V52 deben evaluarse antes que V45 porque sus encabezados reales
     // pueden compartir términos del bloque de quimioterapia o terapia sistémica.
+    if (esEncabezadoV53(valor)) return 'V53';
     if (esEncabezadoV52(valor)) return 'V52';
     if (esEncabezadoV51(valor)) return 'V51';
     if (esEncabezadoV50(valor)) return 'V50';
@@ -623,6 +652,15 @@
     const tiene2C = VARIABLES_SPRINT_2C.some((variable) => presentes.includes(variable));
     const tiene2B = VARIABLES_SPRINT_2B.some((variable) => presentes.includes(variable));
     const tiene2A = VARIABLES_SPRINT_2A.some((variable) => presentes.includes(variable));
+
+    // Sprint 3E se resuelve por última variable presente.
+    // Esto permite cargar archivos de prueba hasta V53 sin exigir V53.1-V53.9 ni variables futuras.
+    if (presentes.includes('V53')) {
+      return {
+        modo: 'ACUMULATIVO_V1_V53',
+        variables: ajustarVariablesEsperadasPorPlantillaReal(VARIABLES_HASTA_3E_V53, presentes)
+      };
+    }
 
     // Sprint 3D se resuelve por última variable presente.
     // Esto permite cargar archivos de prueba hasta V52 sin exigir variables futuras.
@@ -866,6 +904,7 @@
     VARIABLES_SPRINT_3B,
     VARIABLES_SPRINT_3C,
     VARIABLES_SPRINT_3D,
+    VARIABLES_SPRINT_3E,
     VARIABLES_HASTA_2A,
     VARIABLES_HASTA_2B,
     VARIABLES_HASTA_2C,
@@ -895,6 +934,8 @@
     VARIABLES_HASTA_3D_V51,
     VARIABLES_HASTA_3D_V52,
     VARIABLES_HASTA_3D,
+    VARIABLES_HASTA_3E_V53,
+    VARIABLES_HASTA_3E,
     VARIABLES_ESPERADAS,
     MAPA_ENCABEZADOS,
     MAPA_ENCABEZADOS_SPRINT_1,
@@ -931,6 +972,7 @@
     esEncabezadoV50,
     esEncabezadoV51,
     esEncabezadoV52,
+    esEncabezadoV53,
     extraerVariableDesdeEncabezado,
     normalizarEncabezado,
     resolverVariablesEsperadasDinamicas,

@@ -1,8 +1,8 @@
-# Arquitectura Funcional de Variables V1-V52 — Validador CAC Cohorte Cáncer
+# Arquitectura Funcional de Variables V1-V53.9 — Validador CAC Cohorte Cáncer
 
 **Proyecto:** Validador CAC — Cohorte Cáncer  
 **Documento:** Arquitectura funcional de variables y trazabilidad  
-**Alcance actual:** Variables V1 a V52  
+**Alcance actual:** Variables V1 a V53.9  
 **Estado:** Base arquitectónica para auditoría de reglas de negocio  
 **Tecnología del validador:** HTML, CSS y JavaScript local  
 **Propósito:** Documentar cómo se organizan las variables, qué módulos las validan y qué dependencias existen entre ellas.
@@ -11,7 +11,7 @@
 
 ## 1. Objetivo del documento
 
-Este documento define la arquitectura funcional de las variables implementadas hasta la V47 y la arquitectura funcional inicial del bloque V48-V52 en el Validador CAC.
+Este documento define la arquitectura funcional de las variables implementadas hasta V53 y la arquitectura funcional inicial del bloque V53.1-V53.9 en el Validador CAC.
 
 Su objetivo no es reemplazar el instructivo oficial de la Cuenta de Alto Costo, sino servir como mapa técnico-funcional para:
 
@@ -56,6 +56,7 @@ La arquitectura se basa en tres niveles:
 | Módulo 8 | V41-V44 | `src/validaciones/reglas/modulo8.js` | Intervención médica durante el periodo y antecedentes de otro cáncer primario. |
 | Módulo 9 | V45-V47 | `src/validaciones/reglas/modulo9.js` | Terapia sistémica e intratecal en el periodo de reporte; variable de control V45, fases de quimioterapia V46 y ciclos V47. |
 | Módulo 10 | V48-V52 | `src/validaciones/reglas/modulo10.js` | Primer o único esquema de quimioterapia o terapia sistémica: ubicación temporal, fecha de inicio, número de IPS e IPS que suministran el esquema. |
+| Módulo 11 | V53-V53.9 | `src/validaciones/reglas/modulo11.js` | Medicamentos antineoplásicos o terapia hormonal del primer o único esquema: cantidad propuesta y detalle ATC de medicamentos administrados. |
 
 ---
 
@@ -73,6 +74,7 @@ V36-V40  → Ann Arbor/Lugano, Gleason, riesgo, fecha de riesgo y objetivo inici
 V41-V44  → Intervención médica y antecedente/concurrencia de otro cáncer primario.
 V45-V47  → Terapia sistémica e intratecal en el periodo de reporte: control de terapia, fases de quimioterapia y ciclos administrados.
 V48-V52  → Primer o único esquema de terapia sistémica: ubicación temporal, fecha de inicio, número de IPS e IPS suministradoras.
+V53-V53.9 → Medicamentos del primer o único esquema: cantidad de medicamentos propuestos y códigos ATC administrados.
 ```
 
 Las variables no deben validarse de forma aislada cuando el instructivo define relaciones clínicas o administrativas entre ellas.
@@ -704,7 +706,7 @@ Cruces:
 | V46-V46.8 | Cerradas funcionalmente en Sprint 3C · Módulo 9. |
 | V47 | Cerrada funcionalmente en Sprint 3C · Módulo 9. |
 | V48-V52 | Pasa a Sprint 3D · Módulo 10. |
-| V53-V53.9 | Pendiente de lectura y arquitectura específica en un módulo posterior. |
+| V53-V53.9 | Pasa a Sprint 3E · Módulo 11. |
 
 ## 13.9 Decisiones funcionales preliminares para V45-V47
 
@@ -930,7 +932,7 @@ No permitir 96 en V52 hasta que el instructivo lo indique expresamente. El valor
 | V48 | Implementar primero como Sprint 3D · Módulo 10A. |
 | V49 | Implementar después de V48 como Sprint 3D · Módulo 10B. |
 | V50-V52 | Implementar como Sprint 3D · Módulo 10C, por su relación interna con IPS suministradoras. |
-| V53-V53.9 | Separar en Sprint 3E · Módulo 11, porque corresponde a un bloque diferente y más amplio. |
+| V53-V53.9 | Separado en Sprint 3E · Módulo 11; V53 cerrada, V53.1-V53.9 pendientes. |
 
 ## 14.10 Decisiones funcionales preliminares para V48-V52
 
@@ -945,7 +947,178 @@ No permitir 96 en V52 hasta que el instructivo lo indique expresamente. El valor
 | V52 con 96 | No permitir 96 en V52 por ahora; el instructivo solo menciona 96 en V51. |
 
 
-# 15. Variables núcleo de trazabilidad
+
+# 15. Módulo 11 — Medicamentos antineoplásicos o terapia hormonal del primer o único esquema: V53-V53.9
+
+## 15.1 Propósito
+
+Este módulo continúa el bloque de terapia sistémica del primer o único esquema del periodo de reporte.
+
+Su propósito es validar dos niveles diferentes de información:
+
+| Nivel | Variable(s) | Qué registra |
+|---|---|---|
+| Resumen cuantitativo | V53 | Número de medicamentos antineoplásicos o terapia hormonal propuestos por el especialista para el primer o único esquema. |
+| Detalle operativo | V53.1-V53.9 | Códigos ATC de los medicamentos antineoplásicos administrados al usuario en el primer o único esquema durante el periodo. |
+
+Punto crítico de interpretación: V53 habla de medicamentos **propuestos**, mientras que V53.1-V53.9 hablan de medicamentos **administrados**. Por tanto, no se debe exigir coincidencia exacta entre V53 y la cantidad de ATC registrados, salvo inconsistencias evidentes que ameriten advertencia.
+
+## 15.2 Variables
+
+| Variable | Nombre funcional | Tipo | Regla principal |
+|---|---|---|---|
+| V53 | Número de medicamentos antineoplásicos o terapia hormonal propuestos | Numérico / comodín | Si V45=1, debe ser un número entero mayor que cero. Si V45=98, debe ser 98. |
+| V53.1 | Medicamento antineoplásico administrado 1 | Código ATC / comodín | Si V45=1, debe registrar código ATC. Si V45=98, debe ser 98. No tiene comodín 97. |
+| V53.2 | Medicamento antineoplásico administrado 2 | Código ATC / comodines | Código ATC, 97 si ya fue registrado en variable anterior, o 98 si V45=98. |
+| V53.3 | Medicamento antineoplásico administrado 3 | Código ATC / comodines | Código ATC, 97 si ya fue registrado en variable anterior, o 98 si V45=98. |
+| V53.4 | Medicamento antineoplásico administrado 4 | Código ATC / comodines | Código ATC, 97 si ya fue registrado en variable anterior, o 98 si V45=98. |
+| V53.5 | Medicamento antineoplásico administrado 5 | Código ATC / comodines | Código ATC, 97 si ya fue registrado en variable anterior, o 98 si V45=98. |
+| V53.6 | Medicamento antineoplásico administrado 6 | Código ATC / comodines | Código ATC, 97 si ya fue registrado en variable anterior, o 98 si V45=98. |
+| V53.7 | Medicamento antineoplásico administrado 7 | Código ATC / comodines | Código ATC, 97 si ya fue registrado en variable anterior, o 98 si V45=98. |
+| V53.8 | Medicamento antineoplásico administrado 8 | Código ATC / comodines | Código ATC, 97 si ya fue registrado en variable anterior, o 98 si V45=98. |
+| V53.9 | Medicamento antineoplásico administrado 9 | Código ATC / comodines | Código ATC, 97 si ya fue registrado en variable anterior, o 98 si V45=98. |
+
+## 15.3 V53 — Número de medicamentos antineoplásicos o terapia hormonal propuestos
+
+Comodín:
+
+| Valor | Cuándo aplica |
+|---|---|
+| 98 | No aplica: en V45 se seleccionó 98. |
+
+Reglas implementadas y cerradas funcionalmente:
+
+| Código | Regla | Severidad |
+|---|---|---|
+| V53-ERROR-001 | V53 vacía. | Error |
+| V53-ERROR-002 | V53 no es numérica ni corresponde al comodín 98. | Error |
+| V53-ERROR-003 | V45=1, pero V53=98. | Error |
+| V53-ERROR-004 | V45=98, pero V53 es diferente de 98. | Error |
+| V53-ERROR-005 | V53 registra cero o un número negativo. | Error |
+
+Decisiones funcionales:
+
+| Tema | Decisión |
+|---|---|
+| V53 frente a V53.1-V53.9 | No exigir coincidencia exacta porque V53 registra medicamentos propuestos y V53.1-V53.9 registran medicamentos administrados. |
+| Medicamentos adyuvantes o premedicación | No se cuantifican en V53 si no son antineoplásicos. |
+| Esteroides, pegfilgrastim y antirresortivos | No convertir en error automático dentro de V53 sola, porque requieren identificación del medicamento por ATC y soporte clínico. |
+| Estado | Cerrada funcionalmente en Sprint 3E · Módulo 11 con versión `sprint-3e-v53-numero-medicamentos-01`. |
+
+## 15.4 V53.1 — Primer medicamento antineoplásico administrado
+
+Instructivo funcional:
+
+- Registrar el código ATC del medicamento antineoplásico administrado al usuario en el primer o único esquema del periodo de reporte.
+- El medicamento puede estar incluido o no en el plan de beneficios.
+- 98 significa No aplica cuando V45=98.
+
+Valores permitidos:
+
+| Valor | Cuándo aplica |
+|---|---|
+| Código ATC | Cuando V45=1 y se registra el primer medicamento administrado. |
+| 98 | No aplica: en V45 se seleccionó 98. |
+
+Reglas propuestas para implementación:
+
+| Código sugerido | Regla | Severidad |
+|---|---|---|
+| V53_1-ERROR-001 | V53.1 vacía. | Error |
+| V53_1-ERROR-002 | V53.1 no tiene formato ATC ni corresponde al comodín 98. | Error |
+| V53_1-ERROR-003 | V45=1, pero V53.1=98. | Error |
+| V53_1-ERROR-004 | V45=98, pero V53.1 es diferente de 98. | Error |
+| V53_1-ERROR-005 | V53.1=97. Este comodín no está definido para V53.1. | Error |
+| V53_1-ERROR-006 | Código ATC con formato válido, pero no existe en el catálogo ATC oficial cargado. | Error solo cuando el catálogo ATC oficial esté disponible. |
+
+Decisión funcional:
+
+V53.1 no debe aceptar 97. Si V45=1, V53.1 debe registrar el primer medicamento administrado mediante ATC. Si V45=98, debe registrar 98.
+
+## 15.5 V53.2 a V53.9 — Medicamentos administrados 2 a 9
+
+Instructivo funcional:
+
+- Registrar el código ATC de cada medicamento antineoplásico administrado al usuario en el primer o único esquema del periodo de reporte.
+- 97 significa que sí recibió quimioterapia, pero el medicamento ya fue registrado en las variables anteriores.
+- 98 significa No aplica cuando V45=98.
+- Si el esquema tiene menos de nueve medicamentos, las variables restantes deben usar 97 cuando V45=1.
+
+Valores permitidos:
+
+| Valor | Cuándo aplica |
+|---|---|
+| Código ATC | Cuando hay un medicamento administrado que debe reportarse en esa posición. |
+| 97 | V45=1 y los medicamentos ya fueron registrados en variables anteriores. |
+| 98 | V45=98. |
+
+Reglas propuestas para cada variable V53.2 a V53.9:
+
+| Código sugerido | Regla | Severidad |
+|---|---|---|
+| V53_X-ERROR-001 | Variable vacía. | Error |
+| V53_X-ERROR-002 | Valor diferente de código ATC, 97 o 98. | Error |
+| V53_X-ERROR-003 | V45=1, pero la variable registra 98. | Error |
+| V53_X-ERROR-004 | V45=98, pero la variable registra un valor diferente de 98. | Error |
+| V53_X-ERROR-005 | Código ATC con formato válido, pero no existe en el catálogo ATC oficial cargado. | Error solo cuando el catálogo ATC oficial esté disponible. |
+
+Donde `X` corresponde a la subvariable técnica: `2`, `3`, `4`, `5`, `6`, `7`, `8` o `9`.
+
+## 15.6 Reglas de orden y coherencia interna V53.1-V53.9
+
+| Regla funcional | Severidad recomendada | Observación |
+|---|---|---|
+| Si V45=1, V53.1 debe traer ATC y no 97 ni 98. | Error | V53.1 es el primer medicamento administrado. |
+| Si una variable V53.2-V53.9 trae 97, las siguientes normalmente también deberían ser 97 mientras V45=1. | Advertencia | Evita saltos de captura como ATC, 97, ATC. No convertir en error sin confirmación funcional. |
+| Si V45=98, V53.1-V53.9 deben ser 98. | Error | Coherencia con No Aplica. |
+| Si V45=1 y V53.2-V53.9 traen 98, hay inconsistencia. | Error | Para V45=1, el comodín de cierre del bloque es 97, no 98. |
+| Si hay más medicamentos administrados que los propuestos en V53, generar advertencia. | Advertencia | V53 mide propuestos y V53.x administrados, por eso no debe ser error automático. |
+| Si V53 registra más medicamentos propuestos que ATC administrados, no generar error automático. | Sin error automático | Puede haber medicamentos propuestos no administrados. |
+
+## 15.7 Aclaraciones clínicas y de soporte
+
+Las aclaraciones del instructivo para V53.1-V53.9 deben entenderse como reglas de auditoría clínica o documental cuando exista información suficiente para verificarlas:
+
+| Aclaración | Tratamiento en el validador |
+|---|---|
+| Los ATC registrados deben estar descritos en soportes clínicos. | No automatizable sin soporte documental digital estructurado. Dejar como trazabilidad o auditoría manual. |
+| Los medicamentos deben haber sido administrados entre el 2 de enero de 2024 y el 1 de enero de 2025. | No automatizable solo con V53.1-V53.9 porque no traen fecha de administración. Puede ser advertencia futura si se integran fechas o soportes. |
+| No se debe capturar el mismo esquema de tratamiento en primer y segundo esquema. | Pendiente hasta implementar variables del segundo/último esquema, por ejemplo V66.x o las variables que correspondan en el instructivo. |
+| Esteroides como dexametasona, prednisolona, prednisona y metilprednisolona no deben reportarse en cánceres sólidos, linfoma de Hodgkin ni leucemia mieloide aguda cuando su uso sea reducción de efectos adversos. | Requiere catálogo ATC y contexto clínico. No implementar como error sin lista ATC confirmada y regla de aplicabilidad aprobada. |
+| Pegfilgrastim debe reportarse, pero no cuantificarse; no es válido como monoterapia. | Requiere identificación ATC y cruce con V53/V53.1-V53.9. Implementar cuando exista código ATC validado. |
+| Antirresortivos como ácido ibandrónico, alendronato, zoledrónico y denosumab solo cuentan si son por metástasis ósea o hipercalcemia maligna; se reportan, pero no se cuantifican. | Requiere ATC y soporte clínico de indicación. No implementar como error automático sin datos de indicación. |
+
+## 15.8 Dependencias del Módulo 11
+
+| Variable pivote | Variables dependientes | Uso |
+|---|---|---|
+| V45 | V53-V53.9 | Controla si el bloque debe registrar medicamentos reales o No Aplica. |
+| V53 | V53.1-V53.9 | Permite revisar coherencia general entre cantidad propuesta y medicamentos administrados, sin exigir coincidencia exacta. |
+| V53.1-V53.9 | Catálogo ATC | Requieren validación de formato y, cuando exista catálogo oficial, existencia del código ATC. |
+| V53.1-V53.9 | Variables de segundo/último esquema | Cruce futuro para evitar duplicar el mismo esquema de tratamiento. |
+
+## 15.9 Estado funcional del Módulo 11
+
+| Bloque | Estado recomendado |
+|---|---|
+| V53 | Cerrada funcionalmente en Sprint 3E · Módulo 11. Validada por Excel y consola. |
+| V53.1 | Siguiente variable a implementar. Requiere activar reconocimiento de encabezado real `v531medicamentoadm1` y validar ATC/98. |
+| V53.2-V53.9 | Pendientes. Implementar progresivamente o como subbloque cuando V53.1 quede estable. |
+| Catálogo ATC real | Pendiente de confirmación completa. Sin catálogo oficial cargado, validar formato y no existencia como pendiente/advertencia, no como error fuerte. |
+
+## 15.10 Decisiones funcionales preliminares para V53.1-V53.9
+
+| Tema | Decisión recomendada |
+|---|---|
+| V53.1 con 97 | No permitir. El instructivo de V53.1 solo define ATC o 98. |
+| V53.2-V53.9 con 97 | Permitir si V45=1. Representa que los medicamentos ya fueron registrados en variables anteriores. |
+| V53.2-V53.9 con 98 | Solo permitir si V45=98. |
+| Validación ATC contra catálogo oficial | Solo activar como error cuando el catálogo ATC oficial de referencia esté cargado y confirmado. |
+| Duplicidad con segundo/último esquema | No implementar todavía hasta conocer e implementar las variables del segundo/último esquema. |
+| Periodo de administración | No implementar como regla automática sin fechas de administración o soporte estructurado. |
+| Cruce exacto V53 ↔ V53.1-V53.9 | No exigir exactitud. Solo advertir si los administrados superan la cantidad propuesta en V53. |
+
+# 16. Variables núcleo de trazabilidad
 
 ## 11.1 V17 como variable pivote
 
@@ -1012,7 +1185,7 @@ V42 define cómo deben diligenciarse V43 y V44.
 
 ---
 
-# 16. Catálogos externos y validaciones pendientes
+# 17. Catálogos externos y validaciones pendientes
 
 Algunas variables no deben bloquearse completamente hasta tener catálogos oficiales cargados.
 
@@ -1028,7 +1201,7 @@ Algunas variables no deben bloquearse completamente hasta tener catálogos ofici
 
 ---
 
-# 17. Reglas excluidas por decisión funcional
+# 18. Reglas excluidas por decisión funcional
 
 | Regla | Estado |
 |---|---|
@@ -1037,7 +1210,7 @@ Algunas variables no deben bloquearse completamente hasta tener catálogos ofici
 
 ---
 
-# 18. Uso recomendado de esta arquitectura
+# 19. Uso recomendado de esta arquitectura
 
 Este documento debe usarse antes de modificar reglas en cualquier módulo.
 
@@ -1061,7 +1234,7 @@ Flujo recomendado:
 
 ---
 
-# 19. Estado actual de arquitectura V1-V52
+# 20. Estado actual de arquitectura V1-V53.9
 
 | Bloque | Estado |
 |---|---|
@@ -1074,11 +1247,13 @@ Flujo recomendado:
 | V36-V40 | Arquitectura definida; variables cerradas/probadas en Sprint 3A Módulo 7. |
 | V41-V44 | Implementadas y validadas en Módulo 8. |
 | V45-V47 | Módulo 9 cerrado funcionalmente en Sprint 3C. |
-| V48-V52 | Arquitectura inicial definida para Sprint 3D · Módulo 10; pendiente implementación progresiva. |
+| V48-V52 | Módulo 10 cerrado funcionalmente en Sprint 3D. |
+| V53 | Cerrada funcionalmente en Sprint 3E · Módulo 11; validada por Excel y consola. |
+| V53.1-V53.9 | Arquitectura funcional definida; pendiente implementación progresiva iniciando por V53.1. |
 
 ---
 
-## 20. Nota final
+## 21. Nota final
 
 Esta arquitectura no significa que todas las reglas de negocio faltantes ya estén identificadas.
 

@@ -8,8 +8,9 @@
     'V30', 'V32', 'V35', 'V39', 'V43', 'V49'
   ];
 
-  // Variables válidas acumuladas hasta Sprint 3D.
-  // V1-V52 + V46_1-V46_8: incluye subfases reales V46.1, V46.2, V46.3, V46.4, V46.5, V46.6, V46.7 y V46.8.
+  // Variables válidas acumuladas hasta Sprint 3E.
+  // V1-V53 + V46_1-V46_8: incluye subfases reales V46.1 a V46.8.
+  // V53 inicia el Módulo 11 y valida la cantidad de medicamentos antineoplásicos propuestos.
   const VARIABLES_VALIDABLES = [
     ...Array.from({ length: 46 }, (_, i) => `V${i + 1}`),
     'V46_1',
@@ -25,7 +26,8 @@
     'V49',
     'V50',
     'V51',
-    'V52'
+    'V52',
+    'V53'
   ];
 
   function texto(valor) {
@@ -79,7 +81,11 @@
 
     // Fallback seguro si estructura.js no cargara:
     // captura el número completo después de "v".
-    // Permite reconocer subfases reales V46.x aunque estructura.js no cargara.
+    // Permite reconocer V53 aunque estructura.js no cargara.
+    if (limpio === 'v53' || limpio.startsWith('v53cantidadmedictosantineoplasic') || limpio.startsWith('v53cantidadmedicamentosantineoplasicos') || (limpio.startsWith('v53') && limpio.includes('cantidad') && (limpio.includes('medicto') || limpio.includes('medicamento') || limpio.includes('antineoplasic')))) {
+      return 'V53';
+    }
+
     if (limpio === 'v52' || limpio.startsWith('v52cdigodelaips2') || limpio.startsWith('v52codigodelaips2') || (limpio.startsWith('v52') && limpio.includes('ips2'))) {
       return 'V52';
     }
@@ -136,13 +142,13 @@
       return 'V46_1';
     }
 
-    // Permite V1-V46.
+    // Permite V1-V53.
     const match = limpio.match(/^v(\d{1,3})/);
 
     if (match) {
       const numero = Number(match[1]);
 
-      if (Number.isInteger(numero) && numero >= 1 && numero <= 50) {
+      if (Number.isInteger(numero) && numero >= 1 && numero <= 53) {
         return `V${numero}`;
       }
     }
@@ -186,7 +192,7 @@
       const variable = normalizarEncabezado(celda);
 
       // No se permite que una columna posterior sobrescriba una variable
-      // que ya fue detectada antes. Esto protege el mapeo real V1-V33.
+      // que ya fue detectada antes. Esto protege el mapeo real V1-V53.
       if (esVariableValida(variable) && !variablesYaMapeadas.has(variable)) {
         variablesYaMapeadas.add(variable);
 
@@ -203,7 +209,7 @@
 
     let consecutivasDesdeV1 = 0;
 
-    for (let n = 1; n <= 50; n += 1) {
+    for (let n = 1; n <= 53; n += 1) {
       if (numeros.includes(n)) consecutivasDesdeV1 = n;
       else break;
     }
@@ -253,7 +259,8 @@
       (variables.includes('V49') ? 30 : 0) +
       (variables.includes('V50') ? 30 : 0) +
       (variables.includes('V51') ? 30 : 0) +
-      (variables.includes('V52') ? 30 : 0);
+      (variables.includes('V52') ? 30 : 0) +
+      (variables.includes('V53') ? 30 : 0);
 
     return {
       esCandidata,
