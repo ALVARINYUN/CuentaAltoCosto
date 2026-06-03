@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3e-v53-engine-modulo11-01';
+  const VERSION = 'sprint-3e-v53-2-engine-modulo11-01';
 
   function obtenerDocumento(registro) {
     const tipo = CACTipos.textoMayuscula(registro.V5);
@@ -281,12 +281,12 @@
       );
     }
 
-    // Módulo 11 · V53
-    // V53 inicia el bloque de medicamentos antineoplásicos o terapia hormonal
-    // propuestos para el primer o único esquema. Por ahora se ejecuta solo si
-    // el archivo trae V53; V53.1-V53.9 se implementarán después.
+    // Módulo 11 · V53-V53.2
+    // V53 inicia el bloque de medicamentos antineoplásicos o terapia hormonal.
+    // V53.1 y V53.2 validan medicamentos administrados mediante ATC.
+    // El módulo se ejecuta progresivamente solo si el archivo trae alguna variable del bloque.
     const archivoTraeBloque3E = tieneAlgunaColumna(registro, [
-      'V53'
+      'V53', 'V53_1', 'V53_2'
     ]);
 
     if (

@@ -9,8 +9,8 @@
   ];
 
   // Variables válidas acumuladas hasta Sprint 3E.
-  // V1-V53 + V46_1-V46_8: incluye subfases reales V46.1 a V46.8.
-  // V53 inicia el Módulo 11 y valida la cantidad de medicamentos antineoplásicos propuestos.
+  // V1-V53.4 + V46_1-V46_8: incluye subfases reales V46.1 a V46.8.
+  // V53 inicia el Módulo 11; V53.1, V53.2, V53.3 y V53.4 validan medicamentos administrados mediante ATC.
   const VARIABLES_VALIDABLES = [
     ...Array.from({ length: 46 }, (_, i) => `V${i + 1}`),
     'V46_1',
@@ -27,7 +27,16 @@
     'V50',
     'V51',
     'V52',
-    'V53'
+    'V53',
+    'V53_1',
+    'V53_2',
+    'V53_3',
+    'V53_4',
+    'V53_5',
+    'V53_6',
+    'V53_7',
+    'V53_8',
+    'V53_9'
   ];
 
   function texto(valor) {
@@ -80,8 +89,43 @@
     const limpio = normalizarBasicoEncabezado(valor);
 
     // Fallback seguro si estructura.js no cargara:
-    // captura el número completo después de "v".
-    // Permite reconocer V53 aunque estructura.js no cargara.
+    // Permite reconocer V53.1-V53.3 y V53 con encabezados reales de la matriz.
+    if (limpio === 'v539' || limpio.startsWith('v539medicamentoadm9') || (limpio.startsWith('v539') && limpio.includes('medicamento'))) {
+      return 'V53_9';
+    }
+
+    if (limpio === 'v538' || limpio.startsWith('v538medicamentoadm8') || (limpio.startsWith('v538') && limpio.includes('medicamento'))) {
+      return 'V53_8';
+    }
+
+    if (limpio === 'v537' || limpio.startsWith('v537medicamentoadm7') || (limpio.startsWith('v537') && limpio.includes('medicamento'))) {
+      return 'V53_7';
+    }
+
+    if (limpio === 'v536' || limpio.startsWith('v536medicamentoadm6') || (limpio.startsWith('v536') && limpio.includes('medicamento'))) {
+      return 'V53_6';
+    }
+
+    if (limpio === 'v535' || limpio.startsWith('v535medicamentoadm5') || (limpio.startsWith('v535') && limpio.includes('medicamento'))) {
+      return 'V53_5';
+    }
+
+    if (limpio === 'v534' || limpio.startsWith('v534medicamentoadm4') || (limpio.startsWith('v534') && limpio.includes('medicamento'))) {
+      return 'V53_4';
+    }
+
+    if (limpio === 'v533' || limpio.startsWith('v533medicamentoadm3') || (limpio.startsWith('v533') && limpio.includes('medicamento'))) {
+      return 'V53_3';
+    }
+
+    if (limpio === 'v532' || limpio.startsWith('v532medicamentoadm2') || (limpio.startsWith('v532') && limpio.includes('medicamento'))) {
+      return 'V53_2';
+    }
+
+    if (limpio === 'v531' || limpio.startsWith('v531medicamentoadm1') || (limpio.startsWith('v531') && limpio.includes('medicamento'))) {
+      return 'V53_1';
+    }
+
     if (limpio === 'v53' || limpio.startsWith('v53cantidadmedictosantineoplasic') || limpio.startsWith('v53cantidadmedicamentosantineoplasicos') || (limpio.startsWith('v53') && limpio.includes('cantidad') && (limpio.includes('medicto') || limpio.includes('medicamento') || limpio.includes('antineoplasic')))) {
       return 'V53';
     }
@@ -142,7 +186,7 @@
       return 'V46_1';
     }
 
-    // Permite V1-V53.
+    // Permite V1-V53. Las subvariables como V53.1 se reconocen arriba de forma explícita.
     const match = limpio.match(/^v(\d{1,3})/);
 
     if (match) {
@@ -169,6 +213,15 @@
     if (texto(variable) === 'V46_6') return 46.6;
     if (texto(variable) === 'V46_7') return 46.7;
     if (texto(variable) === 'V46_8') return 46.8;
+    if (texto(variable) === 'V53_1') return 53.1;
+    if (texto(variable) === 'V53_2') return 53.2;
+    if (texto(variable) === 'V53_3') return 53.3;
+    if (texto(variable) === 'V53_4') return 53.4;
+    if (texto(variable) === 'V53_5') return 53.5;
+    if (texto(variable) === 'V53_6') return 53.6;
+    if (texto(variable) === 'V53_7') return 53.7;
+    if (texto(variable) === 'V53_8') return 53.8;
+    if (texto(variable) === 'V53_9') return 53.9;
 
     const match = texto(variable).match(/^V(\d+)$/);
     return match ? Number(match[1]) : null;
@@ -192,7 +245,7 @@
       const variable = normalizarEncabezado(celda);
 
       // No se permite que una columna posterior sobrescriba una variable
-      // que ya fue detectada antes. Esto protege el mapeo real V1-V53.
+      // que ya fue detectada antes. Esto protege el mapeo real V1-V53.1.
       if (esVariableValida(variable) && !variablesYaMapeadas.has(variable)) {
         variablesYaMapeadas.add(variable);
 
@@ -260,7 +313,16 @@
       (variables.includes('V50') ? 30 : 0) +
       (variables.includes('V51') ? 30 : 0) +
       (variables.includes('V52') ? 30 : 0) +
-      (variables.includes('V53') ? 30 : 0);
+      (variables.includes('V53') ? 30 : 0) +
+      (variables.includes('V53_1') ? 30 : 0) +
+      (variables.includes('V53_2') ? 30 : 0) +
+      (variables.includes('V53_3') ? 30 : 0) +
+      (variables.includes('V53_4') ? 30 : 0) +
+      (variables.includes('V53_5') ? 30 : 0) +
+      (variables.includes('V53_6') ? 30 : 0) +
+      (variables.includes('V53_7') ? 30 : 0) +
+      (variables.includes('V53_8') ? 30 : 0) +
+      (variables.includes('V53_9') ? 30 : 0);
 
     return {
       esCandidata,

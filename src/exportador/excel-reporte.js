@@ -32,7 +32,49 @@
     V25: 'Código válido de habilitación de la IPS donde se realiza la confirmación diagnóstica',
     V26: 'Fecha de primera consulta con médico tratante de la enfermedad maligna',
     V27: 'Histología del tumor en muestra de biopsia o quirúrgica',
-    V28: 'Grado de diferenciación del tumor sólido maligno'
+    V28: 'Grado de diferenciación del tumor sólido maligno',
+    V29: 'Primera estadificación clínica o patológica',
+    V30: 'Fecha de estadificación clínica',
+    V31: 'Fecha de estadificación TNM clínica',
+    V32: 'Fecha de estadificación TNM patológica',
+    V33: 'Fecha de estadificación agrupada',
+    V34: 'Estadificación Dukes para cáncer colorrectal',
+    V35: 'Fecha de estadificación Dukes',
+    V36: 'Estadificación Ann Arbor/Lugano',
+    V37: 'Clasificación de Gleason',
+    V38: 'Clasificación del riesgo',
+    V39: 'Fecha de clasificación del riesgo',
+    V40: 'Variable 40',
+    V41: 'Intervención médica documentada',
+    V42: 'Variable 42',
+    V43: 'Variable 43',
+    V44: 'Variable 44',
+    V45: 'Recibió quimioterapia u otra terapia sistémica',
+    V46: 'Número de fases de quimioterapia',
+    V46_1: 'Fase de quimioterapia 1',
+    V46_2: 'Fase de quimioterapia 2',
+    V46_3: 'Fase de quimioterapia 3',
+    V46_4: 'Fase de quimioterapia 4',
+    V46_5: 'Fase de quimioterapia 5',
+    V46_6: 'Fase de quimioterapia 6',
+    V46_7: 'Fase de quimioterapia 7',
+    V46_8: 'Fase de quimioterapia 8',
+    V47: 'Número de ciclos recibidos',
+    V48: 'Ubicación temporal del primer o único esquema',
+    V49: 'Fecha de inicio del primer o único esquema',
+    V50: 'Número de IPS que suministran el primer o único esquema',
+    V51: 'Código de la IPS1 que suministra el primer o único esquema',
+    V52: 'Código de la IPS2 que suministra el primer o único esquema',
+    V53: 'Cantidad de medicamentos administrados',
+    V53_1: 'Primer medicamento antineoplásico administrado',
+    V53_2: 'Segundo medicamento antineoplásico administrado',
+    V53_3: 'Tercer medicamento antineoplásico administrado',
+    V53_4: 'Cuarto medicamento antineoplásico administrado',
+    V53_5: 'Quinto medicamento antineoplásico administrado',
+    V53_6: 'Sexto medicamento antineoplásico administrado',
+    V53_7: 'Séptimo medicamento antineoplásico administrado',
+    V53_8: 'Octavo medicamento antineoplásico administrado',
+    V53_9: 'Noveno medicamento antineoplásico administrado'
   };
 
   // Encabezados reales usados por la base matriz CAC.
@@ -191,7 +233,83 @@
     v28: 'V28',
     v28gradodediferenciacindeltumors: 'V28',
     v28gradodediferenciacion: 'V28',
-    v28gradodediferenciaciondeltumor: 'V28'
+    v28gradodediferenciaciondeltumor: 'V28',
+
+    v29: 'V29',
+    v30: 'V30',
+    v31: 'V31',
+    v32: 'V32',
+    v33: 'V33',
+    v34: 'V34',
+    v35: 'V35',
+    v36: 'V36',
+    v37: 'V37',
+    v38: 'V38',
+    v39: 'V39',
+    v40: 'V40',
+    v41: 'V41',
+    v42: 'V42',
+    v43: 'V43',
+    v44: 'V44',
+    v45: 'V45',
+    v45recibioquimioterapiauotratamientosistemico: 'V45',
+    v45recibioquimioterapiauotraterapiasistemica: 'V45',
+    v46: 'V46',
+    v46numerodefases: 'V46',
+    v46numerodefasesdequimioterapia: 'V46',
+    v461: 'V46_1',
+    v462: 'V46_2',
+    v463: 'V46_3',
+    v464: 'V46_4',
+    v465: 'V46_5',
+    v466: 'V46_6',
+    v467: 'V46_7',
+    v468: 'V46_8',
+    v47: 'V47',
+    v47numerodeciclos: 'V47',
+    v48: 'V48',
+    v48ubicaciontemporal: 'V48',
+    v49: 'V49',
+    v49fechainiciodeesquema: 'V49',
+    v49fechadeiniciodeesquema: 'V49',
+    v50: 'V50',
+    v50numerodeipsquesuministran: 'V50',
+    v51: 'V51',
+    v51codigodelaips1: 'V51',
+    v51codigodelaips1quesuministra: 'V51',
+    v52: 'V52',
+    v52codigodelaips2: 'V52',
+    v52codigodelaips2quesuministra: 'V52',
+    v53: 'V53',
+    v53cantidadmedicamentos: 'V53',
+    v53cantidadmedicamentosadministrados: 'V53',
+    v531: 'V53_1',
+    v531medicamentoadm1: 'V53_1',
+    v531medicamentoadministrado1: 'V53_1',
+    v532: 'V53_2',
+    v532medicamentoadm2: 'V53_2',
+    v532medicamentoadministrado2: 'V53_2',
+    v533: 'V53_3',
+    v533medicamentoadm3: 'V53_3',
+    v533medicamentoadministrado3: 'V53_3',
+    v534: 'V53_4',
+    v534medicamentoadm4: 'V53_4',
+    v534medicamentoadministrado4: 'V53_4',
+    v535: 'V53_5',
+    v535medicamentoadm5: 'V53_5',
+    v535medicamentoadministrado5: 'V53_5',
+    v536: 'V53_6',
+    v536medicamentoadm6: 'V53_6',
+    v536medicamentoadministrado6: 'V53_6',
+    v537: 'V53_7',
+    v537medicamentoadm7: 'V53_7',
+    v537medicamentoadministrado7: 'V53_7',
+    v538: 'V53_8',
+    v538medicamentoadm8: 'V53_8',
+    v538medicamentoadministrado8: 'V53_8',
+    v539: 'V53_9',
+    v539medicamentoadm9: 'V53_9',
+    v539medicamentoadministrado9: 'V53_9'
   };
 
   const ESTILO_ENCABEZADO_NORMAL = {
@@ -271,15 +389,48 @@
       .replace(/[^a-z0-9]/g, '');
   }
 
-  function obtenerVariableDesdeEncabezado(encabezado) {
-    const valor = String(encabezado ?? '').trim().toUpperCase();
-    const directa = valor.match(/^V(\d{1,3})$/);
+  function normalizarVariableTecnica(valor) {
+    const limpio = String(valor ?? '')
+      .trim()
+      .toUpperCase()
+      .replace(/\./g, '_');
 
-    if (directa) {
-      const numero = Number(directa[1]);
-      return numero >= 1 && numero <= 28 ? `V${numero}` : valor;
+    return /^V\d+(?:_\d+)?$/.test(limpio) ? limpio : '';
+  }
+
+  function obtenerSeveridadHallazgo(hallazgo) {
+    const severidad = String(hallazgo?.severidad || '').toLowerCase();
+    const codigo = String(hallazgo?.codigo || '').toUpperCase();
+
+    if (severidad === 'error' || codigo.includes('-ERROR-')) {
+      return 'error';
     }
 
+    if (severidad === 'advertencia' || codigo.includes('-ADVERTENCIA-') || codigo.includes('-WARNING-')) {
+      return 'advertencia';
+    }
+
+    return 'advertencia';
+  }
+
+  function obtenerFilaExcelResultado(resultado) {
+    const fila = Number(
+      resultado?.indiceFilaExcel ??
+      resultado?.filaExcel ??
+      resultado?.__filaExcel ??
+      resultado?.fila
+    );
+
+    return Number.isInteger(fila) && fila > 0 ? fila : '';
+  }
+
+  function obtenerVariableDesdeEncabezado(encabezado) {
+    const variableTecnica = normalizarVariableTecnica(encabezado);
+    if (variableTecnica) {
+      return variableTecnica;
+    }
+
+    const valor = String(encabezado ?? '').trim().toUpperCase();
     const clave = limpiarClaveEncabezado(encabezado);
     const variableMapeada = MAPA_ENCABEZADOS_A_VARIABLES[clave];
 
@@ -287,12 +438,28 @@
       return variableMapeada;
     }
 
-    // Toma el número completo después de la V para no confundir v29 como V2.
-    const prefijoVariable = clave.match(/^v(\d{1,3})/);
+    // Subvariables reales de la plantilla CAC.
+    // Ejemplos:
+    // v461recibialafase... => V46_1
+    // v468recibialafase... => V46_8
+    // v531medicamentoadm1  => V53_1
+    // v532medicamentoadm2  => V53_2
+    const subvariable46 = clave.match(/^v46([1-8])(?:\D|$)/);
+    if (subvariable46) {
+      return `V46_${subvariable46[1]}`;
+    }
 
+    const subvariable53 = clave.match(/^v53([1-9])(?:\D|$)/);
+    if (subvariable53) {
+      return `V53_${subvariable53[1]}`;
+    }
+
+    // Variables simples V1, V2, V52, V53, etc.
+    // Se ejecuta después de las subvariables para no convertir v532... en V532.
+    const prefijoVariable = clave.match(/^v(\d{1,3})(?:\D|$)/);
     if (prefijoVariable) {
       const numero = Number(prefijoVariable[1]);
-      if (numero >= 1 && numero <= 28) {
+      if (numero >= 1 && numero <= 160) {
         return `V${numero}`;
       }
     }
@@ -369,14 +536,11 @@
 
     (resumen.resultados || []).forEach((resultado) => {
       (resultado.hallazgos || []).forEach((hallazgo) => {
-        const severidadTexto = hallazgo.severidad === 'error'
-          ? 'ERROR'
-          : hallazgo.severidad === 'advertencia'
-            ? 'ADVERTENCIA'
-            : 'INFO';
+        const severidadHallazgo = obtenerSeveridadHallazgo(hallazgo);
+        const severidadTexto = severidadHallazgo === 'error' ? 'ERROR' : 'ADVERTENCIA';
 
         filas.push({
-          'Fila Excel': resultado.indiceFilaExcel,
+          'Fila Excel': obtenerFilaExcelResultado(resultado),
           'Documento': resultado.documento,
           'Tipo': severidadTexto,
           'Código': hallazgo.codigo || '',
@@ -413,7 +577,7 @@
 
   function construirFilasPacientes(resumen) {
     return (resumen.resultados || []).map((resultado) => ({
-      'Fila Excel': resultado.indiceFilaExcel,
+      'Fila Excel': obtenerFilaExcelResultado(resultado),
       'Documento': resultado.documento,
       'Errores': resultado.errores,
       'Advertencias': resultado.advertencias,
@@ -426,14 +590,14 @@
     const mapaEncabezados = {};
 
     (resumen.resultados || []).forEach((resultado) => {
-      const filaExcel = resultado.indiceFilaExcel;
+      const filaExcel = obtenerFilaExcelResultado(resultado);
 
       if (!mapa[filaExcel]) {
         mapa[filaExcel] = {};
       }
 
       (resultado.hallazgos || []).forEach((hallazgo) => {
-        const severidad = hallazgo.severidad === 'error' ? 'error' : 'advertencia';
+        const severidad = obtenerSeveridadHallazgo(hallazgo);
 
         const columnas = Array.isArray(hallazgo.columnasCorregir) && hallazgo.columnasCorregir.length > 0
           ? hallazgo.columnasCorregir
@@ -508,7 +672,7 @@
 
     if (primerRegistro) {
       Object.keys(primerRegistro).forEach((clave) => {
-        const match = clave.match(/^__columna_(V\d+)$/);
+        const match = clave.match(/^__columna_(V\d+(?:_\d+)?)$/);
         if (!match) return;
 
         const variable = match[1];
@@ -523,7 +687,7 @@
     if (Array.isArray(datosExcel?.encabezados)) {
       datosExcel.encabezados.forEach((encabezado, indice) => {
         const variable = obtenerVariableDesdeEncabezado(encabezado);
-        if (/^V\d+$/.test(variable) && mapa[variable] === undefined) {
+        if (/^V\d+(?:_\d+)?$/.test(variable) && mapa[variable] === undefined) {
           mapa[variable] = indice;
         }
       });
@@ -562,14 +726,14 @@
       : Math.max(Number(datosExcel.filaEncabezados || 1) - 1, 0);
 
     (resumen.resultados || []).forEach((resultado) => {
-      const filaExcel = Number(resultado.indiceFilaExcel || resultado.filaExcel || resultado.__filaExcel);
+      const filaExcel = Number(obtenerFilaExcelResultado(resultado));
 
       if (!Number.isInteger(filaExcel) || filaExcel <= 0) return;
 
       const filaIndice = filaExcel - 1;
 
       (resultado.hallazgos || []).forEach((hallazgo) => {
-        const severidad = hallazgo.severidad === 'error' ? 'error' : 'advertencia';
+        const severidad = obtenerSeveridadHallazgo(hallazgo);
         const estiloCelda = severidad === 'error' ? ESTILO_CELDA_ERROR : ESTILO_CELDA_ADVERTENCIA;
         const estiloEncabezado = severidad === 'error' ? ESTILO_ENCABEZADO_ERROR : ESTILO_ENCABEZADO_ADVERTENCIA;
 
@@ -706,7 +870,7 @@
   }
 
   window.CACExportadorExcel = {
-    VERSION_EXPORTADOR: 'fix-export-matriz-original-marcada-v1',
+    VERSION_EXPORTADOR: 'fix-export-subvariables-v53-2-marcado-01',
     exportarReporte
   };
 })();
