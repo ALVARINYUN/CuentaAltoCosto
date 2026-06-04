@@ -1,9 +1,8 @@
 # Backlog del Proyecto — Validador CAC
 
-**Proyecto:** Validador CAC — Cohorte Cáncer  
+**Proyecto:** Validador CAC —  Cáncer  
 **Objetivo:** construir una herramienta local para validar archivos Excel de la Cuenta de Alto Costo antes del reporte final.  
-**Metodología:** Scrum / desarrollo incremental por sprints.  
-**Estado actual:** V1-V60 cerradas funcionalmente. V61 en implementación.  
+**Metodología:** Scrum / desarrollo incremental por sprints.   
 **Regla principal:** no modificar variables cerradas salvo bug real.
 
 ---
