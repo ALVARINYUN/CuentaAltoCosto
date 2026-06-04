@@ -74,7 +74,10 @@
     V53_6: 'Sexto medicamento antineoplásico administrado',
     V53_7: 'Séptimo medicamento antineoplásico administrado',
     V53_8: 'Octavo medicamento antineoplásico administrado',
-    V53_9: 'Noveno medicamento antineoplásico administrado'
+    V53_9: 'Noveno medicamento antineoplásico administrado',
+    V54: 'Medicamento antineoplásico adicional 1',
+    V55: 'Medicamento antineoplásico adicional 2',
+    V56: 'Medicamento antineoplásico adicional 3'
   };
 
   // Encabezados reales usados por la base matriz CAC.
@@ -309,7 +312,18 @@
     v538medicamentoadministrado8: 'V53_8',
     v539: 'V53_9',
     v539medicamentoadm9: 'V53_9',
-    v539medicamentoadministrado9: 'V53_9'
+    v539medicamentoadministrado9: 'V53_9',
+
+    v54: 'V54',
+    v54medicamentoadicional1: 'V54',
+    v54medicamentoantineoplasicoadditional1: 'V54',
+    v54medicamentoantineoplasicoadicional1: 'V54',
+    v55: 'V55',
+    v55medicamentoadicional2: 'V55',
+    v55medicamentoantineoplasicoadicional2: 'V55',
+    v56: 'V56',
+    v56medicamentoadicional3: 'V56',
+    v56medicamentoantineoplasicoadicional3: 'V56'
   };
 
   const ESTILO_ENCABEZADO_NORMAL = {
@@ -653,6 +667,72 @@
     return [encabezadosSalida, ...filas];
   }
 
+
+  // Variables que realmente son fechas dentro de la matriz CAC.
+  // Todas las demás se exportan como texto para evitar que Excel convierta
+  // códigos de catálogo como 98 en fechas visuales como 7/04/1900.
+  const VARIABLES_FECHA_EXPORTACION = new Set([
+    'V7', 'V16', 'V18', 'V19', 'V20', 'V23', 'V24', 'V26', 'V30', 'V32', 'V35', 'V39', 'V43', 'V49',
+    'V58', 'V62', 'V71', 'V76', 'V80', 'V88', 'V94', 'V97', 'V103', 'V109', 'V112', 'V115', 'V118',
+    'V121', 'V130', 'V131', 'V134'
+  ]);
+
+  function esVariableFechaExportacion(variable) {
+    return VARIABLES_FECHA_EXPORTACION.has(String(variable || '').toUpperCase());
+  }
+
+  function serialExcelDesdeFecha(fecha) {
+    if (!(fecha instanceof Date) || Number.isNaN(fecha.getTime())) {
+      return '';
+    }
+
+    // SheetJS/Excel usan como base práctica 1899-12-30 para seriales.
+    // Ejemplo: serial 98 se visualiza como 1900-04-07 cuando una celda queda con formato fecha.
+    const base = Date.UTC(1899, 11, 30);
+    const actual = Date.UTC(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
+    return Math.round((actual - base) / 86400000);
+  }
+
+  function normalizarValorNoFechaParaExportacion(valor) {
+    if (valor instanceof Date) {
+      const serial = serialExcelDesdeFecha(valor);
+      return serial === '' ? '' : String(serial);
+    }
+
+    if (valor === null || valor === undefined) {
+      return '';
+    }
+
+    return String(valor);
+  }
+
+  function forzarFormatoTextoEnVariablesNoFecha(hoja, columnasPorVariable, filaEncabezadosIndice) {
+    if (!hoja || !columnasPorVariable) return;
+
+    Object.entries(columnasPorVariable).forEach(([variable, columnaIndice]) => {
+      if (!/^V\d+(?:_\d+)?$/.test(variable)) return;
+      if (esVariableFechaExportacion(variable)) return;
+      if (!Number.isInteger(columnaIndice) || columnaIndice < 0) return;
+      if (!hoja['!ref']) return;
+
+      const rango = XLSX.utils.decode_range(hoja['!ref']);
+
+      for (let filaIndice = 0; filaIndice <= rango.e.r; filaIndice += 1) {
+        if (filaIndice === filaEncabezadosIndice) continue;
+
+        const celdaRef = XLSX.utils.encode_cell({ r: filaIndice, c: columnaIndice });
+        const celda = hoja[celdaRef];
+        if (!celda) continue;
+
+        const valorNormalizado = normalizarValorNoFechaParaExportacion(celda.v);
+        celda.t = 's';
+        celda.v = valorNormalizado;
+        celda.w = valorNormalizado;
+        celda.z = '@';
+      }
+    });
+  }
+
   function crearMapaColumnasPorVariable(datosExcel) {
     const mapa = {};
 
@@ -724,6 +804,10 @@
     const filaEncabezadosIndice = Number.isInteger(datosExcel.filaEncabezadosIndice)
       ? datosExcel.filaEncabezadosIndice
       : Math.max(Number(datosExcel.filaEncabezados || 1) - 1, 0);
+
+    // Corrección visual: evita que las variables de catálogo/código se exporten como fechas.
+    // Ejemplo corregido: V36=98 ya no debe verse como 7/04/1900 en MATRIZ_MARCADA.
+    forzarFormatoTextoEnVariablesNoFecha(hoja, columnasPorVariable, filaEncabezadosIndice);
 
     (resumen.resultados || []).forEach((resultado) => {
       const filaExcel = Number(obtenerFilaExcelResultado(resultado));
@@ -870,7 +954,7 @@
   }
 
   window.CACExportadorExcel = {
-    VERSION_EXPORTADOR: 'fix-export-subvariables-v53-2-marcado-01',
+    VERSION_EXPORTADOR: 'fix-export-formato-catalogos-v36-v54-01',
     exportarReporte
   };
 })();
