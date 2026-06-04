@@ -5,7 +5,7 @@
     'V7', 'V16',
     'V18', 'V19', 'V20', 'V23', 'V24',
     'V26',
-    'V30', 'V32', 'V35', 'V39', 'V43', 'V49'
+    'V30', 'V32', 'V35', 'V39', 'V43', 'V49', 'V58'
   ];
 
   // Variables válidas acumuladas hasta Sprint 3E.
@@ -36,7 +36,14 @@
     'V53_6',
     'V53_7',
     'V53_8',
-    'V53_9'
+    'V53_9',
+    'V54',
+    'V55',
+    'V56',
+    'V57',
+    'V58',
+    'V59',
+    'V60'
   ];
 
   function texto(valor) {
@@ -89,7 +96,31 @@
     const limpio = normalizarBasicoEncabezado(valor);
 
     // Fallback seguro si estructura.js no cargara:
-    // Permite reconocer V53.1-V53.3 y V53 con encabezados reales de la matriz.
+    // Permite reconocer V53.1-V53.9, V54-V56 y V53 con encabezados reales de la matriz.
+    if (limpio === 'v60' || limpio.startsWith('v60motivofinalizacion') || limpio.startsWith('v60motivodelafinalizacion') || (limpio.startsWith('v60') && limpio.includes('motivo'))) {
+      return 'V60';
+    }
+
+    if (limpio === 'v59' || limpio.startsWith('v59caracteristicas') || (limpio.startsWith('v59') && limpio.includes('esquema'))) {
+      return 'V59';
+    }
+
+    if (limpio === 'v58' || limpio.startsWith('v58fecha') || (limpio.startsWith('v58') && (limpio.includes('finalizacion') || limpio.includes('finalizacin') || limpio.includes('final') || limpio.includes('termino') || limpio.includes('termino')))) {
+      return 'V58';
+    }
+
+    if (limpio === 'v56' || limpio.startsWith('v56medicamento') || (limpio.startsWith('v56') && (limpio.includes('antineoplasic') || limpio.includes('terapiahormonal') || limpio.includes('adicional')))) {
+      return 'V56';
+    }
+
+    if (limpio === 'v55' || limpio.startsWith('v55medicamento') || (limpio.startsWith('v55') && (limpio.includes('antineoplasic') || limpio.includes('terapiahormonal') || limpio.includes('adicional')))) {
+      return 'V55';
+    }
+
+    if (limpio === 'v54' || limpio.startsWith('v54medicamento') || (limpio.startsWith('v54') && (limpio.includes('antineoplasic') || limpio.includes('terapiahormonal') || limpio.includes('adicional')))) {
+      return 'V54';
+    }
+
     if (limpio === 'v539' || limpio.startsWith('v539medicamentoadm9') || (limpio.startsWith('v539') && limpio.includes('medicamento'))) {
       return 'V53_9';
     }
@@ -192,7 +223,7 @@
     if (match) {
       const numero = Number(match[1]);
 
-      if (Number.isInteger(numero) && numero >= 1 && numero <= 53) {
+      if (Number.isInteger(numero) && numero >= 1 && numero <= 57) {
         return `V${numero}`;
       }
     }
@@ -222,6 +253,13 @@
     if (texto(variable) === 'V53_7') return 53.7;
     if (texto(variable) === 'V53_8') return 53.8;
     if (texto(variable) === 'V53_9') return 53.9;
+    if (texto(variable) === 'V54') return 54;
+    if (texto(variable) === 'V55') return 55;
+    if (texto(variable) === 'V56') return 56;
+    if (texto(variable) === 'V57') return 57;
+    if (texto(variable) === 'V58') return 58;
+    if (texto(variable) === 'V59') return 59;
+    if (texto(variable) === 'V60') return 60;
 
     const match = texto(variable).match(/^V(\d+)$/);
     return match ? Number(match[1]) : null;
@@ -262,7 +300,7 @@
 
     let consecutivasDesdeV1 = 0;
 
-    for (let n = 1; n <= 53; n += 1) {
+    for (let n = 1; n <= 57; n += 1) {
       if (numeros.includes(n)) consecutivasDesdeV1 = n;
       else break;
     }
@@ -322,7 +360,14 @@
       (variables.includes('V53_6') ? 30 : 0) +
       (variables.includes('V53_7') ? 30 : 0) +
       (variables.includes('V53_8') ? 30 : 0) +
-      (variables.includes('V53_9') ? 30 : 0);
+      (variables.includes('V53_9') ? 30 : 0) +
+      (variables.includes('V54') ? 30 : 0) +
+      (variables.includes('V55') ? 30 : 0) +
+      (variables.includes('V56') ? 30 : 0) +
+      (variables.includes('V57') ? 30 : 0) +
+      (variables.includes('V58') ? 30 : 0) +
+      (variables.includes('V59') ? 30 : 0) +
+      (variables.includes('V60') ? 30 : 0);
 
     return {
       esCandidata,

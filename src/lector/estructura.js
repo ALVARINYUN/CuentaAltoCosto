@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3e-v53-9-estructura-03';
+  const VERSION = 'sprint-3g-v60-estructura-01';
 
   const VARIABLES_SPRINT_1 = [
     'V1', 'V2', 'V3', 'V4',
@@ -50,6 +50,16 @@
   // V53.8-V53.9 quedan para pasos posteriores y no se exigen todavía.
   const VARIABLES_SPRINT_3E = [
     'V53', 'V53_1', 'V53_2', 'V53_3', 'V53_4', 'V53_5', 'V53_6', 'V53_7', 'V53_8', 'V53_9'
+  ];
+
+  // Sprint 3F · Módulo 12 inicia con V54 y continúa con V55 y V56.
+  const VARIABLES_SPRINT_3F = [
+    'V54', 'V55', 'V56'
+  ];
+
+  // Sprint 3G · Módulo 13 inicia con V57 y continúa con V58, V59 y V60.
+  const VARIABLES_SPRINT_3G = [
+    'V57', 'V58', 'V59', 'V60'
   ];
 
   const VARIABLES_HASTA_2A = [
@@ -241,10 +251,51 @@
     'V53_9'
   ];
 
-  // Alias de compatibilidad para el nuevo bloque iniciado en V53.
+  // Alias de compatibilidad para el bloque cerrado V53-V53.9.
   const VARIABLES_HASTA_3E = VARIABLES_HASTA_3E_V53_9;
 
-  const VARIABLES_ESPERADAS = VARIABLES_HASTA_3E_V53_9;
+  const VARIABLES_HASTA_3F_V54 = [
+    ...VARIABLES_HASTA_3E_V53_9,
+    'V54'
+  ];
+
+  const VARIABLES_HASTA_3F_V55 = [
+    ...VARIABLES_HASTA_3F_V54,
+    'V55'
+  ];
+
+  const VARIABLES_HASTA_3F_V56 = [
+    ...VARIABLES_HASTA_3F_V55,
+    'V56'
+  ];
+
+  // Alias de compatibilidad para el bloque iniciado en V54 y ampliado hasta V56.
+  const VARIABLES_HASTA_3F = VARIABLES_HASTA_3F_V56;
+
+  const VARIABLES_HASTA_3G_V57 = [
+    ...VARIABLES_HASTA_3F_V56,
+    'V57'
+  ];
+
+  const VARIABLES_HASTA_3G_V58 = [
+    ...VARIABLES_HASTA_3G_V57,
+    'V58'
+  ];
+
+  const VARIABLES_HASTA_3G_V59 = [
+    ...VARIABLES_HASTA_3G_V58,
+    'V59'
+  ];
+
+  const VARIABLES_HASTA_3G_V60 = [
+    ...VARIABLES_HASTA_3G_V59,
+    'V60'
+  ];
+
+  // Alias de compatibilidad para el bloque iniciado en V57 y ampliado hasta V60.
+  const VARIABLES_HASTA_3G = VARIABLES_HASTA_3G_V60;
+
+  const VARIABLES_ESPERADAS = VARIABLES_HASTA_3G_V60;
 
   const MAPA_ENCABEZADOS = {
     v1: 'V1', primernombre: 'V1', v1primernombre: 'V1',
@@ -316,7 +367,14 @@
     v536: 'V53_6', v536medicamentoadm6: 'V53_6', v536medicamentoantineoplasico: 'V53_6', v536medicamentoantineoplasicoadministrado: 'V53_6', v536sextomedicamentoadministrado: 'V53_6',
     v537: 'V53_7', v537medicamentoadm7: 'V53_7', v537medicamentoantineoplasico: 'V53_7', v537medicamentoantineoplasicoadministrado: 'V53_7', v537septimomedicamentoadministrado: 'V53_7',
     v538: 'V53_8', v538medicamentoadm8: 'V53_8', v538medicamentoantineoplasico: 'V53_8', v538medicamentoantineoplasicoadministrado: 'V53_8', v538octavomedicamentoadministrado: 'V53_8',
-    v539: 'V53_9', v539medicamentoadm9: 'V53_9', v539medicamentoantineoplasico: 'V53_9', v539medicamentoantineoplasicoadministrado: 'V53_9', v539novenomedicamentoadministrado: 'V53_9'
+    v539: 'V53_9', v539medicamentoadm9: 'V53_9', v539medicamentoantineoplasico: 'V53_9', v539medicamentoantineoplasicoadministrado: 'V53_9', v539novenomedicamentoadministrado: 'V53_9',
+    v54: 'V54', v54medicamentoantineoplasico: 'V54', v54medicamentoantineoplasicoadicional: 'V54', v54medicamentoantineoplasicoadicional1: 'V54', v54medicamentoadicional: 'V54', v54medicamentoadicional1: 'V54', v54terapiahormonal: 'V54', v54medicamentoantineoplasicooterapiahormonal: 'V54',
+    v55: 'V55', v55medicamentoantineoplasico: 'V55', v55medicamentoantineoplasicoadicional: 'V55', v55medicamentoantineoplasicoadicional2: 'V55', v55medicamentoadicional: 'V55', v55medicamentoadicional2: 'V55', v55terapiahormonal: 'V55', v55medicamentoantineoplasicooterapiahormonal: 'V55',
+    v56: 'V56', v56medicamentoantineoplasico: 'V56', v56medicamentoantineoplasicoadicional: 'V56', v56medicamentoantineoplasicoadicional3: 'V56', v56medicamentoadicional: 'V56', v56medicamentoadicional3: 'V56', v56terapiahormonal: 'V56', v56medicamentoantineoplasicooterapiahormonal: 'V56',
+    v57: 'V57', quimioterapiaintratecal: 'V57', intratecal: 'V57', v57quimioterapiaintratecal: 'V57', v57recibioquimioterapiaintratecal: 'V57', v57recibioquimioterapiaintratecalenelprimerounicoesquema: 'V57',
+    v58: 'V58', fechafinalizacionesquema: 'V58', fechadefinalizacionesquema: 'V58', fechafinalizacionprimerounicoesquema: 'V58', fechadefinalizaciondelprimerounicoesquema: 'V58', v58fechafinalizacion: 'V58', v58fechadefinalizacion: 'V58', v58fechadefinalizaciondelprimerounicoesquema: 'V58', v58fechadefinalizaciondelprimerounicoesquemadeesteperiododereporte: 'V58',
+    v59: 'V59', caracteristicasactualesprimerounicoesquema: 'V59', caracteristicasactualesdelprimerounicoesquema: 'V59', caracteristicasesquema: 'V59', v59caracteristicas: 'V59', v59caracteristicasactuales: 'V59', v59caracteristicasactualesdelprimerounicoesquema: 'V59', v59caracteristicasactualesdelprimerounicoesquemadeesteperiododereporte: 'V59',
+    v60: 'V60', motivofinalizacion: 'V60', motivodelafinalizacion: 'V60', motivofinalizacionprematura: 'V60', motivodelafinalizacionprematura: 'V60', v60motivo: 'V60', v60motivofinalizacion: 'V60', v60motivodelafinalizacion: 'V60', v60motivodelafinalizacionprematura: 'V60'
   };
 
   const MAPA_ENCABEZADOS_SPRINT_1 = MAPA_ENCABEZADOS;
@@ -685,6 +743,86 @@
   }
 
 
+  function esEncabezadoV54(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v54' || limpio === '54') return true;
+
+    // Encabezado esperado para V54:
+    // medicamento antineoplásico o terapia hormonal adicional a V53.1-V53.9.
+    return limpio.startsWith('v54') &&
+      limpio.includes('medicamento') &&
+      (limpio.includes('antineoplasico') || limpio.includes('antineoplasic') || limpio.includes('terapiahormonal') || limpio.includes('adicional'));
+  }
+
+  function esEncabezadoV55(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v55' || limpio === '55') return true;
+
+    // Encabezado esperado para V55:
+    // medicamento antineoplásico o terapia hormonal adicional 2 a V53.1-V53.9.
+    return limpio.startsWith('v55') &&
+      limpio.includes('medicamento') &&
+      (limpio.includes('antineoplasico') || limpio.includes('antineoplasic') || limpio.includes('terapiahormonal') || limpio.includes('adicional'));
+  }
+
+  function esEncabezadoV56(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v56' || limpio === '56') return true;
+
+    // Encabezado esperado para V56:
+    // medicamento antineoplásico o terapia hormonal adicional 3 a V53.1-V53.9.
+    return limpio.startsWith('v56') &&
+      limpio.includes('medicamento') &&
+      (limpio.includes('antineoplasico') || limpio.includes('antineoplasic') || limpio.includes('terapiahormonal') || limpio.includes('adicional'));
+  }
+
+  function esEncabezadoV57(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v57' || limpio === '57') return true;
+
+    // Encabezado esperado para V57:
+    // ¿Recibió quimioterapia intratecal en el primer o único esquema?
+    return limpio.startsWith('v57') &&
+      (limpio.includes('intratecal') || (limpio.includes('quimioterapia') && limpio.includes('primer')));
+  }
+
+  function esEncabezadoV58(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v58' || limpio === '58') return true;
+
+    // Encabezado esperado para V58:
+    // Fecha de finalización del primer o único esquema del periodo de reporte.
+    return limpio.startsWith('v58') &&
+      limpio.includes('fecha') &&
+      (limpio.includes('finalizacion') || limpio.includes('finalizacin') || limpio.includes('final')) &&
+      (limpio.includes('esquema') || limpio.includes('tratamiento'));
+  }
+
+
+
+  function esEncabezadoV60(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v60' || limpio === '60') return true;
+
+    // Encabezado esperado para V60:
+    // Motivo de la finalización prematura del primer o único esquema.
+    return limpio.startsWith('v60') &&
+      limpio.includes('motivo') &&
+      (limpio.includes('finalizacion') || limpio.includes('prematura') || limpio.includes('esquema'));
+  }
+
+  function esEncabezadoV59(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v59' || limpio === '59') return true;
+
+    // Encabezado esperado para V59:
+    // Características actuales del primer o único esquema del periodo de reporte.
+    return limpio.startsWith('v59') &&
+      (limpio.includes('caracteristicas') || limpio.includes('caractersticas') || limpio.includes('actuales')) &&
+      limpio.includes('esquema');
+  }
+
+
 
   function esEncabezadoV53_2(valor) {
     const limpio = limpiarEncabezado(valor);
@@ -728,7 +866,7 @@
 
     const numero = Number(coincidencia[1]);
 
-    if (!Number.isInteger(numero) || numero < 1 || numero > 53) {
+    if (!Number.isInteger(numero) || numero < 1 || numero > 57) {
       return null;
     }
 
@@ -759,6 +897,21 @@
     if (esEncabezadoV44(valor)) return 'V44';
     // V48, V49, V50, V51 y V52 deben evaluarse antes que V45 porque sus encabezados reales
     // pueden compartir términos del bloque de quimioterapia o terapia sistémica.
+    // V60 se evalúa antes de V59 para reconocer motivo de finalización prematura.
+    if (esEncabezadoV60(valor)) return 'V60';
+
+    // V59 se evalúa antes de V58 para reconocer características actuales del esquema.
+    if (esEncabezadoV59(valor)) return 'V59';
+
+    // V58 se evalúa antes de V57 para reconocer fecha de finalización del esquema.
+    if (esEncabezadoV58(valor)) return 'V58';
+
+    // V57 se evalúa antes de V56 para reconocer quimioterapia intratecal.
+    if (esEncabezadoV57(valor)) return 'V57';
+    // V56, V55 y V54 se evalúan antes del bloque V53 para reconocer medicamentos adicionales.
+    if (esEncabezadoV56(valor)) return 'V56';
+    if (esEncabezadoV55(valor)) return 'V55';
+    if (esEncabezadoV54(valor)) return 'V54';
     if (esEncabezadoV53_9(valor)) return 'V53_9';
     if (esEncabezadoV53_8(valor)) return 'V53_8';
     if (esEncabezadoV53_7(valor)) return 'V53_7';
@@ -818,6 +971,62 @@
     const tiene2C = VARIABLES_SPRINT_2C.some((variable) => presentes.includes(variable));
     const tiene2B = VARIABLES_SPRINT_2B.some((variable) => presentes.includes(variable));
     const tiene2A = VARIABLES_SPRINT_2A.some((variable) => presentes.includes(variable));
+
+    // Sprint 3G · Módulo 13D se resuelve si el archivo ya trae V60.
+    if (presentes.includes('V60')) {
+      return {
+        modo: 'ACUMULATIVO_V1_V60',
+        variables: ajustarVariablesEsperadasPorPlantillaReal(VARIABLES_HASTA_3G_V60, presentes)
+      };
+    }
+
+    // Sprint 3G · Módulo 13C se resuelve si el archivo ya trae V59.
+    if (presentes.includes('V59')) {
+      return {
+        modo: 'ACUMULATIVO_V1_V59',
+        variables: ajustarVariablesEsperadasPorPlantillaReal(VARIABLES_HASTA_3G_V59, presentes)
+      };
+    }
+
+    // Sprint 3G · Módulo 13B se resuelve si el archivo ya trae V58.
+    if (presentes.includes('V58')) {
+      return {
+        modo: 'ACUMULATIVO_V1_V58',
+        variables: ajustarVariablesEsperadasPorPlantillaReal(VARIABLES_HASTA_3G_V58, presentes)
+      };
+    }
+
+    // Sprint 3G · Módulo 13A se resuelve si el archivo ya trae V57.
+    if (presentes.includes('V57')) {
+      return {
+        modo: 'ACUMULATIVO_V1_V57',
+        variables: ajustarVariablesEsperadasPorPlantillaReal(VARIABLES_HASTA_3G_V57, presentes)
+      };
+    }
+
+    // Sprint 3F · Módulo 12C se resuelve si el archivo ya trae V56.
+    if (presentes.includes('V56')) {
+      return {
+        modo: 'ACUMULATIVO_V1_V56',
+        variables: ajustarVariablesEsperadasPorPlantillaReal(VARIABLES_HASTA_3F_V56, presentes)
+      };
+    }
+
+    // Sprint 3F · Módulo 12B se resuelve si el archivo ya trae V55.
+    if (presentes.includes('V55')) {
+      return {
+        modo: 'ACUMULATIVO_V1_V55',
+        variables: ajustarVariablesEsperadasPorPlantillaReal(VARIABLES_HASTA_3F_V55, presentes)
+      };
+    }
+
+    // Sprint 3F · Módulo 12A se resuelve si el archivo ya trae V54.
+    if (presentes.includes('V54')) {
+      return {
+        modo: 'ACUMULATIVO_V1_V54',
+        variables: ajustarVariablesEsperadasPorPlantillaReal(VARIABLES_HASTA_3F_V54, presentes)
+      };
+    }
 
     // Sprint 3E se resuelve por última variable presente.
     // Esto permite cargar archivos de prueba hasta V53.7 sin exigir V53.8-V53.9 ni variables futuras.
@@ -1137,6 +1346,8 @@
     VARIABLES_SPRINT_3C,
     VARIABLES_SPRINT_3D,
     VARIABLES_SPRINT_3E,
+    VARIABLES_SPRINT_3F,
+    VARIABLES_SPRINT_3G,
     VARIABLES_HASTA_2A,
     VARIABLES_HASTA_2B,
     VARIABLES_HASTA_2C,
@@ -1177,6 +1388,15 @@
     VARIABLES_HASTA_3E_V53_8,
     VARIABLES_HASTA_3E_V53_9,
     VARIABLES_HASTA_3E,
+    VARIABLES_HASTA_3F_V54,
+    VARIABLES_HASTA_3F_V55,
+    VARIABLES_HASTA_3F_V56,
+    VARIABLES_HASTA_3F,
+    VARIABLES_HASTA_3G_V57,
+    VARIABLES_HASTA_3G_V58,
+    VARIABLES_HASTA_3G_V59,
+    VARIABLES_HASTA_3G_V60,
+    VARIABLES_HASTA_3G,
     VARIABLES_ESPERADAS,
     MAPA_ENCABEZADOS,
     MAPA_ENCABEZADOS_SPRINT_1,
@@ -1223,6 +1443,13 @@
     esEncabezadoV53_7,
     esEncabezadoV53_8,
     esEncabezadoV53_9,
+    esEncabezadoV54,
+    esEncabezadoV55,
+    esEncabezadoV56,
+    esEncabezadoV57,
+    esEncabezadoV58,
+    esEncabezadoV59,
+    esEncabezadoV60,
     extraerVariableDesdeEncabezado,
     normalizarEncabezado,
     resolverVariablesEsperadasDinamicas,

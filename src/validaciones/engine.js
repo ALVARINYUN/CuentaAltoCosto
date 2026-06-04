@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3e-v53-2-engine-modulo11-01';
+  const VERSION = 'sprint-3g-v60-engine-modulo13-01';
 
   function obtenerDocumento(registro) {
     const tipo = CACTipos.textoMayuscula(registro.V5);
@@ -281,12 +281,12 @@
       );
     }
 
-    // Módulo 11 · V53-V53.2
+    // Módulo 11 · V53-V53.9
     // V53 inicia el bloque de medicamentos antineoplásicos o terapia hormonal.
-    // V53.1 y V53.2 validan medicamentos administrados mediante ATC.
+    // V53.1-V53.9 validan medicamentos administrados mediante ATC.
     // El módulo se ejecuta progresivamente solo si el archivo trae alguna variable del bloque.
     const archivoTraeBloque3E = tieneAlgunaColumna(registro, [
-      'V53', 'V53_1', 'V53_2'
+      'V53', 'V53_1', 'V53_2', 'V53_3', 'V53_4', 'V53_5', 'V53_6', 'V53_7', 'V53_8', 'V53_9'
     ]);
 
     if (
@@ -298,6 +298,45 @@
         hallazgos,
         window.CACModulo11.validar(registro),
         'CACModulo11'
+      );
+    }
+
+    // Módulo 12 · V54-V56
+    // V54 registra el primer medicamento antineoplásico o terapia hormonal adicional.
+    // V55 registra el segundo medicamento adicional.
+    // V56 registra el tercer medicamento adicional y cruza solo con variables anteriores ya implementadas.
+    const archivoTraeBloque3F = tieneAlgunaColumna(registro, ['V54', 'V55', 'V56']);
+
+    if (
+      archivoTraeBloque3F &&
+      window.CACModulo12 &&
+      typeof window.CACModulo12.validar === 'function'
+    ) {
+      hallazgos = concatenarHallazgos(
+        hallazgos,
+        window.CACModulo12.validar(registro),
+        'CACModulo12'
+      );
+    }
+
+
+    // Módulo 13 · V57-V60
+    // V57 registra si recibió quimioterapia intratecal.
+    // V58 registra la fecha de finalización del primer o único esquema.
+    // V59 registra las características actuales del primer o único esquema.
+    // V60 registra el motivo de finalización prematura cuando V59=2.
+    // Solo cruza con variables anteriores ya implementadas; no usa segundo esquema, último esquema ni variables futuras.
+    const archivoTraeBloque3G = tieneAlgunaColumna(registro, ['V57', 'V58', 'V59', 'V60']);
+
+    if (
+      archivoTraeBloque3G &&
+      window.CACModulo13 &&
+      typeof window.CACModulo13.validar === 'function'
+    ) {
+      hallazgos = concatenarHallazgos(
+        hallazgos,
+        window.CACModulo13.validar(registro),
+        'CACModulo13'
       );
     }
 

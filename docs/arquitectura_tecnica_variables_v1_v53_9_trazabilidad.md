@@ -1,11 +1,5 @@
 # Arquitectura técnica por variable — Validador CAC Cohorte Cáncer
 
-**Proyecto:** Validador CAC — Cohorte Cáncer  
-**Documento:** Arquitectura técnica por variable con trazabilidad  
-**Alcance:** V1 a V53.9  
-**Estado:** Cerrado funcionalmente hasta V53.9  
-**Siguiente variable:** V54  
-**Regla operativa:** El validador es acumulativo. Las variables cerradas no se desactivan ni se modifican salvo bug real o decisión funcional aprobada.
 
 ---
 
