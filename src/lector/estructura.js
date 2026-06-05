@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3g-v60-estructura-03-progresivo';
+  const VERSION = 'sprint-3g-v62-estructura-01-progresivo';
 
   const VARIABLES_SPRINT_1 = [
     'V1', 'V2', 'V3', 'V4',
@@ -59,7 +59,7 @@
 
   // Sprint 3G · Módulo 13 inicia con V57 y continúa con V58, V59 y V60.
   const VARIABLES_SPRINT_3G = [
-    'V57', 'V58', 'V59', 'V60'
+    'V57', 'V58', 'V59', 'V60', 'V61', 'V62'
   ];
 
   const VARIABLES_HASTA_2A = [
@@ -292,10 +292,20 @@
     'V60'
   ];
 
-  // Alias de compatibilidad para el bloque iniciado en V57 y ampliado hasta V60.
-  const VARIABLES_HASTA_3G = VARIABLES_HASTA_3G_V60;
+  const VARIABLES_HASTA_3G_V61 = [
+    ...VARIABLES_HASTA_3G_V60,
+    'V61'
+  ];
 
-  const VARIABLES_ESPERADAS = VARIABLES_HASTA_3G_V60;
+  const VARIABLES_HASTA_3G_V62 = [
+    ...VARIABLES_HASTA_3G_V61,
+    'V62'
+  ];
+
+  // Alias de compatibilidad para el bloque iniciado en V57 y ampliado hasta V62.
+  const VARIABLES_HASTA_3G = VARIABLES_HASTA_3G_V62;
+
+  const VARIABLES_ESPERADAS = VARIABLES_HASTA_3G_V62;
 
   const MAPA_ENCABEZADOS = {
     v1: 'V1', primernombre: 'V1', v1primernombre: 'V1',
@@ -374,7 +384,9 @@
     v57: 'V57', quimioterapiaintratecal: 'V57', intratecal: 'V57', v57quimioterapiaintratecal: 'V57', v57recibioquimioterapiaintratecal: 'V57', v57recibioquimioterapiaintratecalenelprimerounicoesquema: 'V57',
     v58: 'V58', fechafinalizacionesquema: 'V58', fechadefinalizacionesquema: 'V58', fechafinalizacionprimerounicoesquema: 'V58', fechadefinalizaciondelprimerounicoesquema: 'V58', v58fechafinalizacion: 'V58', v58fechadefinalizacion: 'V58', v58fechadefinalizaciondelprimerounicoesquema: 'V58', v58fechadefinalizaciondelprimerounicoesquemadeesteperiododereporte: 'V58',
     v59: 'V59', caracteristicasactualesprimerounicoesquema: 'V59', caracteristicasactualesdelprimerounicoesquema: 'V59', caracteristicasesquema: 'V59', v59caracteristicas: 'V59', v59caracteristicasactuales: 'V59', v59caracteristicasactualesdelprimerounicoesquema: 'V59', v59caracteristicasactualesdelprimerounicoesquemadeesteperiododereporte: 'V59',
-    v60: 'V60', motivofinalizacion: 'V60', motivodelafinalizacion: 'V60', motivofinalizacionprematura: 'V60', motivodelafinalizacionprematura: 'V60', v60motivo: 'V60', v60motivofinalizacion: 'V60', v60motivodelafinalizacion: 'V60', v60motivodelafinalizacionprematura: 'V60'
+    v60: 'V60', motivofinalizacion: 'V60', motivodelafinalizacion: 'V60', motivofinalizacionprematura: 'V60', motivodelafinalizacionprematura: 'V60', v60motivo: 'V60', v60motivofinalizacion: 'V60', v60motivodelafinalizacion: 'V60', v60motivodelafinalizacionprematura: 'V60',
+    v61: 'V61', ubicaciontemporalultimoesquema: 'V61', ubicaciontemporaldelultimoesquema: 'V61', ultimoesquema: 'V61', esquemafinal: 'V61', v61ubicaciontemporal: 'V61', v61ubicaciontemporalultimoesquema: 'V61', v61ubicaciontemporaldelultimoesquema: 'V61',
+    v62: 'V62', fechainicioultimoesquema: 'V62', fechadeinicioultimoesquema: 'V62', fechadeiniciodelultimoesquema: 'V62', v62fechainicio: 'V62', v62fechainicioultimoesquema: 'V62', v62fechadeiniciodelultimoesquema: 'V62'
   };
 
   const MAPA_ENCABEZADOS_SPRINT_1 = MAPA_ENCABEZADOS;
@@ -845,6 +857,44 @@
 
 
 
+  function esEncabezadoV61(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v61' || limpio === '61') return true;
+
+    // Encabezado esperado para V61:
+    // Ubicación temporal del último esquema de quimioterapia o terapia sistémica del periodo.
+    return limpio.startsWith('v61') &&
+      limpio.includes('ubicacion') &&
+      limpio.includes('temporal') &&
+      (
+        limpio.includes('ultimo') ||
+        limpio.includes('esquema') ||
+        limpio.includes('quimioterapia') ||
+        limpio.includes('terapiasistemica') ||
+        limpio.includes('periodo')
+      );
+  }
+
+
+
+  function esEncabezadoV62(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v62' || limpio === '62') return true;
+
+    // Encabezado esperado para V62:
+    // Fecha de inicio del último esquema de quimioterapia o terapia sistémica del periodo.
+    return limpio.startsWith('v62') &&
+      limpio.includes('fecha') &&
+      limpio.includes('inicio') &&
+      (
+        limpio.includes('ultimo') ||
+        limpio.includes('esquema') ||
+        limpio.includes('quimioterapia') ||
+        limpio.includes('terapiasistemica') ||
+        limpio.includes('periodo')
+      );
+  }
+
   function esEncabezadoV53_2(valor) {
     const limpio = limpiarEncabezado(valor);
     if (limpio === 'v532' || limpio === '532' || limpio === 'v53_2') return true;
@@ -922,6 +972,12 @@
     if (esEncabezadoV44(valor)) return 'V44';
     // V48, V49, V50, V51 y V52 deben evaluarse antes que V45 porque sus encabezados reales
     // pueden compartir términos del bloque de quimioterapia o terapia sistémica.
+    // V62 se evalúa antes de V61 para reconocer la fecha de inicio del último esquema.
+    if (esEncabezadoV62(valor)) return 'V62';
+
+    // V61 se evalúa antes de V60 para reconocer el bloque del último esquema.
+    if (esEncabezadoV61(valor)) return 'V61';
+
     // V60 se evalúa antes de V59 para reconocer motivo de finalización prematura.
     if (esEncabezadoV60(valor)) return 'V60';
 
@@ -996,6 +1052,22 @@
     const tiene2C = VARIABLES_SPRINT_2C.some((variable) => presentes.includes(variable));
     const tiene2B = VARIABLES_SPRINT_2B.some((variable) => presentes.includes(variable));
     const tiene2A = VARIABLES_SPRINT_2A.some((variable) => presentes.includes(variable));
+
+    // Sprint 3G · Módulo 14B se resuelve si el archivo ya trae V62.
+    if (presentes.includes('V62')) {
+      return {
+        modo: 'ACUMULATIVO_V1_V62',
+        variables: ajustarVariablesEsperadasPorPlantillaReal(VARIABLES_HASTA_3G_V62, presentes)
+      };
+    }
+
+    // Sprint 3G · Módulo 14A se resuelve si el archivo ya trae V61.
+    if (presentes.includes('V61')) {
+      return {
+        modo: 'ACUMULATIVO_V1_V61',
+        variables: ajustarVariablesEsperadasPorPlantillaReal(VARIABLES_HASTA_3G_V61, presentes)
+      };
+    }
 
     // Sprint 3G · Módulo 13D se resuelve si el archivo ya trae V60.
     if (presentes.includes('V60')) {
@@ -1421,6 +1493,8 @@
     VARIABLES_HASTA_3G_V58,
     VARIABLES_HASTA_3G_V59,
     VARIABLES_HASTA_3G_V60,
+    VARIABLES_HASTA_3G_V61,
+    VARIABLES_HASTA_3G_V62,
     VARIABLES_HASTA_3G,
     VARIABLES_ESPERADAS,
     MAPA_ENCABEZADOS,
@@ -1475,6 +1549,8 @@
     esEncabezadoV58,
     esEncabezadoV59,
     esEncabezadoV60,
+    esEncabezadoV61,
+    esEncabezadoV62,
     extraerVariableDesdeEncabezado,
     normalizarEncabezado,
     resolverVariablesEsperadasDinamicas,

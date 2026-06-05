@@ -5,7 +5,7 @@
     'V7', 'V16',
     'V18', 'V19', 'V20', 'V23', 'V24',
     'V26',
-    'V30', 'V32', 'V35', 'V39', 'V43', 'V49', 'V58'
+    'V30', 'V32', 'V35', 'V39', 'V43', 'V49', 'V58', 'V62'
   ];
 
   // Variables válidas acumuladas hasta Sprint 3E.
@@ -43,7 +43,9 @@
     'V57',
     'V58',
     'V59',
-    'V60'
+    'V60',
+    'V61',
+    'V62'
   ];
 
   function texto(valor) {
@@ -96,7 +98,15 @@
     const limpio = normalizarBasicoEncabezado(valor);
 
     // Fallback seguro si estructura.js no cargara:
-    // Permite reconocer V53.1-V53.9, V54-V56 y V53 con encabezados reales de la matriz.
+    // Permite reconocer V53.1-V53.9, V54-V62 y encabezados reales de la matriz.
+    if (limpio === 'v62' || limpio.startsWith('v62fechadeinicio') || (limpio.startsWith('v62') && limpio.includes('fecha') && limpio.includes('inicio'))) {
+      return 'V62';
+    }
+
+    if (limpio === 'v61' || limpio.startsWith('v61ubicaciontemporal') || (limpio.startsWith('v61') && limpio.includes('esquema'))) {
+      return 'V61';
+    }
+
     if (limpio === 'v60' || limpio.startsWith('v60motivofinalizacion') || limpio.startsWith('v60motivodelafinalizacion') || (limpio.startsWith('v60') && limpio.includes('motivo'))) {
       return 'V60';
     }
@@ -223,7 +233,7 @@
     if (match) {
       const numero = Number(match[1]);
 
-      if (Number.isInteger(numero) && numero >= 1 && numero <= 57) {
+      if (Number.isInteger(numero) && numero >= 1 && numero <= 62) {
         return `V${numero}`;
       }
     }
@@ -260,6 +270,8 @@
     if (texto(variable) === 'V58') return 58;
     if (texto(variable) === 'V59') return 59;
     if (texto(variable) === 'V60') return 60;
+    if (texto(variable) === 'V61') return 61;
+    if (texto(variable) === 'V62') return 62;
 
     const match = texto(variable).match(/^V(\d+)$/);
     return match ? Number(match[1]) : null;
@@ -300,7 +312,7 @@
 
     let consecutivasDesdeV1 = 0;
 
-    for (let n = 1; n <= 57; n += 1) {
+    for (let n = 1; n <= 62; n += 1) {
       if (numeros.includes(n)) consecutivasDesdeV1 = n;
       else break;
     }
@@ -367,7 +379,9 @@
       (variables.includes('V57') ? 30 : 0) +
       (variables.includes('V58') ? 30 : 0) +
       (variables.includes('V59') ? 30 : 0) +
-      (variables.includes('V60') ? 30 : 0);
+      (variables.includes('V60') ? 30 : 0) +
+      (variables.includes('V61') ? 30 : 0) +
+      (variables.includes('V62') ? 30 : 0);
 
     return {
       esCandidata,

@@ -1,20 +1,22 @@
-# Catálogo de hallazgos encontrados — avance parcial V1-V28 y V54-V60
+# Catálogo de hallazgos encontrados — avance parcial V1-V28 y V54-V61
 
 ## Total de hallazgos encontrados documentados
 
-Este documento consolida los hallazgos documentados del validador. Actualmente conserva el bloque histórico V1-V28 y agrega el bloque cerrado funcionalmente V54-V60. Los hallazgos de V29-V53.9 deben completarse con los módulos correspondientes para dejar el catálogo continuo hasta V60.
+Este documento consolida los hallazgos documentados del validador. Actualmente conserva el bloque histórico V1-V28 y agrega el bloque cerrado funcionalmente V54-V61. Los hallazgos de V29-V53.9 deben completarse con los módulos correspondientes para dejar el catálogo continuo hasta V61.
 
 | Concepto | Total |
 |---|---:|
-| Hallazgos documentados | 212 |
-| Errores | 178 |
-| Advertencias | 34 |
-| Variables cubiertas en este documento | V1-V28 y V54-V60 |
+| Hallazgos documentados | 217 |
+| Errores | 182 |
+| Advertencias | 35 |
+| Variables cubiertas en este documento | V1-V28 y V54-V61 |
 | Bloque pendiente de integrar | V29-V53.9 |
 
-> Este total corresponde a los bloques documentados en este archivo. El catálogo continuo hasta V60 requiere integrar todavía los hallazgos de V29-V53.9.
+> Este total corresponde a los bloques documentados en este archivo. El catálogo continuo hasta V61 requiere integrar todavía los hallazgos de V29-V53.9.
 
 > Actualización: se agregó `V27-ERROR-005` después de implementar la regla espejo de V27: si `V27=98`, entonces `V21` debe ser `7`.
+
+> Actualización V61: se agregó el bloque `V61` cerrado funcionalmente en Sprint 3G · Módulo 14A, con 4 errores, 1 advertencia, catálogo visible y trazabilidad pendiente hacia V62-V73.
 
 
 ---
@@ -58,6 +60,7 @@ Este documento consolida los hallazgos documentados del validador. Actualmente c
 | V58 | Fecha de finalización del primer o único esquema | 5 | 5 | 0 |
 | V59 | Características actuales del primer o único esquema | 4 | 4 | 0 |
 | V60 | Motivo de finalización prematura del primer o único esquema | 4 | 4 | 0 |
+| V61 | Ubicación temporal del último esquema de terapia sistémica del periodo | 5 | 4 | 1 |
 
 
 ---
@@ -598,6 +601,34 @@ Este documento consolida los hallazgos documentados del validador. Actualmente c
 | `V60-ERROR-003` | Error | V59=2 indica finalización incompleta, pero V60 está en 98 |
 | `V60-ERROR-004` | Error | V60 registra un motivo, pero V59 no está en 2 |
 
+## V61 — Ubicación temporal del último esquema de terapia sistémica del periodo
+
+**Total en V61: 5 hallazgos**  
+**Errores:** 4  
+**Advertencias:** 1
+
+| Código | Tipo | Hallazgo |
+|---|---|---|
+| `V61-ERROR-001` | Error | V61 está vacía |
+| `V61-ERROR-002` | Error | V61 tiene un valor fuera del catálogo permitido |
+| `V61-ERROR-003` | Error | V45 indica que no tuvo terapia sistémica, pero V61 no está en 98 |
+| `V61-ERROR-004` | Error | V45 indica que tuvo terapia sistémica, pero V61 está en 98 |
+| `V61-ADVERTENCIA-001` | Advertencia | V61=97 requiere trazabilidad posterior con V62 a V73 |
+
+**Catálogo permitido para V61:**
+
+| Código | Descripción |
+|---:|---|
+| 1 | Neoadyuvancia (manejo inicial prequirúrgico) |
+| 2 | Tratamiento inicial curativo sin cirugía sugerida |
+| 3 | Adyuvancia (manejo inicial postquirúrgico) |
+| 11 | Manejo de progresión o recaída |
+| 12 | Manejo de enfermedad metastásica |
+| 13 | Cambio por toxicidad |
+| 14 | Manejo paliativo, sin manejo de recaída ni enfermedad metastásica |
+| 97 | Solo recibió un esquema de quimioterapia en este periodo y en V45 seleccionó la opción 1; verificar V62 a V73 cuando esas variables estén implementadas |
+| 98 | No aplica cuando V45=98 |
+
 # Hallazgos con trazabilidad entre variables
 
 Estos hallazgos no validan una sola celda aislada, sino la coherencia entre dos o más variables.
@@ -652,13 +683,16 @@ Estos hallazgos no validan una sola celda aislada, sino la coherencia entre dos 
 | `V59-ERROR-004` | V59 ↔ V45 | Si V45=1, V59 debe registrar 1, 2 o 3 |
 | `V60-ERROR-003` | V60 ↔ V59 | Si V59=2, V60 debe registrar un motivo entre 1 y 8 |
 | `V60-ERROR-004` | V60 ↔ V59 | Si V59 es diferente de 2, V60 debe registrar 98 |
+| `V61-ERROR-003` | V61 ↔ V45 | Si V45=98, V61 debe registrar 98 porque no aplica reportar ubicación temporal del último esquema |
+| `V61-ERROR-004` | V61 ↔ V45 | Si V45=1, V61 no debe registrar 98; debe registrar una ubicación temporal válida o 97 cuando solo recibió un esquema |
+| `V61-ADVERTENCIA-001` | V61 ↔ V62-V73 | Si V61=97, queda pendiente verificar que V62 a V73 registren No Aplica cuando esas variables estén implementadas |
 
-**Total de hallazgos con trazabilidad identificados:** 46.
+**Total de hallazgos con trazabilidad identificados:** 49.
 
 ---
 
 # Total documentado en este archivo
 
-**212 hallazgos documentados**: **178 errores** y **34 advertencias**.
+**217 hallazgos documentados**: **182 errores** y **35 advertencias**.
 
-Este corte incluye V1-V28 y V54-V60. Para dejar el catálogo continuo hasta V60 falta integrar los hallazgos de V29-V53.9.
+Este corte incluye V1-V28 y V54-V61. Para dejar el catálogo continuo hasta V61 falta integrar los hallazgos de V29-V53.9.

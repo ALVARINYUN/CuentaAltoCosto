@@ -77,7 +77,13 @@
     V53_9: 'Noveno medicamento antineoplásico administrado',
     V54: 'Medicamento antineoplásico adicional 1',
     V55: 'Medicamento antineoplásico adicional 2',
-    V56: 'Medicamento antineoplásico adicional 3'
+    V56: 'Medicamento antineoplásico adicional 3',
+    V57: 'Recibió quimioterapia intratecal en el primer o único esquema',
+    V58: 'Fecha de finalización del primer o único esquema',
+    V59: 'Características actuales del primer o único esquema',
+    V60: 'Motivo de finalización prematura del primer o único esquema',
+    V61: 'Ubicación temporal del último esquema de terapia sistémica del periodo',
+    V62: 'Fecha de inicio del último esquema de quimioterapia o terapia sistémica'
   };
 
   // Encabezados reales usados por la base matriz CAC.
@@ -110,7 +116,13 @@
     V25: 'v25cdigovlidodehabilitacindelaip',
     V26: 'v26fechadeprimeraconsultaconmdic',
     V27: 'v27histologadeltumorenmuestradeb',
-    V28: 'v28gradodediferenciacindeltumors'
+    V28: 'v28gradodediferenciacindeltumors',
+    V57: 'v57recibioquimioterapiaintratecal',
+    V58: 'v58fechadefinalizacindelprimerci',
+    V59: 'v59caractersticasactualesdelprim',
+    V60: 'v60motivofinalizacinprematuradep',
+    V61: 'v61ubicaciontemporaldelultimoesquema',
+    V62: 'v62fechadeiniciodelultimoesquema'
   };
 
   const MAPA_ENCABEZADOS_A_VARIABLES = {
@@ -323,7 +335,27 @@
     v55medicamentoantineoplasicoadicional2: 'V55',
     v56: 'V56',
     v56medicamentoadicional3: 'V56',
-    v56medicamentoantineoplasicoadicional3: 'V56'
+    v56medicamentoantineoplasicoadicional3: 'V56',
+
+    v57: 'V57',
+    v57recibioquimioterapiaintratecal: 'V57',
+    v58: 'V58',
+    v58fechadefinalizacindelprimerci: 'V58',
+    v58fechadefinalizaciondelprimerounicoesquema: 'V58',
+    v59: 'V59',
+    v59caractersticasactualesdelprim: 'V59',
+    v59caracteristicasactualesdelprimerounicoesquema: 'V59',
+    v60: 'V60',
+    v60motivofinalizacinprematuradep: 'V60',
+    v60motivofinalizacionprematura: 'V60',
+    v61: 'V61',
+    v61ubicaciontemporal: 'V61',
+    v61ubicaciontemporaldelultimoesquema: 'V61',
+    v61ubicaciontemporalultimoesquema: 'V61',
+    v62: 'V62',
+    v62fechadeinicio: 'V62',
+    v62fechadeiniciodelultimoesquema: 'V62',
+    v62fechainicioultimoesquema: 'V62'
   };
 
   const ESTILO_ENCABEZADO_NORMAL = {
@@ -575,7 +607,7 @@
 
   function construirResumenGeneral({ resumen, nombreArchivo, nombreHoja }) {
     return [
-      { Campo: 'Proyecto', Valor: 'Validador CAC — Cohorte Cáncer' },
+      { Campo: 'Proyecto', Valor: 'Validador CAC — Cáncer' },
       { Campo: 'Archivo validado', Valor: nombreArchivo || '' },
       { Campo: 'Hoja validada', Valor: nombreHoja || '' },
       { Campo: 'Fecha de exportación', Valor: new Date().toLocaleString('es-CO') },
@@ -954,7 +986,7 @@
   }
 
   window.CACExportadorExcel = {
-    VERSION_EXPORTADOR: 'fix-export-formato-catalogos-v36-v54-01',
+    VERSION_EXPORTADOR: 'sprint-3g-v62-exportador-01',
     exportarReporte
   };
 })();

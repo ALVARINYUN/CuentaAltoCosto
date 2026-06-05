@@ -1,9 +1,9 @@
 # Backlog del Proyecto — Validador CAC
 
-**Proyecto:** Validador CAC — Cohorte Cáncer  
+**Proyecto:** Validador CAC — Cáncer  
 **Objetivo:** desarrollar una herramienta local que permita revisar archivos Excel de la Cuenta de Alto Costo antes del reporte final, identificando errores, advertencias y posibles inconsistencias en la información.  
-**Metodología de trabajo:** Scrum, con desarrollo progresivo por sprints y cierre funcional por bloques de variables.  
-**Estado actual:** avance funcional cerrado hasta V60. La siguiente variable de trabajo es V61.  
+**Metodología de trabajo:** desarrollo progresivo por sprints y cierre funcional por bloques de variables.  
+**Estado actual:** avance funcional cerrado hasta **V62**. La siguiente variable de trabajo es **V63**.  
 **Regla de trabajo:** las variables cerradas no se modifican, salvo que se identifique un bug real o una mejora puntual de redacción que no cambie la lógica.
 
 ---
@@ -47,6 +47,7 @@ Este flujo se mantiene durante todo el proyecto para conservar orden, trazabilid
 - Evitar errores basura de variables anteriores en los archivos de prueba.
 - Mantener textos visibles claros, cortos y entendibles para el usuario final.
 - Si una regla depende de una variable que aún no se ha implementado, se deja pendiente hasta llegar a esa variable.
+- El desarrollo es acumulativo: las variables cerradas permanecen activas mientras se agregan nuevas variables.
 
 ---
 
@@ -75,38 +76,83 @@ Este flujo se mantiene durante todo el proyecto para conservar orden, trazabilid
 
 ---
 
-### Sprint 2 — Diagnóstico y confirmación
+### Sprint 2A — Diagnóstico inicial
 
 | Variables | Descripción | Estado |
 |---|---|---|
 | V17-V24 | Diagnóstico del cáncer, fechas, tipo de estudio e información histopatológica. | Cerrado funcional |
+
+---
+
+### Sprint 2B — Confirmación, histología y diferenciación
+
+| Variables | Descripción | Estado |
+|---|---|---|
 | V25-V28 | IPS de confirmación, primera consulta, histología y grado de diferenciación. | Cerrado funcional |
-| V29-V35 | Estadificación inicial y variables complementarias del diagnóstico. | Cerrado funcional |
 
 ---
 
-### Sprint 3A / 3B — Estadificación, riesgo, intervención y antecedentes
+### Sprint 2C — Primera estadificación
 
 | Variables | Descripción | Estado |
 |---|---|---|
-| V36 | Estadificación Ann Arbor/Lugano. | Cerrado funcional |
-| V37 | Escala Gleason. | Cerrado funcional |
-| V38 | Clasificación de riesgo. | Cerrado funcional |
-| V39 | Fecha de clasificación de riesgo. | Cerrado funcional |
-| V40 | Objetivo del tratamiento inicial. | Cerrado funcional |
-| V41 | Intervención médica durante el periodo. | Cerrado funcional |
-| V42-V44 | Antecedente de otro cáncer primario. | Cerrado funcional |
+| V29 | Primera estadificación clínica o patológica según diagnóstico. | Cerrado funcional |
 
 ---
 
-### Sprint 3E — Terapia sistémica inicial
+### Sprint 2D — Fechas y variables complementarias de estadificación
 
 | Variables | Descripción | Estado |
 |---|---|---|
-| V45 | Indica si el usuario recibió quimioterapia u otra terapia sistémica. | Cerrado funcional |
-| V46-V46.8 | Número de fases y fases de quimioterapia recibidas. | Cerrado funcional |
-| V47-V52 | Ciclos, ubicación temporal, fecha de inicio e IPS del primer o único esquema. | Cerrado funcional |
-| V53-V53.9 | Número y medicamentos antineoplásicos administrados en el primer o único esquema. | Cerrado funcional |
+| V30-V33 | Fechas y variables complementarias de estadificación. | Cerrado funcional |
+
+---
+
+### Sprint 2E — Dukes colorrectal
+
+| Variables | Descripción | Estado |
+|---|---|---|
+| V34-V35 | Estadificación Dukes y fecha de estadificación Dukes para cáncer colorrectal. | Cerrado funcional |
+
+---
+
+### Sprint 3A — Estadificación, riesgo y objetivo de tratamiento
+
+| Variables | Descripción | Estado |
+|---|---|---|
+| V36-V40 | Ann Arbor/Lugano, Gleason, clasificación de riesgo, fecha de riesgo y objetivo del tratamiento inicial. | Cerrado funcional |
+
+---
+
+### Sprint 3B — Intervención médica y antecedentes
+
+| Variables | Descripción | Estado |
+|---|---|---|
+| V41-V44 | Intervención médica durante el periodo y antecedente de otro cáncer primario. | Cerrado funcional |
+
+---
+
+### Sprint 3C — Inicio de terapia sistémica
+
+| Variables | Descripción | Estado |
+|---|---|---|
+| V45-V47 | Indica si recibió quimioterapia u otra terapia sistémica, número de fases, subfases V46.1-V46.8 y número de ciclos. | Cerrado funcional |
+
+---
+
+### Sprint 3D — Primer o único esquema: ubicación, inicio e IPS
+
+| Variables | Descripción | Estado |
+|---|---|---|
+| V48-V52 | Ubicación temporal, fecha de inicio, número de IPS e IPS1/IPS2 que suministran el primer o único esquema. | Cerrado funcional |
+
+---
+
+### Sprint 3E — Primer o único esquema: medicamentos base
+
+| Variables | Descripción | Estado |
+|---|---|---|
+| V53-V53.9 | Número de medicamentos propuestos y medicamentos antineoplásicos o terapia hormonal administrados en el primer o único esquema. | Cerrado funcional |
 
 ---
 
@@ -135,8 +181,8 @@ Este flujo se mantiene durante todo el proyecto para conservar orden, trazabilid
 
 | Variable | Descripción | Trazabilidad principal | Estado |
 |---|---|---|---|
-| V61 | Ubicación temporal del último esquema de quimioterapia o terapia sistémica. | V45, V61 | En revisión |
-| V62 | Fecha de inicio del último esquema. | V61, V62 | Pendiente |
+| V61 | Ubicación temporal del último esquema de quimioterapia o terapia sistémica. | V45, V61 | Cerrado funcional |
+| V62 | Fecha de inicio del último esquema de quimioterapia o terapia sistémica. | V45, V61, V62 | Cerrado funcional |
 | V63 | Número de IPS que suministran el último esquema. | V61, V63 | Pendiente |
 | V64 | Código IPS1 del último esquema. | V61, V63, V64 | Pendiente |
 | V65 | Código IPS2 del último esquema. | V61, V63, V65 | Pendiente |
@@ -150,10 +196,10 @@ Este flujo se mantiene durante todo el proyecto para conservar orden, trazabilid
 
 ---
 
-### Sprints pendientes
+## 6. Sprints pendientes
 
 | Bloque | Variables | Descripción | Estado |
-|---|---|---|---|
+|---|---|---|
 | Cirugía | V74-V85 | Cirugía curativa o paliativa, fechas, IPS, CUPS, ubicación temporal y estado vital postquirúrgico. | Pendiente |
 | Radioterapia | V86-V105 | Radioterapia, sesiones, fechas, CUPS, IPS, características y motivo de finalización. | Pendiente |
 | Trasplante | V106-V110 | Trasplante de células progenitoras hematopoyéticas. | Pendiente |
@@ -162,22 +208,23 @@ Este flujo se mantiene durante todo el proyecto para conservar orden, trazabilid
 
 ---
 
-## 6. Backlog técnico actual
+## 7. Backlog técnico actual
 
 | Tarea | Descripción | Estado |
 |---|---|---|
-| Revisar V61 | Analizar el instructivo y definir reglas estrictas sin adelantar V62-V73. | En revisión |
-| Activar módulo 14 | Mantener preparado el módulo correspondiente al bloque de último esquema. | En revisión |
-| Reconocer V61 en estructura | Confirmar que la aplicación reconozca encabezados reales de V61. | En revisión |
-| Validar V61 en lector | Confirmar que V61 esté incluida como variable validable. | En revisión |
-| Ejecutar V61 desde el motor | Confirmar que el motor ejecute el módulo correspondiente cuando el archivo incluya V61. | En revisión |
-| Crear Excel limpio V61 | Preparar casos de error y casos correctos para validar V61. | Pendiente |
-| Revisar exportador V61 | Confirmar que la matriz marcada señale únicamente las filas con error en V61. | Pendiente |
-| Cerrar V61 | Cerrar funcionalmente después de validar estructura, reglas, pantalla, consola y exportador. | Pendiente |
+| Cerrar V61 | Validar ubicación temporal del último esquema, catálogo visible, trazabilidad con V45 y exportador. | Cerrado funcional |
+| Cerrar V62 | Validar fecha de inicio del último esquema, trazabilidad con V45/V61, lectura como fecha y exportador. | Cerrado funcional |
+| Revisar V63 | Analizar instructivo y definir reglas estrictas para número de IPS que suministran el último esquema. | Siguiente |
+| Reconocer V63 en estructura | Confirmar encabezados reales/cortados de V63 antes de validar reglas. | Pendiente |
+| Validar V63 en lector | Confirmar que V63 esté incluida como variable validable. | Pendiente |
+| Ejecutar V63 desde el motor | Confirmar que el motor ejecute el módulo correspondiente cuando el archivo incluya V63. | Pendiente |
+| Crear Excel limpio V63 | Preparar casos de error y casos correctos para validar V63 sin contaminar V1-V62. | Pendiente |
+| Revisar exportador V63 | Confirmar que la matriz marcada señale únicamente las filas con error/advertencia en V63. | Pendiente |
+| Cerrar V63 | Cerrar funcionalmente después de validar estructura, reglas, pantalla, consola y exportador. | Pendiente |
 
 ---
 
-## 7. Criterios de cierre por variable
+## 8. Criterios de cierre por variable
 
 Una variable se considera cerrada cuando:
 
@@ -194,28 +241,30 @@ Una variable se considera cerrada cuando:
 
 ---
 
-## 8. Estado resumido del proyecto
+## 9. Estado resumido del proyecto
 
 | Bloque | Estado | Observación |
 |---|---|---|
 | V1-V53.9 | Cerrado funcional | Base acumulativa validada. |
 | V54-V56 | Cerrado funcional | Medicamentos adicionales del primer o único esquema. |
 | V57-V60 | Cerrado funcional | Cierre del primer o único esquema. |
-| V61 | En revisión | Inicio del bloque de último esquema. |
-| V62-V73 | Pendiente | Último esquema de terapia sistémica. |
+| V61-V62 | Cerrado funcional | Inicio del bloque de último esquema. |
+| V63-V73 | Pendiente | Continuación del último esquema de terapia sistémica. |
 | V74-V134 | Pendiente | Bloques posteriores del instructivo. |
 
 ---
 
-## 9. Próxima acción
+## 10. Próxima acción
 
-Continuar con V61, manteniendo cerrado el avance hasta V60.
+Continuar con **V63 — Número de IPS que suministran el último esquema de este periodo de reporte**.
 
 Pasos inmediatos:
 
-1. Revisar nuevamente el instructivo de V61.
-2. Confirmar reglas permitidas sin usar todavía V62-V73.
-3. Generar Excel limpio de prueba para V61.
-4. Validar estructura, conteos y trazabilidad por fila.
-5. Revisar el exportador.
-6. Cerrar V61 funcionalmente antes de avanzar a V62.
+1. Revisar el instructivo exacto de V63.
+2. Confirmar si el número permitido será entero positivo o limitado por V64/V65.
+3. Definir trazabilidad con V61, V62 y V63 sin adelantar reglas de V64-V65 más allá de lo soportado.
+4. Actualizar estructura, lector, motor, módulo de reglas, exportador e index si aplica.
+5. Generar Excel limpio de prueba para V63.
+6. Validar estructura, conteos y trazabilidad por fila.
+7. Revisar exportador.
+8. Cerrar V63 funcionalmente antes de avanzar a V64.

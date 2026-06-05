@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3g-v60-engine-modulo13-01';
+  const VERSION = 'sprint-3g-v62-engine-modulo14-02';
 
   function obtenerDocumento(registro) {
     const tipo = CACTipos.textoMayuscula(registro.V5);
@@ -71,7 +71,7 @@
 
   function normalizarFila(encabezados, fila) {
     // Cuando excel.js entrega cada fila como objeto, también se normalizan las claves.
-    // Esto permite reconocer encabezados reales largos como V29, V36-V41, etc.
+    // Esto permite reconocer encabezados reales largos como V29, V36-V61, etc.
     if (!Array.isArray(fila) && typeof fila === 'object' && fila !== null) {
       return normalizarFilaObjeto(fila);
     }
@@ -337,6 +337,24 @@
         hallazgos,
         window.CACModulo13.validar(registro),
         'CACModulo13'
+      );
+    }
+
+    // Módulo 14 · V61-V62
+    // V61 inicia el bloque del último esquema de quimioterapia o terapia sistémica del periodo.
+    // V62 registra la fecha de inicio del último esquema.
+    // No valida V63-V73 todavía porque esas variables aún no están implementadas.
+    const archivoTraeBloque3GModulo14 = tieneAlgunaColumna(registro, ['V61', 'V62']);
+
+    if (
+      archivoTraeBloque3GModulo14 &&
+      window.CACModulo14 &&
+      typeof window.CACModulo14.validar === 'function'
+    ) {
+      hallazgos = concatenarHallazgos(
+        hallazgos,
+        window.CACModulo14.validar(registro),
+        'CACModulo14'
       );
     }
 
