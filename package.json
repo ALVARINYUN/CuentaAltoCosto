@@ -1,0 +1,28 @@
+{
+  "name": "validador-cac",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ALVARINYUN/CuentaAltoCosto.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ALVARINYUN/CuentaAltoCosto/issues"
+  },
+  "homepage": "https://github.com/ALVARINYUN/CuentaAltoCosto#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.60.0"
+  }
+}

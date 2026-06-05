@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3g-v60-estructura-01';
+  const VERSION = 'sprint-3g-v60-estructura-03-progresivo';
 
   const VARIABLES_SPRINT_1 = [
     'V1', 'V2', 'V3', 'V4',
@@ -792,10 +792,21 @@
 
     // Encabezado esperado para V58:
     // Fecha de finalización del primer o único esquema del periodo de reporte.
+    // Encabezado real observado en bases tipo CAC:
+    // v58fechadefinalizacindelprimerci
     return limpio.startsWith('v58') &&
       limpio.includes('fecha') &&
-      (limpio.includes('finalizacion') || limpio.includes('finalizacin') || limpio.includes('final')) &&
-      (limpio.includes('esquema') || limpio.includes('tratamiento'));
+      (
+        limpio.includes('finalizacion') ||
+        limpio.includes('finalizacin') ||
+        limpio.includes('final')
+      ) &&
+      (
+        limpio.includes('primer') ||
+        limpio.includes('prim') ||
+        limpio.includes('esquema') ||
+        limpio.includes('tratamiento')
+      );
   }
 
 
@@ -817,9 +828,19 @@
 
     // Encabezado esperado para V59:
     // Características actuales del primer o único esquema del periodo de reporte.
+    // Encabezado real observado en bases tipo CAC:
+    // v59caractersticasactualesdelprim
     return limpio.startsWith('v59') &&
-      (limpio.includes('caracteristicas') || limpio.includes('caractersticas') || limpio.includes('actuales')) &&
-      limpio.includes('esquema');
+      (
+        limpio.includes('caracteristicas') ||
+        limpio.includes('caractersticas') ||
+        limpio.includes('actuales')
+      ) &&
+      (
+        limpio.includes('primer') ||
+        limpio.includes('prim') ||
+        limpio.includes('esquema')
+      );
   }
 
 
@@ -866,11 +887,15 @@
 
     const numero = Number(coincidencia[1]);
 
-    if (!Number.isInteger(numero) || numero < 1 || numero > 57) {
+    if (!Number.isInteger(numero) || numero < 1) {
       return null;
     }
 
     const variable = `V${numero}`;
+
+    // La estructura es progresiva: no se limita con un número fijo en esta función.
+    // Si una variable existe en VARIABLES_ESPERADAS, puede reconocerse automáticamente.
+    // Para subvariables como V46.1 o V53.2 se mantienen las funciones específicas.
     return VARIABLES_ESPERADAS.includes(variable) ? variable : null;
   }
 
