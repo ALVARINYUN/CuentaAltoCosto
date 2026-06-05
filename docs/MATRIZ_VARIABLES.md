@@ -8,9 +8,10 @@ Este es el corazón del validador. Cada validación, cada regla, cada campo del 
 
 **Total de variables:** 134 (que se expanden a 168 campos en el archivo plano)
 
-**Estado del documento:** En construcción
-**Variables documentadas:** V1-V14, V17-V19
-**Próxima variable a documentar:** V15
+**Estado del documento:** Actualización en curso según avance del proyecto  
+**Variables documentadas:** Matriz base organizada de V1 a V134  
+**Avance funcional validado:** V1 a V60  
+**Siguiente variable de trabajo:** V61
 
 ---
 
@@ -2100,15 +2101,15 @@ Ejemplo: `76001` = Cali (Departamento 76, Municipio 001)
 - Si solo conoce año y mes → día 15
 
 **Dependencias:**
-- V58 ≥ V49 (fecha de inicio del esquema)
+- V58 ≥ V49 (fecha de inicio del esquema), cuando ambas son fechas reales
 - Si V45 = `98` → V58 = `1845-01-01`
-- Si V59 = `3` (esquema aún en curso) → V58 = `1800-01-01`
+- El valor `1800-01-01` está permitido cuando corresponde a hormonoterapia o a un esquema que aún no finaliza
 
 **Soporte documental:** Sí — historia clínica o registros de administración
 
 **Severidad:**
-- **Error** si: formato incorrecto, V58 < V49, fecha futura (salvo `1800-01-01`)
-- **Advertencia** si: `1800-01-01` sin que V59 = `3`
+- **Error** si: formato incorrecto, V58 < V49 cuando ambas son fechas reales, o comodín incorrecto según V45
+- **Advertencia** si: el uso de `1800-01-01` requiere revisión del soporte clínico cuando no sea claro que el esquema continúa o corresponde a hormonoterapia
 
 ---
 
@@ -2171,8 +2172,7 @@ Ejemplo: `76001` = Cali (Departamento 76, Municipio 001)
 **Soporte documental:** Sí — nota clínica o administrativa con justificación
 
 **Severidad:**
-- **Error** si: campo vacío cuando V59 = `2`, código no está en el catálogo
-- **Advertencia** si: `98` cuando V59 = `2`
+- **Error** si: campo vacío, código no está en el catálogo, `98` cuando V59 = `2`, o motivo entre 1 y 8 cuando V59 es diferente de `2`
 
 ---
 
@@ -4011,31 +4011,24 @@ Ejemplo: `76001` = Cali (Departamento 76, Municipio 001)
 - **Error** si: cualquier valor diferente a `2025-01-01`
 
 
-## Resumen de progreso
+## Resumen de avance del proyecto
 
-| Variable | Estado | Notas |
+| Bloque | Estado | Observaciones |
 |---|---|---|
-| V1 | ✅ Documentada | Primer nombre |
-| V2 | ✅ Documentada | Segundo nombre, comodín NONE |
-| V3 | ✅ Documentada | Primer apellido |
-| V4 | ✅ Documentada | Segundo apellido, comodín NOAP |
-| V5 | ✅ Documentada | Tipo ID, 14 códigos |
-| V6 | ✅ Documentada | Número ID |
-| V7 | ✅ Documentada | Fecha nacimiento |
-| V8 | ✅ Documentada | Sexo (M/F) |
-| V9 | ✅ Documentada | Ocupación CIUO |
-| V10 | ✅ Documentada | Régimen (6 códigos) |
-| V11 | ✅ Documentada | EAPB o entidad territorial |
-| V12 | ✅ Documentada | Pertenencia étnica (6 códigos) |
-| V13 | ✅ Documentada | Grupo poblacional (32 códigos en 4 rangos) |
-| V14 | ✅ Documentada | Municipio DIVIPOLA |
-| V15 | 🔄 Próxima | Pendiente |
-| V16 | ⏳ Pendiente | |
-| V17 | ✅ Documentada | CIE-10 con 14 excepciones |
-| V18 | ✅ Documentada | Fecha diagnóstico |
-| V19 | ✅ Documentada | Fecha remisión |
-| V20 | ⏳ Pendiente | |
-| V21-V134 | ⏳ Pendiente | |
+| V1-V16 | Cerrado | Identificación del usuario y datos básicos. |
+| V17-V28 | Cerrado | Diagnóstico, confirmación, histología y diferenciación. |
+| V29-V35 | Cerrado | Estadificación inicial y variables complementarias. |
+| V36-V44 | Cerrado | Linfomas, riesgo, intervención médica y antecedentes. |
+| V45-V53.9 | Cerrado | Inicio de terapia sistémica, ciclos, IPS y medicamentos base. |
+| V54-V56 | Cerrado | Medicamentos adicionales del primer o único esquema. |
+| V57 | Cerrado | Quimioterapia intratecal. |
+| V58 | Cerrado | Fecha de finalización del primer o único esquema. |
+| V59 | Cerrado | Características actuales del primer o único esquema. |
+| V60 | Cerrado | Motivo de finalización prematura del primer o único esquema. |
+| V61 | En revisión | Inicio del bloque correspondiente al último esquema de terapia sistémica. |
+| V62-V73 | Pendiente | Variables del último esquema de terapia sistémica. |
+| V74-V134 | Pendiente de desarrollo | Variables documentadas en la matriz base, pendientes de implementación progresiva. |
+
 
 ---
 
@@ -4055,4 +4048,4 @@ Ejemplo: `76001` = Cali (Departamento 76, Municipio 001)
 
 ---
 
-**Próximo paso:** continuar documentando desde V15 en orden secuencial.
+**Próximo paso:** continuar con la revisión e implementación de V61, manteniendo el avance ya cerrado hasta V60.

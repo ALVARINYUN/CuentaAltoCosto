@@ -1,17 +1,18 @@
-# Catálogo de hallazgos encontrados — V1 a V28
+# Catálogo de hallazgos encontrados — avance parcial V1-V28 y V54-V60
 
-## Total de hallazgos encontrados hasta V28
+## Total de hallazgos encontrados documentados
 
-Este documento consolida la cantidad total de errores y advertencias encontrados en la app hasta la variable V28.
+Este documento consolida los hallazgos documentados del validador. Actualmente conserva el bloque histórico V1-V28 y agrega el bloque cerrado funcionalmente V54-V60. Los hallazgos de V29-V53.9 deben completarse con los módulos correspondientes para dejar el catálogo continuo hasta V60.
 
 | Concepto | Total |
 |---|---:|
-| Hallazgos encontrados | 172 |
-| Errores | 138 |
+| Hallazgos documentados | 212 |
+| Errores | 178 |
 | Advertencias | 34 |
-| Variables cubiertas | V1 a V28 |
+| Variables cubiertas en este documento | V1-V28 y V54-V60 |
+| Bloque pendiente de integrar | V29-V53.9 |
 
-> Este total corresponde al corte actual extraído de las reglas trabajadas en `src/validaciones/reglas/`. El total global definitivo del validador completo queda pendiente hasta cerrar las 134 variables.
+> Este total corresponde a los bloques documentados en este archivo. El catálogo continuo hasta V60 requiere integrar todavía los hallazgos de V29-V53.9.
 
 > Actualización: se agregó `V27-ERROR-005` después de implementar la regla espejo de V27: si `V27=98`, entonces `V21` debe ser `7`.
 
@@ -50,6 +51,14 @@ Este documento consolida la cantidad total de errores y advertencias encontrados
 | V26 | Fecha de primera consulta con médico tratante | 4 | 3 | 1 |
 | V27 | Histología del tumor | 7 | 6 | 1 |
 | V28 | Grado de diferenciación del tumor sólido maligno | 5 | 5 | 0 |
+| V54 | Medicamento antineoplásico adicional 1 | 6 | 6 | 0 |
+| V55 | Medicamento antineoplásico adicional 2 | 8 | 8 | 0 |
+| V56 | Medicamento antineoplásico adicional 3 | 9 | 9 | 0 |
+| V57 | Quimioterapia intratecal en el primer o único esquema | 4 | 4 | 0 |
+| V58 | Fecha de finalización del primer o único esquema | 5 | 5 | 0 |
+| V59 | Características actuales del primer o único esquema | 4 | 4 | 0 |
+| V60 | Motivo de finalización prematura del primer o único esquema | 4 | 4 | 0 |
+
 
 ---
 
@@ -483,6 +492,112 @@ Este documento consolida la cantidad total de errores y advertencias encontrados
 
 ---
 
+
+---
+
+## V54 — Medicamento antineoplásico adicional 1
+
+**Total en V54: 6 hallazgos**  
+**Errores:** 6  
+**Advertencias:** 0
+
+| Código | Tipo | Hallazgo |
+|---|---|---|
+| `V54-ERROR-001` | Error | V54 está vacía |
+| `V54-ERROR-002` | Error | V54 tiene un valor diferente de código ATC, 97 o 98 |
+| `V54-ERROR-003` | Error | V45 indica terapia sistémica recibida, pero V54 está marcada como no tuvo esquema |
+| `V54-ERROR-004` | Error | V54 no corresponde con V45: si no tuvo esquema, debe registrarse 98 |
+| `V54-ERROR-005` | Error | V54 tiene formato ATC, pero no existe en el catálogo ATC cargado |
+| `V54-ERROR-006` | Error | V54 repite un medicamento ya registrado en el bloque V53 |
+
+## V55 — Medicamento antineoplásico adicional 2
+
+**Total en V55: 8 hallazgos**  
+**Errores:** 8  
+**Advertencias:** 0
+
+| Código | Tipo | Hallazgo |
+|---|---|---|
+| `V55-ERROR-001` | Error | V55 está vacía |
+| `V55-ERROR-002` | Error | V55 tiene un valor diferente de código ATC, 97 o 98 |
+| `V55-ERROR-003` | Error | V45 indica terapia sistémica recibida, pero V55 está marcada como no tuvo esquema |
+| `V55-ERROR-004` | Error | V55 no corresponde con V45: si no tuvo esquema, debe registrarse 98 |
+| `V55-ERROR-005` | Error | V55 tiene formato ATC, pero no existe en el catálogo ATC cargado |
+| `V55-ERROR-006` | Error | V55 repite un medicamento ya registrado en el bloque V53 |
+| `V55-ERROR-007` | Error | V55 repite el medicamento registrado en V54 |
+| `V55-ERROR-008` | Error | V55 tiene medicamento adicional, pero V54 indica que no hubo medicamentos adicionales |
+
+## V56 — Medicamento antineoplásico adicional 3
+
+**Total en V56: 9 hallazgos**  
+**Errores:** 9  
+**Advertencias:** 0
+
+| Código | Tipo | Hallazgo |
+|---|---|---|
+| `V56-ERROR-001` | Error | V56 está vacía |
+| `V56-ERROR-002` | Error | V56 tiene un valor diferente de código ATC, 97 o 98 |
+| `V56-ERROR-003` | Error | V45 indica terapia sistémica recibida, pero V56 está marcada como no tuvo esquema |
+| `V56-ERROR-004` | Error | V56 no corresponde con V45: si no tuvo esquema, debe registrarse 98 |
+| `V56-ERROR-005` | Error | V56 tiene formato ATC, pero no existe en el catálogo ATC cargado |
+| `V56-ERROR-006` | Error | V56 repite un medicamento ya registrado en el bloque V53 |
+| `V56-ERROR-007` | Error | V56 repite el medicamento registrado en V54 |
+| `V56-ERROR-008` | Error | V56 repite el medicamento registrado en V55 |
+| `V56-ERROR-009` | Error | V56 tiene medicamento adicional, pero la secuencia anterior indica que no había más adicionales |
+
+## V57 — Quimioterapia intratecal en el primer o único esquema
+
+**Total en V57: 4 hallazgos**  
+**Errores:** 4  
+**Advertencias:** 0
+
+| Código | Tipo | Hallazgo |
+|---|---|---|
+| `V57-ERROR-001` | Error | V57 está vacía |
+| `V57-ERROR-002` | Error | V57 tiene un valor diferente de 1, 2 o 98 |
+| `V57-ERROR-003` | Error | V45 indica que tuvo terapia sistémica, pero V57 está en 98 |
+| `V57-ERROR-004` | Error | V57 no corresponde con V45: si no tuvo esquema, debe registrarse 98 |
+
+## V58 — Fecha de finalización del primer o único esquema
+
+**Total en V58: 5 hallazgos**  
+**Errores:** 5  
+**Advertencias:** 0
+
+| Código | Tipo | Hallazgo |
+|---|---|---|
+| `V58-ERROR-001` | Error | V58 está vacía |
+| `V58-ERROR-002` | Error | V58 no tiene formato de fecha válido |
+| `V58-ERROR-003` | Error | V45 indica que no tuvo esquema, pero V58 no está en 1845-01-01 |
+| `V58-ERROR-004` | Error | V45 indica que sí tuvo terapia sistémica, pero V58 está en no aplica |
+| `V58-ERROR-005` | Error | V58 es anterior a la fecha de inicio del esquema |
+
+## V59 — Características actuales del primer o único esquema
+
+**Total en V59: 4 hallazgos**  
+**Errores:** 4  
+**Advertencias:** 0
+
+| Código | Tipo | Hallazgo |
+|---|---|---|
+| `V59-ERROR-001` | Error | V59 está vacía |
+| `V59-ERROR-002` | Error | V59 tiene un valor diferente de 1, 2, 3 o 98 |
+| `V59-ERROR-003` | Error | V45 indica que no tuvo esquema, pero V59 no está en 98 |
+| `V59-ERROR-004` | Error | V45 indica que tuvo terapia sistémica, pero V59 está en 98 |
+
+## V60 — Motivo de finalización prematura del primer o único esquema
+
+**Total en V60: 4 hallazgos**  
+**Errores:** 4  
+**Advertencias:** 0
+
+| Código | Tipo | Hallazgo |
+|---|---|---|
+| `V60-ERROR-001` | Error | V60 está vacía |
+| `V60-ERROR-002` | Error | V60 tiene un valor fuera del catálogo permitido |
+| `V60-ERROR-003` | Error | V59=2 indica finalización incompleta, pero V60 está en 98 |
+| `V60-ERROR-004` | Error | V60 registra un motivo, pero V59 no está en 2 |
+
 # Hallazgos con trazabilidad entre variables
 
 Estos hallazgos no validan una sola celda aislada, sino la coherencia entre dos o más variables.
@@ -513,10 +628,37 @@ Estos hallazgos no validan una sola celda aislada, sino la coherencia entre dos 
 | `V28-ERROR-004` | V28 ↔ V21 | Si V21=7, V28 debe ser 98 |
 | `V28-ERROR-005` | V28 ↔ V21 | Si V28=98, V21 debe ser 7 |
 
-**Total de hallazgos con trazabilidad identificados:** 23.
+
+| `V54-ERROR-003` | V54 ↔ V45 | Si V45=1, V54 no debe registrar 98 |
+| `V54-ERROR-004` | V54 ↔ V45 | Si V45=98, V54 debe registrar 98 |
+| `V54-ERROR-006` | V54 ↔ V53 | V54 no debe repetir medicamentos ya reportados en el bloque V53 |
+| `V55-ERROR-003` | V55 ↔ V45 | Si V45=1, V55 no debe registrar 98 |
+| `V55-ERROR-004` | V55 ↔ V45 | Si V45=98, V55 debe registrar 98 |
+| `V55-ERROR-006` | V55 ↔ V53 | V55 no debe repetir medicamentos ya reportados en el bloque V53 |
+| `V55-ERROR-007` | V55 ↔ V54 | V55 no debe repetir el medicamento registrado en V54 |
+| `V55-ERROR-008` | V55 ↔ V54 | Si V54=97, no debe aparecer un segundo medicamento adicional en V55 |
+| `V56-ERROR-003` | V56 ↔ V45 | Si V45=1, V56 no debe registrar 98 |
+| `V56-ERROR-004` | V56 ↔ V45 | Si V45=98, V56 debe registrar 98 |
+| `V56-ERROR-006` | V56 ↔ V53 | V56 no debe repetir medicamentos ya reportados en el bloque V53 |
+| `V56-ERROR-007` | V56 ↔ V54 | V56 no debe repetir el medicamento registrado en V54 |
+| `V56-ERROR-008` | V56 ↔ V55 | V56 no debe repetir el medicamento registrado en V55 |
+| `V56-ERROR-009` | V56 ↔ V54/V55 | V56 solo se usa si existe secuencia previa válida en V54 y V55 |
+| `V57-ERROR-003` | V57 ↔ V45 | Si V45=1, V57 debe responder 1 o 2, no 98 |
+| `V57-ERROR-004` | V57 ↔ V45 | Si V45=98, V57 debe registrar 98 |
+| `V58-ERROR-003` | V58 ↔ V45 | Si V45=98, V58 debe registrar 1845-01-01 |
+| `V58-ERROR-004` | V58 ↔ V45 | Si V45=1, V58 no debe registrar 1845-01-01 |
+| `V58-ERROR-005` | V58 ↔ V49 | La fecha de finalización no debe ser anterior a la fecha de inicio |
+| `V59-ERROR-003` | V59 ↔ V45 | Si V45=98, V59 debe registrar 98 |
+| `V59-ERROR-004` | V59 ↔ V45 | Si V45=1, V59 debe registrar 1, 2 o 3 |
+| `V60-ERROR-003` | V60 ↔ V59 | Si V59=2, V60 debe registrar un motivo entre 1 y 8 |
+| `V60-ERROR-004` | V60 ↔ V59 | Si V59 es diferente de 2, V60 debe registrar 98 |
+
+**Total de hallazgos con trazabilidad identificados:** 46.
 
 ---
 
-# Total final
+# Total documentado en este archivo
 
- **172 hallazgos encontrados hasta V28**: **138 errores** y **34 advertencias**.
+**212 hallazgos documentados**: **178 errores** y **34 advertencias**.
+
+Este corte incluye V1-V28 y V54-V60. Para dejar el catálogo continuo hasta V60 falta integrar los hallazgos de V29-V53.9.

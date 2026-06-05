@@ -2,33 +2,48 @@
 
 **Proyecto:** Validador CAC para reporte de cohorte cáncer  
 **Normativa base:** Resolución 0247/2014 · Instructivo CAC-IEP1-I01 · Medición enero 2025  
-**Versión del backlog:** 2.1  
-**Fecha:** Mayo 2026  
+**Versión del backlog de historias:** 3.0  
+**Estado actual:** avance funcional validado hasta V60  
+**Siguiente bloque de trabajo:** V61 — inicio del último esquema de terapia sistémica  
+**Fecha de actualización:** Junio 2026  
 
 ---
 
-## Reglas del backlog
+## 1. Propósito del documento
+
+Este documento reúne las historias de usuario del Validador CAC.  
+Su función es orientar el desarrollo del proyecto desde la perspectiva de las personas que van a usar, revisar, mantener o auditar la herramienta.
+
+Las historias no reemplazan el instructivo CAC ni la matriz de variables. Sirven para organizar el trabajo por necesidades reales del proceso: cargar archivos, validar información, revisar hallazgos, exportar reportes y mantener trazabilidad.
+
+El proyecto se trabaja por sprints, con avance acumulativo. Las variables cerradas se conservan activas y no se modifican salvo que se identifique un bug real.
+
+---
+
+## 2. Reglas del backlog
 
 1. No se reutilizan IDs de historias.
-2. Las historias descartadas se marcan como `[DESCARTADA]` con justificación.
+2. Las historias descartadas se conservan marcadas como `[DESCARTADA]`, con justificación.
 3. Cada historia debe tener valor funcional claro.
 4. Cada sprint debe entregar algo usable.
 5. Las validaciones se implementan por bloques de variables, no todas al mismo tiempo.
 6. Los datos sensibles deben mantenerse en entorno autorizado.
+7. Las reglas de negocio deben salir del instructivo o de una trazabilidad clara entre variables.
+8. Si una regla depende de una variable futura, se deja pendiente hasta llegar a esa variable.
 
 ---
 
-## Perfiles
+## 3. Perfiles
 
 | Perfil | Descripción |
 |---|---|
-| Digitador | Registra o carga datos de pacientes. |
-| Analista de calidad | Revisa errores, advertencias y soportes. |
-| Auditor CAC | Verifica cumplimiento frente al instructivo. |
-| Coordinador del programa | Consulta indicadores y resultados. |
-| Administrador | Configura usuarios, matriz y catálogos. |
-| Encargado de seguridad | Controla privacidad y protección de datos. |
-| Desarrollador / mantenedor | Actualiza reglas, catálogos y exportaciones. |
+| Digitador | Registra, corrige o carga datos de pacientes. |
+| Analista de calidad | Revisa errores, advertencias y soportes antes del reporte. |
+| Auditor CAC | Verifica cumplimiento frente al instructivo y soportes. |
+| Coordinador del programa | Consulta indicadores, avance y calidad del dato. |
+| Administrador | Mantiene catálogos, documentación y configuración del sistema. |
+| Encargado de seguridad | Revisa privacidad, acceso y manejo de datos sensibles. |
+| Desarrollador / mantenedor | Actualiza reglas, módulos, catálogos y exportaciones. |
 
 ---
 
@@ -47,6 +62,7 @@
 - Cada variable muestra tipo de dato, formato, catálogo, comodines, dependencias, reglas, soporte documental y severidad.
 
 **Prioridad:** Alta  
+**Estado:** En uso como documentación base  
 **Sprint sugerido:** Sprint 0
 
 ---
@@ -54,8 +70,8 @@
 ## HU-002 — Mantener matriz técnica de variables
 
 **Como** administrador,  
-**quiero** crear y actualizar fichas técnicas de variables CAC,  
-**para** mantener el sistema alineado con el instructivo vigente.
+**quiero** actualizar la matriz técnica de variables,  
+**para** mantener el sistema alineado con el instructivo y con el avance real del desarrollo.
 
 **Criterios de aceptación:**
 - Permite registrar número de variable.
@@ -63,8 +79,10 @@
 - Permite definir tipo de dato y formato esperado.
 - Permite registrar catálogo, comodines, dependencias, reglas y severidad.
 - Permite indicar soporte documental requerido.
+- Refleja el avance funcional cerrado hasta la variable correspondiente.
 
 **Prioridad:** Alta  
+**Estado:** En actualización continua  
 **Sprint sugerido:** Sprint 0
 
 ---
@@ -73,16 +91,18 @@
 
 **Como** administrador,  
 **quiero** versionar la matriz de variables,  
-**para** conservar trazabilidad cuando cambie el instructivo CAC.
+**para** conservar trazabilidad cuando cambie el instructivo o se cierre un nuevo bloque.
 
 **Criterios de aceptación:**
 - Cada cambio queda asociado a una versión.
-- Se registra fecha, usuario responsable y descripción del cambio.
+- Se registra fecha, responsable y descripción del cambio.
 - Se puede consultar historial.
 - Se puede marcar una versión como activa.
+- Se diferencia entre documentación base y avance funcional implementado.
 
 **Prioridad:** Media  
-**Sprint sugerido:** Sprint 2
+**Estado:** Pendiente de formalización completa  
+**Sprint sugerido:** Sprint transversal
 
 ---
 
@@ -98,11 +118,13 @@
 - Permite cargar archivo `.xlsx`.
 - Rechaza archivos no compatibles.
 - Muestra nombre del archivo cargado.
+- Permite seleccionar la hoja de trabajo.
 - Muestra mensaje claro si el archivo no se puede leer.
 - No procesa datos hasta validar estructura mínima.
 
 **Prioridad:** Alta  
-**Sprint sugerido:** Sprint 1
+**Estado:** Cerrado funcional  
+**Sprint:** Sprint 1
 
 ---
 
@@ -113,14 +135,15 @@
 **para** evitar resultados equivocados por cargar un archivo incorrecto.
 
 **Criterios de aceptación:**
-- Detecta columnas obligatorias faltantes.
-- Detecta nombres de columnas incompatibles.
-- Informa qué columnas faltan.
-- Permite ignorar columnas adicionales no requeridas.
+- Detecta encabezados reales del instructivo.
+- Reconoce variables simples y subvariables.
+- Detecta columnas obligatorias faltantes según el avance cargado.
+- Permite trabajar con archivos parciales de prueba.
 - Bloquea validación si la estructura mínima no es válida.
 
 **Prioridad:** Alta  
-**Sprint sugerido:** Sprint 1
+**Estado:** Cerrado funcional hasta V60  
+**Sprint:** Sprint 1 en adelante
 
 ---
 
@@ -138,11 +161,12 @@
 - Muestra error claro si el proceso falla.
 
 **Prioridad:** Media  
-**Sprint sugerido:** Sprint 2
+**Estado:** Implementado parcialmente  
+**Sprint sugerido:** Transversal
 
 ---
 
-# Épica C — Captura manual y celular
+# Épica C — Captura manual y uso web futuro
 
 ## HU-007 — Crear registro CAC manualmente
 
@@ -154,11 +178,12 @@
 - Permite crear un registro nuevo.
 - Muestra variables por módulo.
 - Guarda avance parcial.
-- El registro queda en estado `Borrador` hasta validarse.
+- El registro queda en estado de revisión antes de validarse.
 - Permite continuar luego.
 
 **Prioridad:** Alta para versión web  
-**Sprint sugerido:** Sprint 3
+**Estado:** Pendiente  
+**Sprint sugerido:** Futuro
 
 ---
 
@@ -175,8 +200,9 @@
 - La información se guarda en una base central.
 - El usuario puede continuar un registro desde otro dispositivo.
 
-**Prioridad:** Alta para uso hospitalario  
-**Sprint sugerido:** Sprint 4
+**Prioridad:** Alta para uso institucional  
+**Estado:** Pendiente  
+**Sprint sugerido:** Futuro web
 
 ---
 
@@ -184,17 +210,18 @@
 
 **Como** analista de calidad,  
 **quiero** ver registros creados por diferentes usuarios,  
-**para** revisar información consolidada del hospital.
+**para** revisar información consolidada de la institución.
 
 **Criterios de aceptación:**
 - Lista registros creados desde PC y celular.
 - Permite buscar por documento.
 - Permite filtrar por estado.
 - Permite ver registros incompletos.
-- Los datos no dependen del localStorage del dispositivo.
+- Los datos no dependen del almacenamiento local del dispositivo.
 
 **Prioridad:** Alta para versión web  
-**Sprint sugerido:** Sprint 4
+**Estado:** Pendiente  
+**Sprint sugerido:** Futuro web
 
 ---
 
@@ -207,21 +234,20 @@
 **para** detectar errores en nombres, documento, afiliación, régimen, municipio y teléfono.
 
 **Criterios de aceptación:**
-- V1, V2, V3 y V4 validan mayúsculas y caracteres prohibidos.
-- V2 permite `NONE`.
-- V4 permite `NOAP`.
+- V1-V4 validan nombres y apellidos según reglas de texto.
 - V5 valida catálogo de tipo de identificación.
 - V6 valida formato según V5.
-- V7 valida fecha de nacimiento.
+- V7 valida fecha de nacimiento sin aplicar regla de corte excluida por decisión del cliente.
 - V8 solo permite `M` o `F`.
 - V10 valida régimen.
-- Si V5 = `AS` o `MS`, V10 debe ser `S`.
-- V14 valida estructura DIVIPOLA.
+- Si V5=`AS` o `MS`, V10 debe ser `S`.
+- V14 valida estructura de municipio.
 - V15 permite máximo dos teléfonos separados por guion o `0`.
 - V16 valida fecha de afiliación.
 
 **Prioridad:** Alta  
-**Sprint sugerido:** Sprint 1
+**Estado:** Cerrado funcional  
+**Sprint:** Sprint 1
 
 ---
 
@@ -229,22 +255,21 @@
 
 **Como** analista de calidad,  
 **quiero** validar diagnóstico del cáncer,  
-**para** revisar CIE-10, fechas, estudio diagnóstico, histología, estadificación y antecedentes.
+**para** revisar CIE-10, fechas, estudio diagnóstico, histología, estadificación, riesgo, intervención y antecedentes.
 
 **Criterios de aceptación:**
 - V17 valida CIE-10 contra catálogo operativo.
-- V17 bloquea `C80X`.
 - V18 valida fecha de diagnóstico.
 - V19 y V20 validan secuencia remisión-ingreso-diagnóstico.
 - V21 valida tipo de estudio.
-- Si V21 = `7`, V22 es obligatorio.
-- Si V21 = `7`, V23 y V24 deben ser `1845-01-01`.
-- Si V17 inicia con `D`, V29 debe ser `0`.
-- V31-V33 aplican según cáncer de mama.
-- V37 aplica según cáncer de próstata.
+- Si V21=7, se activan coherencias con V22, V23, V24, V27 y V28.
+- V29 valida estadificación según el diagnóstico.
+- V36-V39 validan linfomas, mieloma, Gleason y riesgo según corresponda.
+- V41-V44 validan intervención y antecedente de otro cáncer primario.
 
 **Prioridad:** Alta  
-**Sprint sugerido:** Sprint 2
+**Estado:** Cerrado funcional  
+**Sprint:** Sprint 2 y Sprint 3A/3B
 
 ---
 
@@ -255,17 +280,21 @@
 **para** revisar esquemas, ciclos, medicamentos, IPS, fechas y finalización.
 
 **Criterios de aceptación:**
-- V45 controla V46-V73.
-- Si V45 = `98`, las dependientes usan comodines de no aplica.
+- V45 controla el bloque de terapia sistémica.
+- V46-V46.8 validan fases cuando aplican según diagnóstico.
 - V47 valida ciclos.
-- V49 valida inicio del esquema.
-- V51 y V52 validan IPS contra REPS.
-- V53.1-V53.9 validan ATC.
-- No permite duplicar medicamentos dentro del mismo esquema.
-- Valida coherencia entre primer y último esquema.
+- V48-V52 validan ubicación, fecha de inicio e IPS del primer o único esquema.
+- V53-V53.9 validan medicamentos base con catálogo ATC.
+- V54-V56 validan medicamentos adicionales sin duplicar el bloque V53.
+- V57 valida quimioterapia intratecal.
+- V58 valida fecha de finalización.
+- V59 valida características actuales del esquema.
+- V60 valida motivo de finalización prematura cuando V59=2.
+- V61-V73 quedan para el bloque del último esquema.
 
-**Prioridad:** Media  
-**Sprint sugerido:** Sprint 5
+**Prioridad:** Alta  
+**Estado:** Cerrado funcional hasta V60; V61 en revisión  
+**Sprint:** Sprint 3E, 3F, 3G y 3H
 
 ---
 
@@ -277,17 +306,17 @@
 
 **Criterios de aceptación:**
 - V74 controla V75-V85.
-- Si V74 = `2`, el resto del bloque registra no aplica.
+- Si V74=2, el resto del bloque registra no aplica.
 - V75 valida tiempos quirúrgicos.
 - V76 valida primera cirugía en periodo.
-- V77 valida IPS contra REPS.
-- V78 valida CUPS contra catálogo oficial.
-- V83 valida CUPS contra catálogo oficial.
+- V77 valida IPS.
+- V78 valida CUPS.
 - V80 solo aplica si hubo más de una cirugía.
-- V85 es coherente con V127.
+- V85 se revisa con estado vital cuando corresponda.
 
 **Prioridad:** Media  
-**Sprint sugerido:** Sprint 6
+**Estado:** Pendiente  
+**Sprint sugerido:** Futuro
 
 ---
 
@@ -299,17 +328,17 @@
 
 **Criterios de aceptación:**
 - V86 controla V87-V105.
-- Si V86 = `98`, el resto registra no aplica.
+- Si V86=98, el resto registra no aplica.
 - V87 valida número de sesiones.
 - V88 valida fecha de inicio.
-- V90 valida CUPS contra catálogo oficial.
-- V99 valida CUPS contra catálogo oficial.
-- V92 y V93 validan IPS contra REPS.
+- V90 y V99 validan CUPS.
+- V92 y V93 validan IPS.
 - V94 valida finalización.
-- V96 solo aplica si V95 = `2`.
+- V96 solo aplica si V95=2.
 
 **Prioridad:** Media  
-**Sprint sugerido:** Sprint 6
+**Estado:** Pendiente  
+**Sprint sugerido:** Futuro
 
 ---
 
@@ -322,15 +351,16 @@
 **Criterios de aceptación:**
 - V125 valida tratamiento a la fecha de corte.
 - V126 valida resultado final.
-- Si V127 = `2`, V126 debe ser `99`.
-- Si V127 = `2`, V131 debe tener fecha válida.
-- Si V127 = `1`, V131 debe ser `1845-01-01`.
+- Si V127=2, V126 debe ser 99.
+- Si V127=2, V131 debe tener fecha válida.
+- Si V127=1, V131 debe ser 1845-01-01.
 - V128 valida novedad administrativa.
 - V129 valida novedad clínica.
-- V134 siempre debe ser `2025-01-01`.
+- V134 siempre debe ser 2025-01-01.
 
 **Prioridad:** Media  
-**Sprint sugerido:** Sprint 7
+**Estado:** Pendiente  
+**Sprint sugerido:** Futuro
 
 ---
 
@@ -341,15 +371,15 @@
 **para** priorizar correcciones antes del envío.
 
 **Criterios de aceptación:**
-- Errores críticos en rojo.
+- Errores en rojo.
 - Advertencias en amarillo.
-- Información en azul o gris.
-- Errores críticos bloquean exportación final oficial.
-- Advertencias permiten exportar dejando constancia.
 - Cada alerta indica variable, regla y recomendación.
+- Las reglas de trazabilidad muestran datos involucrados.
+- Los textos visibles son claros y operativos.
 
 **Prioridad:** Alta  
-**Sprint sugerido:** Sprint 1
+**Estado:** Cerrado funcional, con mejoras de redacción en curso  
+**Sprint:** Transversal
 
 ---
 
@@ -359,17 +389,17 @@
 
 **Como** administrador,  
 **quiero** cargar catálogo CIE-10,  
-**para** validar diagnósticos y reglas clínicas asociadas.
+**para** validar diagnósticos y reglas asociadas.
 
 **Criterios de aceptación:**
-- Permite importar Excel, CSV o JSON.
-- Permite buscar código y descripción.
-- Permite marcar códigos no permitidos.
-- Bloquea `C80X`.
-- Se actualiza sin tocar lógica.
+- Permite consultar código y descripción.
+- Permite validar V17 y V44.
+- Permite reglas por agrupador diagnóstico.
+- Se actualiza sin tocar lógica cuando sea posible.
 
 **Prioridad:** Alta  
-**Sprint sugerido:** Sprint 2
+**Estado:** Implementado para uso actual  
+**Sprint:** Sprint 2
 
 ---
 
@@ -386,7 +416,8 @@
 - Se actualiza sin modificar código fuente.
 
 **Prioridad:** Alta  
-**Sprint sugerido:** Sprint 2
+**Estado:** Pendiente / parcial según catálogo disponible  
+**Sprint sugerido:** Transversal
 
 ---
 
@@ -403,7 +434,8 @@
 - Valida formato territorial cuando aplique.
 
 **Prioridad:** Media  
-**Sprint sugerido:** Sprint 3
+**Estado:** Pendiente / parcial según catálogo disponible  
+**Sprint sugerido:** Transversal
 
 ---
 
@@ -420,7 +452,8 @@
 - Valida servicio habilitado cuando exista esa información.
 
 **Prioridad:** Media  
-**Sprint sugerido:** Sprint 4
+**Estado:** Pendiente de catálogo completo  
+**Sprint sugerido:** Transversal
 
 ---
 
@@ -431,34 +464,32 @@
 **para** validar medicamentos antineoplásicos administrados.
 
 **Criterios de aceptación:**
-- Importa códigos ATC.
-- Valida medicamentos de primer y último esquema.
-- Advierte duplicados.
-- Se actualiza sin tocar reglas.
+- Permite validar códigos ATC cargados.
+- Aplica a V53.1-V53.9 y V54-V56.
+- Permite consultar medicamentos.
+- Informa cuando el código no existe en el catálogo cargado.
 
-**Prioridad:** Media  
-**Sprint sugerido:** Sprint 5
+**Prioridad:** Alta para terapia sistémica  
+**Estado:** Implementado para el bloque trabajado  
+**Sprint:** Sprint 3E / 3F
 
 ---
 
 ## HU-044 — Cargar catálogo CUPS
 
 **Como** administrador,  
-**quiero** cargar el catálogo de procedimientos CUPS,  
-**para** validar los códigos de cirugía y radioterapia registrados en el reporte CAC.
+**quiero** cargar el catálogo CUPS,  
+**para** validar códigos de cirugía y radioterapia cuando se implementen esos bloques.
 
 **Criterios de aceptación:**
-- Permite importar el catálogo en formato Excel, CSV o JSON.
-- Valida V78 (CUPS primera cirugía) contra el catálogo.
-- Valida V83 (CUPS última cirugía) contra el catálogo.
-- Valida V90 (CUPS primer esquema radioterapia) contra el catálogo.
-- Valida V99 (CUPS último esquema radioterapia) contra el catálogo.
-- Informa si el código ingresado no existe en el catálogo.
-- Se actualiza sin modificar el código fuente.
-- Identifica la versión del catálogo cargado (Resolución 2641/2024 MinSalud vigente para 2025).
+- Permite consultar códigos CUPS.
+- Valida V78, V83, V90 y V99 cuando esos bloques estén implementados.
+- Informa si el código ingresado no existe.
+- Se actualiza sin modificar reglas de negocio.
 
 **Prioridad:** Media  
-**Sprint sugerido:** Sprint 6
+**Estado:** Catálogo de apoyo disponible / validaciones futuras pendientes  
+**Sprint sugerido:** Futuro
 
 ---
 
@@ -479,7 +510,8 @@
 - Muestra recomendación.
 
 **Prioridad:** Alta  
-**Sprint sugerido:** Sprint 1
+**Estado:** Cerrado funcional  
+**Sprint:** Sprint 1
 
 ---
 
@@ -490,13 +522,14 @@
 **para** revisar un caso puntual.
 
 **Criterios de aceptación:**
-- Busca por tipo y número de identificación.
+- Busca por documento.
 - Muestra resumen del paciente.
 - Muestra errores y advertencias asociados.
 - Permite limpiar búsqueda.
 
 **Prioridad:** Alta  
-**Sprint sugerido:** Sprint 1
+**Estado:** Implementado / sujeto a mejoras de UI  
+**Sprint:** Sprint 1
 
 ---
 
@@ -504,24 +537,24 @@
 
 **Como** analista de calidad,  
 **quiero** filtrar errores por tipo,  
-**para** revisar formato, catálogo, coherencia o soporte por separado.
+**para** revisar formato, catálogo o coherencia por separado.
 
 **Criterios de aceptación:**
 - Filtra por formato.
 - Filtra por catálogo.
 - Filtra por coherencia.
-- Filtra por soporte documental.
 - Permite ver todos nuevamente.
 
 **Prioridad:** Media  
-**Sprint sugerido:** Sprint 2
+**Estado:** Pendiente / mejora futura  
+**Sprint sugerido:** Futuro
 
 ---
 
 ## HU-025 — Ordenar pacientes por criticidad
 
 **Como** analista de calidad,  
-**quiero** ordenar pacientes por cantidad de errores críticos,  
+**quiero** ordenar pacientes por cantidad de errores,  
 **para** priorizar casos urgentes.
 
 **Criterios de aceptación:**
@@ -531,7 +564,8 @@
 - Conserva filtros activos.
 
 **Prioridad:** Media  
-**Sprint sugerido:** Sprint 2
+**Estado:** Pendiente / mejora futura  
+**Sprint sugerido:** Futuro
 
 ---
 
@@ -548,7 +582,8 @@
 - Conserva filtros.
 
 **Prioridad:** Media  
-**Sprint sugerido:** Sprint 2
+**Estado:** Implementado o en mejora según pantalla actual  
+**Sprint sugerido:** Transversal
 
 ---
 
@@ -561,13 +596,14 @@
 **para** saber qué tan lista está la base.
 
 **Criterios de aceptación:**
-- Muestra porcentaje sin errores críticos.
-- Muestra porcentaje con advertencias.
-- Muestra porcentaje incompleto.
 - Muestra total de pacientes procesados.
+- Muestra pacientes con errores.
+- Muestra pacientes con advertencias.
+- Muestra pacientes sin problemas.
 
 **Prioridad:** Media  
-**Sprint sugerido:** Sprint 2
+**Estado:** Implementado como resumen principal  
+**Sprint:** Transversal
 
 ---
 
@@ -578,14 +614,13 @@
 **para** identificar dónde están las debilidades.
 
 **Criterios de aceptación:**
-- Muestra cumplimiento V1-V16.
-- Muestra cumplimiento V17-V44.
-- Muestra cumplimiento V45-V73.
-- Muestra cumplimiento V74-V105.
-- Muestra cumplimiento V106-V134.
+- Muestra cumplimiento por grupos de variables.
+- Permite identificar bloques con mayor número de hallazgos.
+- Se actualiza según avance funcional.
 
 **Prioridad:** Media  
-**Sprint sugerido:** Sprint 3
+**Estado:** Pendiente / mejora futura  
+**Sprint sugerido:** Futuro
 
 ---
 
@@ -593,16 +628,17 @@
 
 **Como** coordinador,  
 **quiero** ver reglas que más se incumplen,  
-**para** capacitar al equipo.
+**para** orientar correcciones y capacitación.
 
 **Criterios de aceptación:**
-- Muestra top 10 reglas incumplidas.
+- Muestra reglas más frecuentes.
 - Muestra número de ocurrencias.
 - Muestra variable asociada.
 - Permite filtrar por bloque.
 
 **Prioridad:** Media  
-**Sprint sugerido:** Sprint 3
+**Estado:** Pendiente / mejora futura  
+**Sprint sugerido:** Futuro
 
 ---
 
@@ -611,20 +647,20 @@
 ## HU-030 — Exportar Excel de validación
 
 **Como** analista de calidad,  
-**quiero** exportar Excel de validación,  
-**para** compartir errores, advertencias y pendientes.
+**quiero** exportar un Excel con las celdas marcadas,  
+**para** revisar y corregir la matriz original con mayor facilidad.
 
 **Criterios de aceptación:**
-- Hoja de resumen ejecutivo.
-- Hoja de detalle de registros.
-- Hoja de errores y advertencias.
-- Hoja de soportes requeridos.
-- Columnas legibles.
-- Encabezados claros.
-- Hojas con filtros.
+- Conserva la estructura principal de la matriz.
+- Marca errores en rojo.
+- Marca advertencias en amarillo.
+- Marca solo las variables afectadas por hallazgos reales.
+- Reconoce variables simples y subvariables.
+- Mantiene formato adecuado para fechas y catálogos.
 
 **Prioridad:** Alta  
-**Sprint sugerido:** Sprint 2
+**Estado:** Cerrado funcional hasta V60, con revisión acumulativa  
+**Sprint:** Transversal
 
 ---
 
@@ -638,12 +674,12 @@
 - Incluye resumen ejecutivo.
 - Incluye indicadores principales.
 - Incluye principales hallazgos de calidad del dato.
-- Incluye pendientes prioritarios.
 - No incluye información innecesaria.
 - Tiene diseño legible y profesional.
 
 **Prioridad:** Media  
-**Sprint sugerido:** Sprint 3
+**Estado:** Pendiente  
+**Sprint sugerido:** Futuro
 
 ---
 
@@ -661,7 +697,8 @@
 - Abre en Microsoft Word.
 
 **Prioridad:** Media  
-**Sprint sugerido:** Sprint 3
+**Estado:** Pendiente  
+**Sprint sugerido:** Futuro
 
 ---
 
@@ -676,10 +713,11 @@
 - Respeta formato definido.
 - Bloquea exportación si hay errores críticos.
 - Permite exportar con advertencias dejando constancia.
-- Registra fecha y usuario que exporta.
+- Registra fecha y responsable cuando exista versión con usuarios.
 
 **Prioridad:** Alta final  
-**Sprint sugerido:** Sprint 8
+**Estado:** Pendiente  
+**Sprint sugerido:** Cierre del proyecto
 
 ---
 
@@ -699,7 +737,8 @@
 - Muestra ejemplo cuando aplique.
 
 **Prioridad:** Media  
-**Sprint sugerido:** Sprint 2
+**Estado:** Pendiente / mejora futura  
+**Sprint sugerido:** Futuro
 
 ---
 
@@ -713,10 +752,12 @@
 - Indica qué está mal.
 - Indica cómo corregirlo.
 - Menciona variable afectada.
+- Incluye datos involucrados cuando hay trazabilidad.
 - Evita lenguaje excesivamente técnico.
 
 **Prioridad:** Alta  
-**Sprint sugerido:** Sprint 1
+**Estado:** En mejora continua  
+**Sprint:** Transversal
 
 ---
 
@@ -726,17 +767,17 @@
 
 **Como** encargado de seguridad,  
 **quiero** garantizar que los datos no salgan del entorno autorizado,  
-**para** cumplir protección de datos personales y confidencialidad institucional.
+**para** proteger la información clínica y personal de los pacientes.
 
 **Criterios de aceptación:**
-- Informa dónde se procesan los datos.
-- En modo local, no se envían a servidores externos.
-- En modo institucional, se guardan en servidor autorizado.
+- En modo local, los datos no se envían a servidores externos.
 - No usa servicios externos sin autorización.
-- Muestra advertencia sobre datos sensibles.
+- No guarda datos de pacientes en cookies ni almacenamiento permanente.
+- Muestra advertencia sobre manejo de datos sensibles cuando corresponda.
 
 **Prioridad:** Alta  
-**Sprint sugerido:** Sprint 1 / Sprint 4
+**Estado:** Cerrado para versión local  
+**Sprint:** Sprint 1
 
 ---
 
@@ -744,7 +785,7 @@
 
 **Como** administrador,  
 **quiero** controlar acceso mediante usuarios y roles,  
-**para** proteger información sensible.
+**para** proteger información sensible en una futura versión institucional.
 
 **Criterios de aceptación:**
 - Permite iniciar sesión.
@@ -754,7 +795,8 @@
 - Limita acciones según rol.
 
 **Prioridad:** Alta web  
-**Sprint sugerido:** Sprint 4
+**Estado:** Pendiente  
+**Sprint sugerido:** Futuro web
 
 ---
 
@@ -762,7 +804,7 @@
 
 **Como** auditor CAC,  
 **quiero** ver quién modificó un dato, cuándo y qué cambió,  
-**para** garantizar trazabilidad.
+**para** garantizar trazabilidad en una versión centralizada.
 
 **Criterios de aceptación:**
 - Registra usuario responsable.
@@ -773,7 +815,8 @@
 - Registra módulo afectado.
 
 **Prioridad:** Alta web  
-**Sprint sugerido:** Sprint 5
+**Estado:** Pendiente  
+**Sprint sugerido:** Futuro web
 
 ---
 
@@ -783,16 +826,17 @@
 
 **Como** digitador,  
 **quiero** usar la aplicación desde navegador,  
-**para** no depender de instalación en cada equipo.
+**para** no depender de instalación compleja en cada equipo.
 
 **Criterios de aceptación:**
 - Abre desde navegador moderno.
-- No requiere instalar software adicional para usuario final.
+- Puede ejecutarse localmente.
 - Funciona en PC institucional.
-- Permite acceso desde celular en versión web.
+- No requiere instalar software adicional para el usuario final, aparte de abrir el proyecto o usar servidor local.
 
 **Prioridad:** Alta  
-**Sprint sugerido:** Sprint 1
+**Estado:** Cerrado funcional local  
+**Sprint:** Sprint 1
 
 ---
 
@@ -803,13 +847,14 @@
 **para** validar bases completas sin bloqueo.
 
 **Criterios de aceptación:**
-- Maneja al menos 10.000 filas en pruebas.
+- Maneja bases grandes en pruebas.
 - Muestra avance.
-- No congela interfaz.
+- No congela la interfaz.
 - Muestra error si supera capacidad recomendada.
 
 **Prioridad:** Media  
-**Sprint sugerido:** Sprint 7
+**Estado:** Pendiente de prueba formal de rendimiento  
+**Sprint sugerido:** Futuro
 
 ---
 
@@ -828,27 +873,27 @@
 - Muestra versión activa del instructivo.
 
 **Prioridad:** Media  
-**Sprint sugerido:** Sprint 6
+**Estado:** Pendiente  
+**Sprint sugerido:** Futuro
 
 ---
 
 ## HU-042 — Mantener catálogos separados de la lógica
 
 **Como** desarrollador,  
-**quiero** tener catálogos en archivos o tablas independientes,  
+**quiero** tener catálogos en archivos independientes,  
 **para** actualizarlos sin modificar reglas.
 
 **Criterios de aceptación:**
 - CIE-10 separado de la lógica.
-- DIVIPOLA separado de la lógica.
-- EAPB separado de la lógica.
-- REPS separado de la lógica.
 - ATC separado de la lógica.
 - CUPS separado de la lógica.
-- Identifica versión de catálogo cargado.
+- Otros catálogos se integran según avance.
+- Identifica versión de catálogo cargado cuando sea posible.
 
 **Prioridad:** Alta  
-**Sprint sugerido:** Sprint 2
+**Estado:** En progreso  
+**Sprint:** Transversal
 
 ---
 
@@ -861,23 +906,24 @@
 **Criterios de aceptación:**
 - Muestra versión visible.
 - Muestra fecha de actualización.
-- Muestra versión de matriz CAC.
-- Muestra versión de catálogos.
+- Muestra versión de módulos activos.
+- Muestra versión de catálogos cuando aplique.
 
 **Prioridad:** Media  
-**Sprint sugerido:** Sprint 2
+**Estado:** En progreso  
+**Sprint:** Transversal
 
 ---
 
-# Mapeo a sprints
+# Mapeo de avance por sprints
 
 ## Sprint 0 — Base del producto y matriz
 
 **Objetivo:** preparar base conceptual y técnica.
 
-**Historias:** HU-001, HU-002
+**Historias relacionadas:** HU-001, HU-002, HU-003
 
-**Entregable:** matriz navegable y lista para alimentar reglas.
+**Estado:** En uso y actualización continua.
 
 ---
 
@@ -885,79 +931,39 @@
 
 **Objetivo:** cargar Excel, validar estructura y validar V1-V16.
 
-**Historias:** HU-004, HU-005, HU-010, HU-016, HU-022, HU-023, HU-035, HU-036, HU-039
+**Historias relacionadas:** HU-004, HU-005, HU-010, HU-016, HU-022, HU-023, HU-035, HU-036, HU-039
 
-**Entregable:** primer validador funcional de identificación.
+**Estado:** Cerrado funcional.
 
 ---
 
 ## Sprint 2 — Diagnóstico y catálogos mínimos
 
-**Objetivo:** validar V17-V44 y cargar catálogos base.
+**Objetivo:** validar diagnóstico, confirmación e histología.
 
-**Historias:** HU-011, HU-017, HU-018, HU-024, HU-025, HU-026, HU-030, HU-034, HU-042, HU-043
+**Historias relacionadas:** HU-011, HU-017, HU-018, HU-024, HU-025, HU-026, HU-030, HU-034, HU-042, HU-043
 
-**Entregable:** validador de identificación y diagnóstico con Excel de validación.
-
----
-
-## Sprint 3 — Reportes ejecutivos y dashboard
-
-**Objetivo:** mejorar salidas para coordinación y comité.
-
-**Historias:** HU-003, HU-019, HU-027, HU-028, HU-029, HU-031, HU-032
-
-**Entregable:** reportes Excel, PDF y Word con indicadores.
+**Estado:** Cerrado funcional para los bloques trabajados.
 
 ---
 
-## Sprint 4 — Web institucional y celular
+## Sprint 3 — Tratamiento y avance acumulativo
 
-**Objetivo:** permitir uso real desde varios dispositivos con datos centralizados.
+**Objetivo:** avanzar por bloques de tratamiento sistémico y mantener exportador funcional.
 
-**Historias:** HU-007, HU-008, HU-009, HU-020, HU-037
+**Historias relacionadas:** HU-012, HU-021, HU-030, HU-035
 
-**Entregable:** versión web inicial con usuarios y registros compartidos.
-
----
-
-## Sprint 5 — Tratamiento sistémico y auditoría
-
-**Objetivo:** validar terapia sistémica y activar trazabilidad.
-
-**Historias:** HU-012, HU-021, HU-038
-
-**Entregable:** tratamiento inicial y auditoría de cambios.
+**Estado:** Cerrado funcional hasta V60. V61 queda como siguiente variable.
 
 ---
 
-## Sprint 6 — Cirugía, radioterapia y configuración
+## Sprints futuros — Bloques restantes
 
-**Objetivo:** validar bloques terapéuticos restantes.
+**Objetivo:** completar el resto del instructivo CAC.
 
-**Historias:** HU-013, HU-014, HU-041, HU-044
+**Historias relacionadas:** HU-013, HU-014, HU-015, HU-031, HU-032, HU-033, HU-037, HU-038, HU-040, HU-041, HU-044
 
-**Entregable:** validaciones terapéuticas ampliadas con catálogo CUPS.
-
----
-
-## Sprint 7 — Resultado final y rendimiento
-
-**Objetivo:** cerrar variables finales y probar bases grandes.
-
-**Historias:** HU-015, HU-006, HU-040
-
-**Entregable:** validador completo con pruebas de rendimiento.
-
----
-
-## Sprint 8 — Archivo plano final CAC
-
-**Objetivo:** generar archivo final oficial.
-
-**Historias:** HU-033
-
-**Entregable:** archivo plano CAC final, bloqueado por errores críticos.
+**Estado:** Pendiente.
 
 ---
 
@@ -967,7 +973,7 @@
 |---|---:|
 | Épicas | 12 |
 | Historias | 44 |
-| Sprints sugeridos | 9 |
-| Primera entrega útil | Sprint 1 |
-| Primera entrega clínica fuerte | Sprint 2 |
-| Primera entrega institucional web | Sprint 4 |
+| Avance funcional actual | V1-V60 |
+| Siguiente variable | V61 |
+| Primera entrega útil | V1-V16 |
+| Bloque clínico cerrado actual | Primer o único esquema de terapia sistémica hasta V60 |

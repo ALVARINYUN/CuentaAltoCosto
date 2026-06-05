@@ -299,8 +299,8 @@
         variable: 'V58',
         titulo: 'V58 está vacía',
         mensaje: 'V58 está vacía. Esta variable debe registrar la fecha de finalización del primer o único esquema, 1800-01-01 si es hormonoterapia o el esquema aún no finaliza, o 1845-01-01 si no aplica porque V45=98.',
-        regla: 'V58 es obligatoria dentro del bloque del primer o único esquema.',
-        recomendacion: 'Revise el soporte clínico. Registre una fecha en formato AAAA-MM-DD, 1800-01-01 si el esquema no ha finalizado, o 1845-01-01 si V45=98.',
+        regla: 'V58 debe diligenciarse dentro del bloque del primer o único esquema. Puede registrar una fecha real de finalización, 1800-01-01 si es hormonoterapia o el esquema aún no finaliza, o 1845-01-01 cuando V45=98.',
+        recomendacion: 'Revise el soporte clínico. Registre la fecha de finalización en formato AAAA-MM-DD, 1800-01-01 si es hormonoterapia o el esquema aún no ha finalizado, o 1845-01-01 si V45=98.',
         valor: v58Original,
         datosRelacionados: [
           dato('V45', registro?.V45, describirValorV45(registro?.V45)),

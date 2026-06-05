@@ -260,7 +260,7 @@
         codigo: `${variable}-ERROR-001`,
         variable,
         titulo: `${variable} está vacía`,
-        mensaje: `${variable} está vacía. Esta variable debe registrar un código ATC adicional, 97 si no recibió medicamentos diferentes a V53.1-V53.9 y V45=1, o 98 si no tuvo este esquema y V45=98.`,
+        mensaje: `${variable} está vacía. Debe registrar un código ATC si hubo medicamento adicional. Si no hubo medicamento adicional, registre 97 cuando V45=1. Si no tuvo este esquema, registre 98 cuando V45=98.`,
         regla: `${variable} es obligatoria dentro del bloque del primer o único esquema de terapia sistémica.`,
         recomendacion: 'Revise el soporte de administración. Diligencie un código ATC si hubo medicamento adicional, 97 si no hubo medicamentos adicionales con V45=1, o 98 si no tuvo este esquema con V45=98.',
         valor: valorOriginal,

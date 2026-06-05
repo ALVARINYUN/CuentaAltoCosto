@@ -24,7 +24,7 @@ Archivo Excel
 → lector/estructura.js reconoce encabezados reales
 → lector/excel.js normaliza filas y variables
 → engine.js ejecuta módulos activos
-→ modulo1.js ... modulo11.js generan hallazgos
+→ modulo1.js ... modulo13.js generan hallazgos
 → UI muestra resultados por paciente
 → exportador/excel-reporte.js marca celdas en Excel
 ```
@@ -46,6 +46,9 @@ Archivo Excel
 | Módulo 9 | V45-V47 | `src/validaciones/reglas/modulo9.js` | Cerrado |
 | Módulo 10 | V48-V52 | `src/validaciones/reglas/modulo10.js` | Cerrado |
 | Módulo 11 | V53-V53.9 | `src/validaciones/reglas/modulo11.js` | Cerrado |
+| Módulo 12 | V54-V56 | `src/validaciones/reglas/modulo12.js` | Cerrado |
+| Módulo 13 | V57-V60 | `src/validaciones/reglas/modulo13.js` | Cerrado |
+| Módulo 14 | V61-V73 | `src/validaciones/reglas/modulo14.js` | En revisión |
 
 ---
 
@@ -606,12 +609,119 @@ Si V17=C900, corresponde a mieloma múltiple y V36 sí aplica. Por tanto, V36=98
 
 ---
 
+## Módulo 12 — Medicamentos adicionales del primer o único esquema · V54-V56
+
+### V54 — Medicamento antineoplásico adicional 1
+
+**Función técnica:** Validar el primer medicamento adicional del primer o único esquema.  
+**Trazabilidad:** Depende de V45, del bloque V53.1-V53.9 y del catálogo ATC.  
+**Datos involucrados:** V45, V53.1-V53.9, V54.  
+**Estado:** Cerrada.
+
+**Reglas técnicas principales:**
+
+- Si V45=1, V54 puede registrar un ATC adicional o 97 si no hubo medicamento adicional.
+- Si V45=98, V54 debe registrar 98.
+- V54 no debe repetir medicamentos ya reportados en el bloque V53.
+- Si registra un ATC, debe existir en el catálogo ATC cargado.
+
+### V55 — Medicamento antineoplásico adicional 2
+
+**Función técnica:** Validar el segundo medicamento adicional del primer o único esquema.  
+**Trazabilidad:** Depende de V45, del bloque V53, de V54 y del catálogo ATC.  
+**Datos involucrados:** V45, V53.1-V53.9, V54, V55.  
+**Estado:** Cerrada.
+
+**Reglas técnicas principales:**
+
+- Si V45=1, V55 puede registrar un ATC adicional o 97 si no hubo segundo medicamento adicional.
+- Si V45=98, V55 debe registrar 98.
+- V55 no debe repetir medicamentos del bloque V53 ni repetir el medicamento registrado en V54.
+- Si V54=97, no debe aparecer un ATC en V55, porque la secuencia indica que no hubo medicamentos adicionales previos.
+
+### V56 — Medicamento antineoplásico adicional 3
+
+**Función técnica:** Validar el tercer medicamento adicional del primer o único esquema.  
+**Trazabilidad:** Depende de V45, del bloque V53, de V54, de V55 y del catálogo ATC.  
+**Datos involucrados:** V45, V53.1-V53.9, V54, V55, V56.  
+**Estado:** Cerrada.
+
+**Reglas técnicas principales:**
+
+- Si V45=1, V56 puede registrar un ATC adicional o 97 si no hubo tercer medicamento adicional.
+- Si V45=98, V56 debe registrar 98.
+- V56 no debe repetir medicamentos del bloque V53 ni repetir lo registrado en V54 o V55.
+- Si V54 o V55 están en 97, no debe aparecer un ATC en V56 sin una secuencia previa válida.
+
+---
+
+## Módulo 13 — Cierre del primer o único esquema · V57-V60
+
+### V57 — Quimioterapia intratecal en el primer o único esquema
+
+**Función técnica:** Validar si el usuario recibió quimioterapia intratecal.  
+**Trazabilidad:** Depende de V45.  
+**Datos involucrados:** V45, V57.  
+**Estado:** Cerrada.
+
+**Reglas técnicas principales:**
+
+- Si V45=1, V57 debe registrar 1 o 2.
+- Si V45=98, V57 debe registrar 98.
+- Si el cáncer no aplica para intratecal pero el paciente recibió terapia sistémica, se registra 2.
+
+### V58 — Fecha de finalización del primer o único esquema
+
+**Función técnica:** Validar la fecha de finalización del primer o único esquema.  
+**Trazabilidad:** Depende de V45 y V49.  
+**Datos involucrados:** V45, V49, V58.  
+**Estado:** Cerrada.
+
+**Reglas técnicas principales:**
+
+- Si V45=98, V58 debe registrar 1845-01-01.
+- Si V45=1, V58 no debe registrar 1845-01-01.
+- V58 puede registrar una fecha real, o 1800-01-01 cuando sea hormonoterapia o el esquema aún no finaliza.
+- Si V49 y V58 son fechas reales, V58 no debe ser anterior a V49.
+
+**Nota de trazabilidad:**  
+La coherencia con V45 se explica combinando los instructivos: V45 define si hubo terapia sistémica, y V58 define qué valor se usa cuando no aplica o cuando el esquema no finaliza.
+
+### V59 — Características actuales del primer o único esquema
+
+**Función técnica:** Validar el estado actual del primer o único esquema.  
+**Trazabilidad:** Depende de V45.  
+**Datos involucrados:** V45, V59.  
+**Estado:** Cerrada.
+
+**Reglas técnicas principales:**
+
+- Si V45=1, V59 debe registrar 1, 2 o 3.
+- Si V45=98, V59 debe registrar 98.
+- V59=2 habilita la revisión de V60.
+
+### V60 — Motivo de finalización prematura del primer o único esquema
+
+**Función técnica:** Validar el motivo de finalización prematura cuando el esquema finalizó incompleto.  
+**Trazabilidad:** Depende de V59.  
+**Datos involucrados:** V59, V60.  
+**Estado:** Cerrada.
+
+**Reglas técnicas principales:**
+
+- Si V59=2, V60 debe registrar un motivo entre 1 y 8.
+- Si V59 es diferente de 2, V60 debe registrar 98.
+- V60 no se valida contra V45 directamente; su control principal es V59.
+
+
+---
+
 ## 5. Catálogos técnicos activos
 
 | Catálogo | Registros validados | Uso |
 |---|---:|---|
 | CIE-10 | 556 | V17, V44 y reglas por diagnóstico |
-| ATC | 304 | V53.1-V53.9 y futuro V54-V56 |
+| ATC | 304 | V53.1-V53.9 y V54-V56 |
 | CUPS | 1482 | Buscador de apoyo y variables futuras |
 | REPS | Pendiente de catálogo completo | V25, V51, V52 y futuras IPS |
 | CIUO | Pendiente de catálogo completo | V9 |
@@ -637,32 +747,36 @@ fix-export-formato-catalogos-v36-v54-01
 
 ---
 
-## 7. Estado final de cierre hasta V53.9
+## 7. Estado de cierre técnico hasta V60
 
 | Bloque | Estado | Observación |
 |---|---|---|
-| V1-V16 | Cerrado | Identificación. |
+| V1-V16 | Cerrado | Identificación del usuario. |
 | V17-V24 | Cerrado | Diagnóstico base. |
 | V25-V28 | Cerrado | Confirmación, histología y diferenciación. |
 | V29 | Cerrado | Estadificación principal. |
-| V30-V33 | Cerrado | Fechas/resultados relacionados. |
-| V34-V35 | Cerrado | Dukes. |
-| V36-V40 | Cerrado | Ann Arbor, Gleason, riesgo, fecha riesgo y objetivo. |
-| V41-V44 | Cerrado | Intervención y antecedente de otro cáncer. |
-| V45-V47 | Cerrado | Terapia sistémica general. |
+| V30-V33 | Cerrado | Fechas y resultados relacionados. |
+| V34-V35 | Cerrado | Estadificación Dukes. |
+| V36-V40 | Cerrado | Ann Arbor/Lugano, Gleason, riesgo, fecha de riesgo y objetivo del tratamiento. |
+| V41-V44 | Cerrado | Intervención médica y antecedente de otro cáncer primario. |
+| V45-V47 | Cerrado | Inicio del bloque de terapia sistémica. |
 | V48-V52 | Cerrado | Primer o único esquema: ubicación, fecha e IPS. |
-| V53-V53.9 | Cerrado | Medicamentos ATC 1 a 9. |
+| V53-V53.9 | Cerrado | Medicamentos ATC base del primer o único esquema. |
+| V54-V56 | Cerrado | Medicamentos antineoplásicos adicionales del primer o único esquema. |
+| V57-V60 | Cerrado | Quimioterapia intratecal, fecha de finalización, características y motivo de finalización prematura. |
+| V61 | En revisión | Inicio del bloque del último esquema de terapia sistémica. |
+| V62-V73 | Pendiente | Variables restantes del último esquema. |
 
 ---
 
-## 8. Siguiente paso fuera de este documento
+## 8. Siguiente paso técnico
 
 La siguiente variable técnica será:
 
 ```text
-Sprint 3F · Módulo 12A · V54
+Sprint 3H · Módulo 14 · V61
 ```
 
-V54 no debe mezclarse con esta arquitectura cerrada hasta V53.9.  
-Debe abrirse como nuevo bloque técnico con sus propias reglas, pruebas y versionado.
+V61 abre el bloque del último esquema de terapia sistémica.  
+Las validaciones que dependan de V62 a V73 deben dejarse para cuando esas variables se implementen, para no adelantar reglas que todavía no tienen soporte técnico dentro del sistema.
 
