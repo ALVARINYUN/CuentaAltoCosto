@@ -1,6 +1,6 @@
 # Historias de Usuario — Validador CAC
 
-**Proyecto:** Validador CAC para reporte de cohorte cáncer  
+**Proyecto:** Validador CAC para reporte de cáncer  
 **Normativa base:** Resolución 0247/2014 · Instructivo CAC-IEP1-I01 · Medición enero 2025  
 **Versión del backlog de historias:** 3.0  
 **Estado actual:** avance funcional validado hasta V60  

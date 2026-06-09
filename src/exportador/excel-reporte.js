@@ -83,7 +83,11 @@
     V59: 'Características actuales del primer o único esquema',
     V60: 'Motivo de finalización prematura del primer o único esquema',
     V61: 'Ubicación temporal del último esquema de terapia sistémica del periodo',
-    V62: 'Fecha de inicio del último esquema de quimioterapia o terapia sistémica'
+    V62: 'Fecha de inicio del último esquema de quimioterapia o terapia sistémica',
+    V63: 'Número de IPS que suministran el último esquema',
+    V64: 'Código de la IPS1 que suministra el último esquema',
+    V65: 'Código de la IPS2 que suministra el último esquema',
+    V66: 'Número de medicamentos propuestos en el último esquema'
   };
 
   // Encabezados reales usados por la base matriz CAC.
@@ -122,7 +126,8 @@
     V59: 'v59caractersticasactualesdelprim',
     V60: 'v60motivofinalizacinprematuradep',
     V61: 'v61ubicaciontemporaldelultimoesquema',
-    V62: 'v62fechadeiniciodelultimoesquema'
+    V62: 'v62fechadeiniciodelultimoesquema',
+    V63: 'v63numerodeipsquesuministranelultimoesquema'
   };
 
   const MAPA_ENCABEZADOS_A_VARIABLES = {
@@ -355,7 +360,13 @@
     v62: 'V62',
     v62fechadeinicio: 'V62',
     v62fechadeiniciodelultimoesquema: 'V62',
-    v62fechainicioultimoesquema: 'V62'
+    v62fechainicioultimoesquema: 'V62',
+    v63: 'V63',
+    v63numeroips: 'V63',
+    v63numerodeips: 'V63',
+    v63nmerodeips: 'V63',
+    v63numerodeipsquesuministranelultimoesquema: 'V63',
+    v63nmerodeipsquesuministranelultimoesquema: 'V63'
   };
 
   const ESTILO_ENCABEZADO_NORMAL = {
@@ -986,7 +997,7 @@
   }
 
   window.CACExportadorExcel = {
-    VERSION_EXPORTADOR: 'sprint-3g-v62-exportador-01',
+    VERSION_EXPORTADOR: 'sprint-3h-v66-exportador-02-encabezado-real',
     exportarReporte
   };
 })();

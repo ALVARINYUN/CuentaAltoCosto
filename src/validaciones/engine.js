@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3g-v62-engine-modulo14-02';
+  const VERSION = 'sprint-3h-v66-engine-modulo15-03-resumen-advertencias';
 
   function obtenerDocumento(registro) {
     const tipo = CACTipos.textoMayuscula(registro.V5);
@@ -71,7 +71,7 @@
 
   function normalizarFila(encabezados, fila) {
     // Cuando excel.js entrega cada fila como objeto, también se normalizan las claves.
-    // Esto permite reconocer encabezados reales largos como V29, V36-V61, etc.
+    // Esto permite reconocer encabezados reales largos como V29, V36-V63, etc.
     if (!Array.isArray(fila) && typeof fila === 'object' && fila !== null) {
       return normalizarFilaObjeto(fila);
     }
@@ -343,11 +343,11 @@
     // Módulo 14 · V61-V62
     // V61 inicia el bloque del último esquema de quimioterapia o terapia sistémica del periodo.
     // V62 registra la fecha de inicio del último esquema.
-    // No valida V63-V73 todavía porque esas variables aún no están implementadas.
-    const archivoTraeBloque3GModulo14 = tieneAlgunaColumna(registro, ['V61', 'V62']);
+    // Ejecuta progresivamente V61-V65 del bloque de último esquema.
+    const archivoTraeBloque3HModulo14 = tieneAlgunaColumna(registro, ['V61', 'V62', 'V63', 'V64', 'V65']);
 
     if (
-      archivoTraeBloque3GModulo14 &&
+      archivoTraeBloque3HModulo14 &&
       window.CACModulo14 &&
       typeof window.CACModulo14.validar === 'function'
     ) {
@@ -355,6 +355,24 @@
         hallazgos,
         window.CACModulo14.validar(registro),
         'CACModulo14'
+      );
+    }
+
+
+    // Módulo 15 · V66-V66.9
+    // Inicia el bloque de medicamentos del último esquema.
+    // Avance actual: V66.
+    const archivoTraeBloque3HModulo15 = tieneAlgunaColumna(registro, ['V66']);
+
+    if (
+      archivoTraeBloque3HModulo15 &&
+      window.CACModulo15 &&
+      typeof window.CACModulo15.validar === 'function'
+    ) {
+      hallazgos = concatenarHallazgos(
+        hallazgos,
+        window.CACModulo15.validar(registro),
+        'CACModulo15'
       );
     }
 
@@ -423,6 +441,9 @@
     const totalPacientes = resultados.length;
     const conErrores = resultados.filter((resultado) => resultado.errores > 0).length;
     const conAdvertencias = resultados.filter(
+      (resultado) => resultado.advertencias > 0
+    ).length;
+    const soloConAdvertencias = resultados.filter(
       (resultado) => resultado.errores === 0 && resultado.advertencias > 0
     ).length;
     const sinProblemas = resultados.filter(
@@ -441,6 +462,7 @@
       totalPacientes,
       conErrores,
       conAdvertencias,
+      soloConAdvertencias,
       sinProblemas,
       totalErrores,
       totalAdvertencias,

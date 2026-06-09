@@ -1,6 +1,6 @@
 # Casos de Uso — Validador CAC
 
-**Proyecto:** Validador CAC — Cohorte Cáncer  
+**Proyecto:** Validador CAC — Cáncer  
 **Documento:** Casos de uso funcionales del sistema  
 **Estado actual:** avance funcional validado hasta V60  
 **Siguiente bloque de trabajo:** V61 — último esquema de terapia sistémica  

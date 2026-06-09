@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3g-v62-estructura-01-progresivo';
+  const VERSION = 'sprint-3h-v66-estructura-02-encabezado-real';
 
   const VARIABLES_SPRINT_1 = [
     'V1', 'V2', 'V3', 'V4',
@@ -57,9 +57,15 @@
     'V54', 'V55', 'V56'
   ];
 
-  // Sprint 3G · Módulo 13 inicia con V57 y continúa con V58, V59 y V60.
+  // Sprint 3G · Módulo 13 cierra el primer o único esquema con V57-V60.
   const VARIABLES_SPRINT_3G = [
-    'V57', 'V58', 'V59', 'V60', 'V61', 'V62'
+    'V57', 'V58', 'V59', 'V60'
+  ];
+
+  // Sprint 3H · Módulo 14 inicia el bloque del último esquema con V61-V73.
+  // Avance actual: V61, V62, V63, V64 y V65.
+  const VARIABLES_SPRINT_3H = [
+    'V61', 'V62', 'V63', 'V64', 'V65'
   ];
 
   const VARIABLES_HASTA_2A = [
@@ -292,20 +298,47 @@
     'V60'
   ];
 
-  const VARIABLES_HASTA_3G_V61 = [
+  // Alias de compatibilidad para el bloque cerrado V57-V60.
+  const VARIABLES_HASTA_3G = VARIABLES_HASTA_3G_V60;
+
+  const VARIABLES_HASTA_3H_V61 = [
     ...VARIABLES_HASTA_3G_V60,
     'V61'
   ];
 
-  const VARIABLES_HASTA_3G_V62 = [
-    ...VARIABLES_HASTA_3G_V61,
+  const VARIABLES_HASTA_3H_V62 = [
+    ...VARIABLES_HASTA_3H_V61,
     'V62'
   ];
 
-  // Alias de compatibilidad para el bloque iniciado en V57 y ampliado hasta V62.
-  const VARIABLES_HASTA_3G = VARIABLES_HASTA_3G_V62;
+  const VARIABLES_HASTA_3H_V63 = [
+    ...VARIABLES_HASTA_3H_V62,
+    'V63'
+  ];
 
-  const VARIABLES_ESPERADAS = VARIABLES_HASTA_3G_V62;
+  const VARIABLES_HASTA_3H_V64 = [
+    ...VARIABLES_HASTA_3H_V63,
+    'V64'
+  ];
+
+  const VARIABLES_HASTA_3H_V65 = [
+    ...VARIABLES_HASTA_3H_V64,
+    'V65'
+  ];
+
+  const VARIABLES_SPRINT_3H_MODULO15 = [
+    'V66'
+  ];
+
+  const VARIABLES_HASTA_3H_V66 = [
+    ...VARIABLES_HASTA_3H_V65,
+    ...VARIABLES_SPRINT_3H_MODULO15
+  ];
+
+  // Alias de compatibilidad para el bloque iniciado en V61 y ampliado hasta V65.
+  const VARIABLES_HASTA_3H = VARIABLES_HASTA_3H_V66;
+
+  const VARIABLES_ESPERADAS = VARIABLES_HASTA_3H_V66;
 
   const MAPA_ENCABEZADOS = {
     v1: 'V1', primernombre: 'V1', v1primernombre: 'V1',
@@ -386,7 +419,8 @@
     v59: 'V59', caracteristicasactualesprimerounicoesquema: 'V59', caracteristicasactualesdelprimerounicoesquema: 'V59', caracteristicasesquema: 'V59', v59caracteristicas: 'V59', v59caracteristicasactuales: 'V59', v59caracteristicasactualesdelprimerounicoesquema: 'V59', v59caracteristicasactualesdelprimerounicoesquemadeesteperiododereporte: 'V59',
     v60: 'V60', motivofinalizacion: 'V60', motivodelafinalizacion: 'V60', motivofinalizacionprematura: 'V60', motivodelafinalizacionprematura: 'V60', v60motivo: 'V60', v60motivofinalizacion: 'V60', v60motivodelafinalizacion: 'V60', v60motivodelafinalizacionprematura: 'V60',
     v61: 'V61', ubicaciontemporalultimoesquema: 'V61', ubicaciontemporaldelultimoesquema: 'V61', ultimoesquema: 'V61', esquemafinal: 'V61', v61ubicaciontemporal: 'V61', v61ubicaciontemporalultimoesquema: 'V61', v61ubicaciontemporaldelultimoesquema: 'V61',
-    v62: 'V62', fechainicioultimoesquema: 'V62', fechadeinicioultimoesquema: 'V62', fechadeiniciodelultimoesquema: 'V62', v62fechainicio: 'V62', v62fechainicioultimoesquema: 'V62', v62fechadeiniciodelultimoesquema: 'V62'
+    v62: 'V62', fechainicioultimoesquema: 'V62', fechadeinicioultimoesquema: 'V62', fechadeiniciodelultimoesquema: 'V62', v62fechainicio: 'V62', v62fechainicioultimoesquema: 'V62', v62fechadeiniciodelultimoesquema: 'V62',
+    v63: 'V63', numeroipsultimoesquema: 'V63', numerodeipsultimoesquema: 'V63', numerodeipsquesuministranelultimoesquema: 'V63', v63numeroips: 'V63', v63numerodeips: 'V63', v63numerodeipsquesuministranelultimoesquema: 'V63'
   };
 
   const MAPA_ENCABEZADOS_SPRINT_1 = MAPA_ENCABEZADOS;
@@ -895,6 +929,93 @@
       );
   }
 
+
+  function esEncabezadoV63(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v63' || limpio === '63') return true;
+
+    // Encabezado esperado para V63:
+    // Número de IPS que suministran el último esquema del periodo de reporte.
+    return limpio.startsWith('v63') &&
+      (limpio.includes('numero') || limpio.includes('nmero') || limpio.includes('ips')) &&
+      limpio.includes('ips') &&
+      (
+        limpio.includes('suministran') ||
+        limpio.includes('suministra') ||
+        limpio.includes('ultimo') ||
+        limpio.includes('esquema') ||
+        limpio.includes('periodo')
+      );
+  }
+
+
+
+  function esEncabezadoV66(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v66' || limpio === '66' || limpio === 'v66cuantosmedicamentosantineopls') return true;
+
+    return limpio.startsWith('v66') &&
+      (
+        limpio.includes('cuantos') ||
+        limpio.includes('cuntos') ||
+        limpio.includes('numero') ||
+        limpio.includes('nmero') ||
+        limpio.includes('medicamentos')
+      ) &&
+      (
+        limpio.includes('antineoplas') ||
+        limpio.includes('antineopls') ||
+        limpio.includes('terapiahormonal') ||
+        limpio.includes('ultimo') ||
+        limpio.includes('esquema')
+      );
+  }
+
+  function esEncabezadoV65(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v65' || limpio === '65' || limpio === 'v65cdigodelaips2quesuministraell') return true;
+
+    // Encabezado esperado para V65:
+    // Código de la IPS2 que suministra el último esquema en este periodo de reporte.
+    return limpio.startsWith('v65') &&
+      (
+        limpio.includes('codigo') ||
+        limpio.includes('cdigo') ||
+        limpio.includes('codigodelaips2') ||
+        limpio.includes('cdigodelaips2') ||
+        limpio.includes('ips2')
+      ) &&
+      (
+        limpio.includes('ips2') ||
+        limpio.includes('suministra') ||
+        limpio.includes('ultimo') ||
+        limpio.includes('esquema') ||
+        limpio.includes('periodo')
+      );
+  }
+
+  function esEncabezadoV64(valor) {
+    const limpio = limpiarEncabezado(valor);
+    if (limpio === 'v64' || limpio === '64' || limpio === 'v64cdigodelaips1quesuministraell') return true;
+
+    // Encabezado esperado para V64:
+    // Código de la IPS1 que suministra el último esquema en este periodo de reporte.
+    return limpio.startsWith('v64') &&
+      (
+        limpio.includes('codigo') ||
+        limpio.includes('cdigo') ||
+        limpio.includes('codigodelaips1') ||
+        limpio.includes('cdigodelaips1') ||
+        limpio.includes('ips1')
+      ) &&
+      (
+        limpio.includes('ips1') ||
+        limpio.includes('suministra') ||
+        limpio.includes('ultimo') ||
+        limpio.includes('esquema') ||
+        limpio.includes('periodo')
+      );
+  }
   function esEncabezadoV53_2(valor) {
     const limpio = limpiarEncabezado(valor);
     if (limpio === 'v532' || limpio === '532' || limpio === 'v53_2') return true;
@@ -972,6 +1093,18 @@
     if (esEncabezadoV44(valor)) return 'V44';
     // V48, V49, V50, V51 y V52 deben evaluarse antes que V45 porque sus encabezados reales
     // pueden compartir términos del bloque de quimioterapia o terapia sistémica.
+    // V66 se evalúa antes de V65 para reconocer el número de medicamentos del último esquema.
+    if (esEncabezadoV66(valor)) return 'V66';
+
+    // V65 se evalúa antes de V64 para reconocer código IPS2 del último esquema.
+    if (esEncabezadoV65(valor)) return 'V65';
+
+    // V64 se evalúa antes de V63 para reconocer código IPS1 del último esquema.
+    if (esEncabezadoV64(valor)) return 'V64';
+
+    // V63 se evalúa antes de V62 y V61 para reconocer número de IPS del último esquema.
+    if (esEncabezadoV63(valor)) return 'V63';
+
     // V62 se evalúa antes de V61 para reconocer la fecha de inicio del último esquema.
     if (esEncabezadoV62(valor)) return 'V62';
 
@@ -1053,19 +1186,27 @@
     const tiene2B = VARIABLES_SPRINT_2B.some((variable) => presentes.includes(variable));
     const tiene2A = VARIABLES_SPRINT_2A.some((variable) => presentes.includes(variable));
 
-    // Sprint 3G · Módulo 14B se resuelve si el archivo ya trae V62.
-    if (presentes.includes('V62')) {
+    // Sprint 3H · Módulo 14C se resuelve si el archivo ya trae V63.
+    if (presentes.includes('V63')) {
       return {
-        modo: 'ACUMULATIVO_V1_V62',
-        variables: ajustarVariablesEsperadasPorPlantillaReal(VARIABLES_HASTA_3G_V62, presentes)
+        modo: 'ACUMULATIVO_V1_V66',
+        variables: ajustarVariablesEsperadasPorPlantillaReal(VARIABLES_HASTA_3H_V63, presentes)
       };
     }
 
-    // Sprint 3G · Módulo 14A se resuelve si el archivo ya trae V61.
+    // Sprint 3H · Módulo 14B se resuelve si el archivo ya trae V62.
+    if (presentes.includes('V62')) {
+      return {
+        modo: 'ACUMULATIVO_V1_V62',
+        variables: ajustarVariablesEsperadasPorPlantillaReal(VARIABLES_HASTA_3H_V62, presentes)
+      };
+    }
+
+    // Sprint 3H · Módulo 14A se resuelve si el archivo ya trae V61.
     if (presentes.includes('V61')) {
       return {
         modo: 'ACUMULATIVO_V1_V61',
-        variables: ajustarVariablesEsperadasPorPlantillaReal(VARIABLES_HASTA_3G_V61, presentes)
+        variables: ajustarVariablesEsperadasPorPlantillaReal(VARIABLES_HASTA_3H_V61, presentes)
       };
     }
 
@@ -1445,6 +1586,7 @@
     VARIABLES_SPRINT_3E,
     VARIABLES_SPRINT_3F,
     VARIABLES_SPRINT_3G,
+    VARIABLES_SPRINT_3H,
     VARIABLES_HASTA_2A,
     VARIABLES_HASTA_2B,
     VARIABLES_HASTA_2C,
@@ -1493,9 +1635,11 @@
     VARIABLES_HASTA_3G_V58,
     VARIABLES_HASTA_3G_V59,
     VARIABLES_HASTA_3G_V60,
-    VARIABLES_HASTA_3G_V61,
-    VARIABLES_HASTA_3G_V62,
     VARIABLES_HASTA_3G,
+    VARIABLES_HASTA_3H_V61,
+    VARIABLES_HASTA_3H_V62,
+    VARIABLES_HASTA_3H_V63,
+    VARIABLES_HASTA_3H,
     VARIABLES_ESPERADAS,
     MAPA_ENCABEZADOS,
     MAPA_ENCABEZADOS_SPRINT_1,
@@ -1551,6 +1695,7 @@
     esEncabezadoV60,
     esEncabezadoV61,
     esEncabezadoV62,
+    esEncabezadoV63,
     extraerVariableDesdeEncabezado,
     normalizarEncabezado,
     resolverVariablesEsperadasDinamicas,

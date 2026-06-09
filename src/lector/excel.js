@@ -45,7 +45,11 @@
     'V59',
     'V60',
     'V61',
-    'V62'
+    'V62',
+    'V63',
+    'V64',
+    'V65',
+    'V66'
   ];
 
   function texto(valor) {
@@ -98,7 +102,19 @@
     const limpio = normalizarBasicoEncabezado(valor);
 
     // Fallback seguro si estructura.js no cargara:
-    // Permite reconocer V53.1-V53.9, V54-V62 y encabezados reales de la matriz.
+    // Permite reconocer V53.1-V53.9, V54-V66 y encabezados reales de la matriz.
+    if (limpio === 'v66' || limpio === 'v66cuantosmedicamentosantineopls' || limpio.startsWith('v66cuantosmedicamentos') || limpio.startsWith('v66cuntosmedicamentos') || (limpio.startsWith('v66') && (limpio.includes('medicamentos') || limpio.includes('numero') || limpio.includes('nmero')))) {
+      return 'V66';
+    }
+
+    if (limpio === 'v65' || limpio === 'v65cdigodelaips2quesuministraell' || limpio.startsWith('v65codigodelaips2') || limpio.startsWith('v65cdigodelaips2') || (limpio.startsWith('v65') && (limpio.includes('ips2') || limpio.includes('codigo') || limpio.includes('cdigo')))) {
+      return 'V65';
+    }
+
+    if (limpio === 'v64' || limpio === 'v64cdigodelaips1quesuministraell' || limpio.startsWith('v64codigodelaips1') || limpio.startsWith('v64cdigodelaips1') || (limpio.startsWith('v64') && (limpio.includes('ips1') || limpio.includes('codigo') || limpio.includes('cdigo')))) {
+      return 'V64';
+    }
+
     if (limpio === 'v62' || limpio.startsWith('v62fechadeinicio') || (limpio.startsWith('v62') && limpio.includes('fecha') && limpio.includes('inicio'))) {
       return 'V62';
     }
@@ -233,7 +249,7 @@
     if (match) {
       const numero = Number(match[1]);
 
-      if (Number.isInteger(numero) && numero >= 1 && numero <= 62) {
+      if (Number.isInteger(numero) && numero >= 1 && numero <= 66) {
         return `V${numero}`;
       }
     }
@@ -272,6 +288,10 @@
     if (texto(variable) === 'V60') return 60;
     if (texto(variable) === 'V61') return 61;
     if (texto(variable) === 'V62') return 62;
+    if (texto(variable) === 'V63') return 63;
+    if (texto(variable) === 'V64') return 64;
+    if (texto(variable) === 'V65') return 65;
+    if (texto(variable) === 'V66') return 66;
 
     const match = texto(variable).match(/^V(\d+)$/);
     return match ? Number(match[1]) : null;
@@ -312,7 +332,7 @@
 
     let consecutivasDesdeV1 = 0;
 
-    for (let n = 1; n <= 62; n += 1) {
+    for (let n = 1; n <= 66; n += 1) {
       if (numeros.includes(n)) consecutivasDesdeV1 = n;
       else break;
     }
@@ -381,7 +401,11 @@
       (variables.includes('V59') ? 30 : 0) +
       (variables.includes('V60') ? 30 : 0) +
       (variables.includes('V61') ? 30 : 0) +
-      (variables.includes('V62') ? 30 : 0);
+      (variables.includes('V62') ? 30 : 0) +
+      (variables.includes('V63') ? 30 : 0) +
+      (variables.includes('V64') ? 30 : 0) +
+      (variables.includes('V65') ? 30 : 0) +
+      (variables.includes('V66') ? 30 : 0);
 
     return {
       esCandidata,

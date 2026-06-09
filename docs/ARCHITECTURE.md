@@ -1,6 +1,6 @@
 # Arquitectura del sistema — Validador CAC
 
-**Proyecto:** Validador CAC — Cohorte Cáncer  
+**Proyecto:** Validador CAC — Cáncer  
 **Normativa base:** Resolución 0247/2014 · Instructivo CAC-IEP1-I01 · Medición enero 2025  
 **Versión del documento:** 2.1  
 **Estado actual:** aplicación local con avance funcional validado hasta V60  
