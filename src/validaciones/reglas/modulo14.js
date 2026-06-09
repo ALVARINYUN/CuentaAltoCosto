@@ -322,14 +322,18 @@
         variable: 'V61',
         titulo: 'V45 indica que tuvo terapia sistémica, pero V61 está en 98',
         mensaje:
-          'V45 tiene el valor 1, lo que indica que sí recibió quimioterapia u otra terapia sistémica en el periodo. V61 tiene el valor 98, que significa no aplica cuando V45=98. Por eso, si V45=1, V61 no debe ser 98; debe registrar una ubicación temporal del último esquema o 97 cuando solo recibió un esquema en el periodo.\n\n' +
+          'V45 tiene el valor 1, lo que indica que sí recibió quimioterapia u otra terapia sistémica en el periodo. Sin embargo, V61 tiene el valor 98, que significa “No aplica” para la ubicación temporal del último esquema. Ese valor solo es coherente cuando V45=98. Por eso, si V45=1, V61 debe registrar una ubicación temporal del último esquema o 97 cuando solo recibió un esquema en el periodo.\n\n' +
           CATALOGO_V61_TEXTO,
         regla: 'Si V45=1, V61 debe registrar la ubicación temporal del último esquema con un valor del catálogo permitido, o registrar 97 si solo recibió un esquema en el periodo. V61=98 queda reservado para los casos en los que V45=98.',
         recomendacion: 'Cambie V61 por el valor que corresponda según la historia clínica. Use 97 si solo recibió un esquema en el periodo.',
         valor: v61Original,
         datosRelacionados: [
           dato('V45', v45Original, describirValorV45(v45Original)),
-          dato('V61', v61Original, describirValorV61(v61Original))
+          dato(
+            'V61',
+            v61Original,
+            'V61=98 significa “No aplica” para la ubicación temporal del último esquema. En este caso no es coherente, porque V45=1 indica que sí recibió terapia sistémica.'
+          )
         ]
       }));
     }

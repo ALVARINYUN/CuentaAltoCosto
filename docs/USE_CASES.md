@@ -2,9 +2,9 @@
 
 **Proyecto:** Validador CAC — Cáncer  
 **Documento:** Casos de uso funcionales del sistema  
-**Estado actual:** avance funcional validado hasta V60  
-**Siguiente bloque de trabajo:** V61 — último esquema de terapia sistémica  
-**Versión:** 2.0  
+**Estado actual:** avance funcional validado hasta **V66**  
+**Siguiente bloque de trabajo:** **V66.1 — medicamento administrado 1 del último esquema de terapia sistémica**  
+**Versión:** 2.1  
 **Fecha de actualización:** Junio 2026  
 
 ---
@@ -14,7 +14,7 @@
 Este documento describe los principales casos de uso del Validador CAC.  
 Cada caso explica cómo interactúa el usuario con la aplicación y qué debe hacer el sistema en cada paso.
 
-La versión inicial estaba enfocada en el Sprint 1. Esta actualización deja el documento alineado con el avance actual del proyecto: carga de Excel, validación acumulativa, revisión de hallazgos, exportación del reporte y avance funcional cerrado hasta V60.
+Esta actualización deja el documento alineado con el avance actual del proyecto: carga de Excel, validación acumulativa, revisión de hallazgos, exportación del reporte y avance funcional cerrado hasta **V66**.
 
 ---
 
@@ -49,7 +49,7 @@ Los casos en revisión o pendientes sirven como guía para continuar el desarrol
   - CU-04 — Validar archivo acumulativo
   - CU-05 — Validar bloque de identificación V1-V16
   - CU-06 — Validar bloque diagnóstico V17-V44
-  - CU-07 — Validar terapia sistémica V45-V60
+  - CU-07 — Validar terapia sistémica V45-V66
 - [Flujo 3 — Revisar resultados](#flujo-3--revisar-resultados)
   - CU-08 — Visualizar resumen de resultados
   - CU-09 — Revisar hallazgos por paciente
@@ -60,7 +60,7 @@ Los casos en revisión o pendientes sirven como guía para continuar el desarrol
   - CU-12 — Funcionamiento local
   - CU-13 — Borrado de datos al cerrar
 - [Flujo 6 — Continuidad del desarrollo](#flujo-6--continuidad-del-desarrollo)
-  - CU-14 — Continuar con V61
+  - CU-14 — Continuar con V66.1
 
 ---
 
@@ -151,8 +151,8 @@ Los casos en revisión o pendientes sirven como guía para continuar el desarrol
 **Flujo principal:**
 1. El sistema analiza los encabezados.
 2. Reconoce variables simples y subvariables.
-3. Acepta encabezados cortos como `V57` y encabezados largos del instructivo.
-4. Identifica el modo acumulativo de validación, por ejemplo `ACUMULATIVO_V1_V60`.
+3. Acepta encabezados cortos y encabezados largos/cortados del instructivo.
+4. Identifica el modo acumulativo de validación, por ejemplo `ACUMULATIVO_V1_V66`.
 5. Informa si la estructura es válida.
 6. Habilita el botón de validación.
 
@@ -170,9 +170,10 @@ Los casos en revisión o pendientes sirven como guía para continuar el desarrol
 
 **Reglas de negocio:**
 - El reconocimiento de encabezados debe respetar el avance funcional del proyecto.
+- Antes de implementar una variable nueva, se deben confirmar sus encabezados reales/cortados.
 - Las variables anteriores cerradas deben seguir activas.
 
-**Estado:** Cerrado funcional hasta V60.
+**Estado:** Cerrado funcional hasta V66.
 
 ---
 
@@ -208,7 +209,7 @@ Los casos en revisión o pendientes sirven como guía para continuar el desarrol
 - No se deben generar errores basura de bloques anteriores en archivos limpios de prueba.
 - No se deben aplicar reglas de variables futuras antes de implementarlas.
 
-**Estado:** Cerrado funcional hasta V60.
+**Estado:** Cerrado funcional hasta V66.
 
 ---
 
@@ -262,14 +263,14 @@ Los casos en revisión o pendientes sirven como guía para continuar el desarrol
 
 ---
 
-## CU-07 — Validar terapia sistémica V45-V60
+## CU-07 — Validar terapia sistémica V45-V66
 
 **Historias cubiertas:** HU-012, HU-016, HU-021  
 **Actor principal:** Sistema
 
 **Precondiciones:**
 - La validación está en curso.
-- El archivo contiene variables de terapia sistémica hasta V60.
+- El archivo contiene variables de terapia sistémica hasta V66.
 
 **Flujo principal:**
 1. El sistema valida V45 como variable de control del bloque.
@@ -280,18 +281,23 @@ Los casos en revisión o pendientes sirven como guía para continuar el desarrol
 6. Valida fecha de finalización V58.
 7. Valida características actuales V59.
 8. Valida motivo de finalización prematura V60.
-9. Registra hallazgos con trazabilidad clara.
+9. Valida ubicación, fecha e IPS del último esquema en V61-V65.
+10. Valida número de medicamentos propuestos del último esquema en V66.
+11. Registra hallazgos con trazabilidad clara.
 
-**Postcondición:** Se generan hallazgos del bloque de terapia sistémica hasta V60.
+**Postcondición:** Se generan hallazgos del bloque de terapia sistémica hasta V66.
 
 **Reglas de negocio:**
 - V45 controla la aplicabilidad general del bloque.
 - V54-V56 no deben repetir medicamentos del bloque V53.
 - V58 se cruza con V45 y V49 cuando corresponde.
 - V60 se controla principalmente desde V59.
-- Las reglas de último esquema, V61-V73, se trabajan después.
+- V61-V65 controlan ubicación, fecha e IPS del último esquema.
+- V66 registra número de medicamentos propuestos para el último esquema.
+- V66.1-V66.9 se trabajan progresivamente después de V66.
+- V66.1 no permite 97; V66.2-V66.9 sí permiten 97 según instructivo.
 
-**Estado:** Cerrado funcional hasta V60.
+**Estado:** Cerrado funcional hasta V66.
 
 ---
 
@@ -313,6 +319,10 @@ Los casos en revisión o pendientes sirven como guía para continuar el desarrol
 5. Permite pasar al detalle de hallazgos.
 
 **Postcondición:** El analista conoce el estado general del archivo.
+
+**Reglas de negocio:**
+- El indicador de pacientes con advertencias debe contar pacientes que tengan advertencias, incluso si también tienen errores.
+- El indicador de pacientes sin problemas solo cuenta registros sin errores ni advertencias.
 
 **Estado:** Cerrado funcional.
 
@@ -405,8 +415,9 @@ Los casos en revisión o pendientes sirven como guía para continuar el desarrol
 - El exportador debe marcar solo la celda afectada.
 - Debe reconocer variables simples y subvariables.
 - No debe marcar variables que no tengan hallazgo real.
+- Debe marcar V66 correctamente y conservar soporte para subvariables anteriores.
 
-**Estado:** Cerrado funcional hasta V60, con revisión acumulativa.
+**Estado:** Cerrado funcional hasta V66, con revisión acumulativa.
 
 ---
 
@@ -463,32 +474,38 @@ Los casos en revisión o pendientes sirven como guía para continuar el desarrol
 
 # Flujo 6 — Continuidad del desarrollo
 
-## CU-14 — Continuar con V61
+## CU-14 — Continuar con V66.1
 
-**Historias cubiertas:** HU-012  
+**Historias cubiertas:** HU-012, HU-021  
 **Actor principal:** Desarrollador / mantenedor
 
 **Precondiciones:**
-- El avance V1-V60 está cerrado funcionalmente.
-- Se cuenta con el instructivo de V61.
-- No se deben modificar variables cerradas salvo bug real.
+- El avance V1-V66 está cerrado funcionalmente.
+- Se cuenta con el instructivo de V66.1.
+- Se confirmó el encabezado real `v661medicamentoadm1`.
+- El catálogo ATC está disponible.
+- No se deben modificar variables cerradas salvo bug real o mejora de redacción que no cambie la lógica.
 
 **Flujo principal:**
-1. Se revisa el instructivo de V61.
-2. Se definen reglas sin adelantar validaciones de V62-V73.
-3. Se actualizan los archivos técnicos necesarios.
-4. Se genera Excel limpio de prueba.
-5. Se valida estructura, pantalla, consola y exportador.
-6. Si los resultados coinciden, V61 queda cerrada funcionalmente.
+1. Se revisa el instructivo de V66.1.
+2. Se definen reglas sin adelantar validaciones de V66.2-V66.9.
+3. Se confirma que V66.1 permite ATC o 98 y no permite 97.
+4. Se define trazabilidad con V45, V61, V66 y catálogo ATC.
+5. Se actualizan los archivos técnicos necesarios.
+6. Se genera Excel limpio de prueba.
+7. Se valida estructura, pantalla, consola y exportador.
+8. Si los resultados coinciden, V66.1 queda cerrada funcionalmente.
 
-**Postcondición:** V61 queda validada o se documentan los pendientes encontrados.
+**Postcondición:** V66.1 queda validada o se documentan los pendientes encontrados.
 
 **Reglas de negocio:**
-- Si una validación depende de V62-V73, se deja para cuando esas variables estén implementadas.
+- V66.1 no permite 97.
+- V66.1 debe validar códigos ATC cuando traiga medicamento.
+- Si una validación depende de V66.2-V66.9, se deja para cuando esas variables estén implementadas.
 - La trazabilidad debe explicar claramente de dónde sale cada coherencia.
 - No se deben tocar variables anteriores salvo bug real.
 
-**Estado:** En revisión.
+**Estado:** Siguiente.
 
 ---
 
@@ -498,18 +515,18 @@ Los casos en revisión o pendientes sirven como guía para continuar el desarrol
 |---|---|---|
 | CU-01 | HU-004, HU-039 | Cerrado funcional |
 | CU-02 | HU-004, HU-005 | Cerrado funcional |
-| CU-03 | HU-005 | Cerrado funcional hasta V60 |
-| CU-04 | HU-010, HU-011, HU-012, HU-016 | Cerrado funcional hasta V60 |
+| CU-03 | HU-005 | Cerrado funcional hasta V66 |
+| CU-04 | HU-010, HU-011, HU-012, HU-016 | Cerrado funcional hasta V66 |
 | CU-05 | HU-010, HU-016 | Cerrado funcional |
 | CU-06 | HU-011, HU-016 | Cerrado funcional |
-| CU-07 | HU-012, HU-016, HU-021 | Cerrado funcional hasta V60 |
+| CU-07 | HU-012, HU-016, HU-021 | Cerrado funcional hasta V66 |
 | CU-08 | HU-022, HU-027 | Cerrado funcional |
 | CU-09 | HU-022, HU-035 | Cerrado funcional / mejora continua |
 | CU-10 | HU-023 | Implementado / mejora futura |
-| CU-11 | HU-030 | Cerrado funcional hasta V60 |
+| CU-11 | HU-030 | Cerrado funcional hasta V66 |
 | CU-12 | HU-036, HU-039 | Cerrado funcional local |
 | CU-13 | HU-036 | Cerrado funcional local |
-| CU-14 | HU-012 | En revisión |
+| CU-14 | HU-012, HU-021 | Siguiente |
 
 ---
 
@@ -518,7 +535,8 @@ Los casos en revisión o pendientes sirven como guía para continuar el desarrol
 | Concepto | Estado |
 |---|---|
 | Casos de uso base | Actualizados |
-| Avance funcional reflejado | V1-V60 |
-| Siguiente variable | V61 |
-| Bloque pendiente inmediato | V61-V73 |
-| Bloques futuros | V74-V134 |
+| Avance funcional reflejado | V1-V66 |
+| Siguiente variable | V66.1 |
+| Bloque actual | Medicamentos del último esquema |
+| Bloque pendiente inmediato | V66.1-V66.9 |
+| Bloques futuros | V67-V134 |
