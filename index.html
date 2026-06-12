@@ -6,19 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Validador CAC - Cáncer</title>
 
-  <!-- Fuente Nunito -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap"
-    rel="stylesheet">
-
-  <!-- CSS de la app -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/estilos.css?v=escala-100-01">
 </head>
 
 <body>
-
-  <!-- Aviso de privacidad -->
   <div id="aviso-privacidad" class="aviso-privacidad">
     <div class="aviso-contenido">
       <span class="aviso-icono">!</span>
@@ -31,7 +25,6 @@
     </div>
   </div>
 
-  <!-- Encabezado -->
   <header class="encabezado">
     <div class="encabezado-contenido">
       <div class="encabezado-marca">
@@ -44,30 +37,18 @@
       <div class="encabezado-meta">
         <span class="meta-badge">Resolución 0247/2014</span>
         <span class="meta-badge">Instructivo CAC-IEP1-I01</span>
-        <span id="version-app" class="meta-version">Sprint 3H · V66</span>
+        <span id="version-app" class="meta-version">Sprint 3I · V68</span>
       </div>
     </div>
   </header>
 
   <main class="contenido-principal">
-
-    <!-- Indicador de pasos -->
     <div class="steps-indicador">
-      <div class="step-item activo" id="step-1">
-        <div class="step-bola">1</div>
-        <span class="step-texto">Cargar archivo</span>
-      </div>
-      <div class="step-item" id="step-2">
-        <div class="step-bola">2</div>
-        <span class="step-texto">Validando</span>
-      </div>
-      <div class="step-item" id="step-3">
-        <div class="step-bola">3</div>
-        <span class="step-texto">Resultados</span>
-      </div>
+      <div class="step-item activo" id="step-1"><div class="step-bola">1</div><span class="step-texto">Cargar archivo</span></div>
+      <div class="step-item" id="step-2"><div class="step-bola">2</div><span class="step-texto">Validando</span></div>
+      <div class="step-item" id="step-3"><div class="step-bola">3</div><span class="step-texto">Resultados</span></div>
     </div>
 
-    <!-- Sección de carga -->
     <section id="seccion-carga" class="seccion">
       <div class="seccion-encabezado">
         <div class="seccion-numero">01</div>
@@ -108,7 +89,6 @@
       </div>
     </section>
 
-    <!-- Sección de progreso -->
     <section id="seccion-progreso" class="seccion oculto">
       <div class="seccion-encabezado">
         <div class="seccion-numero">02</div>
@@ -117,14 +97,10 @@
           <p class="seccion-desc">La app está revisando las variables y reglas disponibles.</p>
         </div>
       </div>
-
-      <div class="progreso-barra-contenedor">
-        <div id="progreso-barra" class="progreso-barra" style="width: 0%;"></div>
-      </div>
+      <div class="progreso-barra-contenedor"><div id="progreso-barra" class="progreso-barra" style="width: 0%;"></div></div>
       <div id="progreso-porcentaje" class="progreso-porcentaje">0%</div>
     </section>
 
-    <!-- Sección de resultados -->
     <section id="seccion-resultados" class="seccion oculto">
       <div class="seccion-encabezado resultados-header">
         <div class="seccion-numero">03</div>
@@ -150,95 +126,70 @@
       </div>
 
       <div class="tarjetas-resumen">
-        <div class="tarjeta tarjeta-total">
-          <p id="total-pacientes" class="tarjeta-numero">0</p>
-          <p class="tarjeta-label">Pacientes procesados</p>
-        </div>
-        <div class="tarjeta tarjeta-error">
-          <p id="pacientes-error" class="tarjeta-numero">0</p>
-          <p class="tarjeta-label">Con errores</p>
-        </div>
-        <div class="tarjeta tarjeta-advertencia">
-          <p id="pacientes-advertencia" class="tarjeta-numero">0</p>
-          <p class="tarjeta-label">Con advertencias</p>
-        </div>
-        <div class="tarjeta tarjeta-ok">
-          <p id="pacientes-ok" class="tarjeta-numero">0</p>
-          <p class="tarjeta-label">Sin problemas</p>
-        </div>
+        <div class="tarjeta tarjeta-total"><p id="total-pacientes" class="tarjeta-numero">0</p><p class="tarjeta-label">Pacientes procesados</p></div>
+        <div class="tarjeta tarjeta-error"><p id="pacientes-error" class="tarjeta-numero">0</p><p class="tarjeta-label">Con errores</p></div>
+        <div class="tarjeta tarjeta-advertencia"><p id="pacientes-advertencia" class="tarjeta-numero">0</p><p class="tarjeta-label">Con advertencias</p></div>
+        <div class="tarjeta tarjeta-ok"><p id="pacientes-ok" class="tarjeta-numero">0</p><p class="tarjeta-label">Sin problemas</p></div>
       </div>
 
       <div class="buscador-contenedor">
-        <input id="buscador-documento" class="buscador-input" type="search"
-          placeholder="Buscar por número de documento..." />
+        <input id="buscador-documento" class="buscador-input" type="search" placeholder="Buscar por número de documento..." />
         <button id="btn-limpiar-busqueda" class="btn btn-secundario" type="button">Limpiar búsqueda</button>
       </div>
 
       <div class="tabla-contenedor">
         <table class="tabla-resultados">
-          <thead>
-            <tr>
-              <th>Documento</th>
-              <th>Errores</th>
-              <th>Advertencias</th>
-              <th>Estado</th>
-              <th>Acción</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Documento</th><th>Errores</th><th>Advertencias</th><th>Estado</th><th>Acción</th></tr></thead>
           <tbody id="tabla-cuerpo"></tbody>
         </table>
         <p id="sin-resultados" class="sin-resultados oculto">No se encontró paciente con ese documento.</p>
       </div>
     </section>
-
   </main>
 
   <footer class="pie">
-    <span>Validador CAC</span>
-    <span class="pie-dot"></span>
-    <span>Datos procesados localmente</span>
-    <span class="pie-dot"></span>
+    <span>Validador CAC</span><span class="pie-dot"></span>
+    <span>Datos procesados localmente</span><span class="pie-dot"></span>
     <span>Ningún dato sale de este equipo</span>
   </footer>
 
-  <!-- Scripts -->
   <script src="libs/xlsx-js-style.bundle.js?v=16"></script>
-  <script src="src/validaciones/tipos.js?v=16"></script>
+<script src="src/validaciones/tipos.js?v=16"></script>
 
-  <script src="src/catalogos/cie10.js?v=1"></script>
-  <script src="src/catalogos/cups.js?v=1"></script>
-  <script src="src/catalogos/atc.js?v=1"></script>
-  <script src="src/catalogos/cargador.js?v=2"></script>
+<script src="src/catalogos/cie10.js?v=1"></script>
+<script src="src/catalogos/cups.js?v=1"></script>
+<script src="src/catalogos/atc.js?v=1"></script>
+<script src="src/catalogos/cargador.js?v=2"></script>
 
-  <script src="src/lector/estructura.js?v=sprint-3h-v66-estructura-02-encabezado-real"></script>
-  <script src="src/lector/excel.js?v=sprint-3h-v66-lector-02-encabezado-real"></script>
+<script src="src/lector/estructura.js?v=sprint-3k-v80-estructura-01"></script>
+<script src="src/lector/excel.js?v=sprint-3k-v80-lector-01"></script>
 
-  <script src="src/validaciones/reglas/modulo1.js?v=sprint-1-v1-enie-advertencia-02"></script>
-  <script src="src/validaciones/reglas/modulo2.js?v=fix-v18-v24-texto-01"></script>
-  <script src="src/validaciones/reglas/modulo3.js?v=fix-v27-error-005-01"></script>
-  <script src="src/validaciones/reglas/modulo4.js?v=sprint-2c-v29-catalogos-legibles-01"></script>
-  <script src="src/validaciones/reglas/modulo5.js?v=sprint-2d-v30-v33-advertencias-v32-v33-01"></script>
-  <script src="src/validaciones/reglas/modulo6.js?v=sprint-2e-v34-v35-descripciones-simples-03"></script>
-  <script src="src/validaciones/reglas/modulo7.js?v=sprint-3a-v40-objetivo-tratamiento-01"></script>
-  <script src="src/validaciones/reglas/modulo8.js?v=sprint-3b-v44-cie10-antecedente-05"></script>
-  <script src="src/validaciones/reglas/modulo9.js?v=sprint-3c-v47-ciclos-01"></script>
-  <script src="src/validaciones/reglas/modulo10.js?v=sprint-3d-v52-codigo-ips2-01"></script>
-  <script src="src/validaciones/reglas/modulo11.js?v=sprint-3e-v53-9-medicamento-atc9-01"></script>
-  <script src="src/validaciones/reglas/modulo12.js?v=sprint-3f-v56-medicamento-adicional3-01"></script>
-  <script src="src/validaciones/reglas/modulo13.js?v=sprint-3g-v60-motivo-finalizacion-prematura-01"></script>
-  <script src="src/validaciones/reglas/modulo14.js?v=sprint-3h-v65-ips2-ultimo-esquema-01"></script>
-  <script src="src/validaciones/reglas/modulo15.js?v=sprint-3h-v66-modulo15-medicamentos-ultimo-esquema-02-encabezado-real"></script>
+<script src="src/validaciones/reglas/modulo1.js?v=sprint-1-v1-enie-advertencia-02"></script>
+<script src="src/validaciones/reglas/modulo2.js?v=fix-v18-v24-texto-01"></script>
+<script src="src/validaciones/reglas/modulo3.js?v=fix-v27-error-005-01"></script>
+<script src="src/validaciones/reglas/modulo4.js?v=sprint-2c-v29-catalogos-legibles-01"></script>
+<script src="src/validaciones/reglas/modulo5.js?v=sprint-2d-v30-v33-advertencias-v32-v33-01"></script>
+<script src="src/validaciones/reglas/modulo6.js?v=sprint-2e-v34-v35-descripciones-simples-03"></script>
+<script src="src/validaciones/reglas/modulo7.js?v=sprint-3a-v40-objetivo-tratamiento-01"></script>
+<script src="src/validaciones/reglas/modulo8.js?v=sprint-3b-v44-cie10-antecedente-05"></script>
+<script src="src/validaciones/reglas/modulo9.js?v=sprint-3c-v47-ciclos-01"></script>
+<script src="src/validaciones/reglas/modulo10.js?v=sprint-3d-v52-codigo-ips2-01"></script>
+<script src="src/validaciones/reglas/modulo11.js?v=sprint-3e-v53-9-medicamento-atc9-01"></script>
+<script src="src/validaciones/reglas/modulo12.js?v=sprint-3f-v56-medicamento-adicional3-01"></script>
+<script src="src/validaciones/reglas/modulo13.js?v=sprint-3g-v60-motivo-finalizacion-prematura-01"></script>
+<script src="src/validaciones/reglas/modulo14.js?v=sprint-3h-v65-ips2-ultimo-esquema-01"></script>
+<script src="src/validaciones/reglas/modulo15.js?v=sprint-3k-v77-ips-primera-cirugia-01"></script>
+<script src="src/validaciones/reglas/modulo16.js?v=sprint-3k-v80-fecha-ultima-cirugia-reintervencion-01"></script>
 
-  <script src="src/validaciones/engine.js?v=sprint-3h-v66-engine-modulo15-03-resumen-advertencias"></script>
+<script src="src/validaciones/engine.js?v=sprint-3k-v80-engine-modulo16-01"></script>
 
-  <script src="src/ui/carga.js?v=16"></script>
-  <script src="src/ui/progreso.js?v=16"></script>
-  <script src="src/ui/tabla-resultados.js?v=sprint-2e-v34-v35-resumen-visual-02"></script>
-  <script src="src/ui/buscador.js?v=16"></script>
-  <script src="src/ui/buscador-atc.js?v=mejora-ui-buscador-catalogos-03"></script>
-  <script src="src/exportador/excel-reporte.js?v=sprint-3h-v66-exportador-02-encabezado-real"></script>
-  <script src="src/main.js?v=sprint-2e-v34-v35-resumen-visual-02"></script>
-  <script src="src/ui/reiniciar-flujo.js?v=56"></script>
+<script src="src/ui/carga.js?v=16"></script>
+<script src="src/ui/progreso.js?v=16"></script>
+<script src="src/ui/tabla-resultados.js?v=sprint-2e-v34-v35-resumen-visual-02"></script>
+<script src="src/ui/buscador.js?v=16"></script>
+<script src="src/ui/buscador-atc.js?v=mejora-ui-buscador-catalogos-03"></script>
+<script src="src/exportador/excel-reporte.js?v=sprint-3k-v80-exportador-01"></script>
+<script src="src/main.js?v=sprint-2e-v34-v35-resumen-visual-02"></script>
+<script src="src/ui/reiniciar-flujo.js?v=56"></script>
 </body>
-
 </html>

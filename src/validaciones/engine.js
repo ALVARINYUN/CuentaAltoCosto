@@ -1,8 +1,7 @@
-
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3h-v66-engine-modulo15-03-resumen-advertencias';
+  const VERSION = 'sprint-3k-v80-engine-modulo16-01';
 
   function obtenerDocumento(registro) {
     const tipo = CACTipos.textoMayuscula(registro.V5);
@@ -70,8 +69,6 @@
   }
 
   function normalizarFila(encabezados, fila) {
-    // Cuando excel.js entrega cada fila como objeto, también se normalizan las claves.
-    // Esto permite reconocer encabezados reales largos como V29, V36-V63, etc.
     if (!Array.isArray(fila) && typeof fila === 'object' && fila !== null) {
       return normalizarFilaObjeto(fila);
     }
@@ -110,289 +107,73 @@
     return hallazgos;
   }
 
-  function validarRegistroCompleto(registro) {
-    let hallazgos = [];
-
-    // Módulo 1 · V1-V16
-    if (window.CACModulo1 && typeof window.CACModulo1.validarRegistroModulo1 === 'function') {
-      hallazgos = concatenarHallazgos(
-        hallazgos,
-        window.CACModulo1.validarRegistroModulo1(registro),
-        'CACModulo1'
-      );
-    }
-
-    // Módulo 2 · V17-V24
-    const archivoTraeBloque2A = tieneAlgunaColumna(registro, [
-      'V17', 'V18', 'V19', 'V20', 'V21', 'V22', 'V23', 'V24'
-    ]);
-
+  function ejecutarModulo(hallazgos, registro, variables, modulo, nombreModulo) {
     if (
-      archivoTraeBloque2A &&
-      window.CACModulo2 &&
-      typeof window.CACModulo2.validarRegistroModulo2 === 'function'
+      tieneAlgunaColumna(registro, variables) &&
+      modulo &&
+      typeof modulo.validar === 'function'
     ) {
-      hallazgos = concatenarHallazgos(
-        hallazgos,
-        window.CACModulo2.validarRegistroModulo2(registro),
-        'CACModulo2'
-      );
-    }
-
-    // Módulo 3 · V25-V28
-    const archivoTraeBloque2B = tieneAlgunaColumna(registro, [
-      'V25', 'V26', 'V27', 'V28'
-    ]);
-
-    if (
-      archivoTraeBloque2B &&
-      window.CACModulo3 &&
-      typeof window.CACModulo3.validar === 'function'
-    ) {
-      hallazgos = concatenarHallazgos(
-        hallazgos,
-        window.CACModulo3.validar(registro),
-        'CACModulo3'
-      );
-    }
-
-    // Módulo 4 · V29
-    const archivoTraeBloque2C = tieneAlgunaColumna(registro, ['V29']);
-
-    if (
-      archivoTraeBloque2C &&
-      window.CACModulo4 &&
-      typeof window.CACModulo4.validar === 'function'
-    ) {
-      hallazgos = concatenarHallazgos(
-        hallazgos,
-        window.CACModulo4.validar(registro),
-        'CACModulo4'
-      );
-    }
-
-    // Módulo 5 · V30-V33
-    const archivoTraeBloque2D = tieneAlgunaColumna(registro, [
-      'V30', 'V31', 'V32', 'V33'
-    ]);
-
-    if (
-      archivoTraeBloque2D &&
-      window.CACModulo5 &&
-      typeof window.CACModulo5.validar === 'function'
-    ) {
-      hallazgos = concatenarHallazgos(
-        hallazgos,
-        window.CACModulo5.validar(registro),
-        'CACModulo5'
-      );
-    }
-
-    // Módulo 6 · V34-V35
-    const archivoTraeBloque2E = tieneAlgunaColumna(registro, [
-      'V34', 'V35'
-    ]);
-
-    if (
-      archivoTraeBloque2E &&
-      window.CACModulo6 &&
-      typeof window.CACModulo6.validar === 'function'
-    ) {
-      hallazgos = concatenarHallazgos(
-        hallazgos,
-        window.CACModulo6.validar(registro),
-        'CACModulo6'
-      );
-    }
-
-    // Módulo 7 · V36-V40
-    const archivoTraeBloque3A = tieneAlgunaColumna(registro, [
-      'V36', 'V37', 'V38', 'V39', 'V40'
-    ]);
-
-    if (
-      archivoTraeBloque3A &&
-      window.CACModulo7 &&
-      typeof window.CACModulo7.validar === 'function'
-    ) {
-      hallazgos = concatenarHallazgos(
-        hallazgos,
-        window.CACModulo7.validar(registro),
-        'CACModulo7'
-      );
-    }
-
-    // Módulo 8 · V41-V44
-    // Por ahora el módulo 8 inicia con V41. Se deja listo para V42-V44.
-    const archivoTraeBloque3B = tieneAlgunaColumna(registro, [
-      'V41', 'V42', 'V43', 'V44'
-    ]);
-
-    if (
-      archivoTraeBloque3B &&
-      window.CACModulo8 &&
-      typeof window.CACModulo8.validar === 'function'
-    ) {
-      hallazgos = concatenarHallazgos(
-        hallazgos,
-        window.CACModulo8.validar(registro),
-        'CACModulo8'
-      );
-    }
-
-    // Módulo 9 · V45-V47
-    // V45 inicia el bloque de terapia sistémica, V46 valida número/valor de fases,
-    // V46.1-V46.8 validan subfases y V47 valida número de ciclos.
-    // No exige V48-V73 porque son variables futuras.
-    const archivoTraeBloque3C = tieneAlgunaColumna(registro, [
-      'V45', 'V46', 'V46_1', 'V46_2', 'V46_3', 'V46_4', 'V46_5', 'V46_6', 'V46_7', 'V46_8', 'V47'
-    ]);
-
-    if (
-      archivoTraeBloque3C &&
-      window.CACModulo9 &&
-      typeof window.CACModulo9.validar === 'function'
-    ) {
-      hallazgos = concatenarHallazgos(
-        hallazgos,
-        window.CACModulo9.validar(registro),
-        'CACModulo9'
-      );
-    }
-
-
-
-    // Módulo 10 · V48-V52
-    // V48 inicia el bloque del primer o único esquema de quimioterapia o terapia sistémica.
-    // El módulo se ejecuta de forma progresiva solo si el archivo trae V48, V49, V50, V51 o V52.
-    const archivoTraeBloque3D = tieneAlgunaColumna(registro, [
-      'V48', 'V49', 'V50', 'V51', 'V52'
-    ]);
-
-    if (
-      archivoTraeBloque3D &&
-      window.CACModulo10 &&
-      typeof window.CACModulo10.validar === 'function'
-    ) {
-      hallazgos = concatenarHallazgos(
-        hallazgos,
-        window.CACModulo10.validar(registro),
-        'CACModulo10'
-      );
-    }
-
-    // Módulo 11 · V53-V53.9
-    // V53 inicia el bloque de medicamentos antineoplásicos o terapia hormonal.
-    // V53.1-V53.9 validan medicamentos administrados mediante ATC.
-    // El módulo se ejecuta progresivamente solo si el archivo trae alguna variable del bloque.
-    const archivoTraeBloque3E = tieneAlgunaColumna(registro, [
-      'V53', 'V53_1', 'V53_2', 'V53_3', 'V53_4', 'V53_5', 'V53_6', 'V53_7', 'V53_8', 'V53_9'
-    ]);
-
-    if (
-      archivoTraeBloque3E &&
-      window.CACModulo11 &&
-      typeof window.CACModulo11.validar === 'function'
-    ) {
-      hallazgos = concatenarHallazgos(
-        hallazgos,
-        window.CACModulo11.validar(registro),
-        'CACModulo11'
-      );
-    }
-
-    // Módulo 12 · V54-V56
-    // V54 registra el primer medicamento antineoplásico o terapia hormonal adicional.
-    // V55 registra el segundo medicamento adicional.
-    // V56 registra el tercer medicamento adicional y cruza solo con variables anteriores ya implementadas.
-    const archivoTraeBloque3F = tieneAlgunaColumna(registro, ['V54', 'V55', 'V56']);
-
-    if (
-      archivoTraeBloque3F &&
-      window.CACModulo12 &&
-      typeof window.CACModulo12.validar === 'function'
-    ) {
-      hallazgos = concatenarHallazgos(
-        hallazgos,
-        window.CACModulo12.validar(registro),
-        'CACModulo12'
-      );
-    }
-
-
-    // Módulo 13 · V57-V60
-    // V57 registra si recibió quimioterapia intratecal.
-    // V58 registra la fecha de finalización del primer o único esquema.
-    // V59 registra las características actuales del primer o único esquema.
-    // V60 registra el motivo de finalización prematura cuando V59=2.
-    // Solo cruza con variables anteriores ya implementadas; no usa segundo esquema, último esquema ni variables futuras.
-    const archivoTraeBloque3G = tieneAlgunaColumna(registro, ['V57', 'V58', 'V59', 'V60']);
-
-    if (
-      archivoTraeBloque3G &&
-      window.CACModulo13 &&
-      typeof window.CACModulo13.validar === 'function'
-    ) {
-      hallazgos = concatenarHallazgos(
-        hallazgos,
-        window.CACModulo13.validar(registro),
-        'CACModulo13'
-      );
-    }
-
-    // Módulo 14 · V61-V62
-    // V61 inicia el bloque del último esquema de quimioterapia o terapia sistémica del periodo.
-    // V62 registra la fecha de inicio del último esquema.
-    // Ejecuta progresivamente V61-V65 del bloque de último esquema.
-    const archivoTraeBloque3HModulo14 = tieneAlgunaColumna(registro, ['V61', 'V62', 'V63', 'V64', 'V65']);
-
-    if (
-      archivoTraeBloque3HModulo14 &&
-      window.CACModulo14 &&
-      typeof window.CACModulo14.validar === 'function'
-    ) {
-      hallazgos = concatenarHallazgos(
-        hallazgos,
-        window.CACModulo14.validar(registro),
-        'CACModulo14'
-      );
-    }
-
-
-    // Módulo 15 · V66-V66.9
-    // Inicia el bloque de medicamentos del último esquema.
-    // Avance actual: V66.
-    const archivoTraeBloque3HModulo15 = tieneAlgunaColumna(registro, ['V66']);
-
-    if (
-      archivoTraeBloque3HModulo15 &&
-      window.CACModulo15 &&
-      typeof window.CACModulo15.validar === 'function'
-    ) {
-      hallazgos = concatenarHallazgos(
-        hallazgos,
-        window.CACModulo15.validar(registro),
-        'CACModulo15'
-      );
+      return concatenarHallazgos(hallazgos, modulo.validar(registro), nombreModulo);
     }
 
     return hallazgos;
   }
 
+  function validarRegistroCompleto(registro) {
+    let hallazgos = [];
+
+    if (window.CACModulo1 && typeof window.CACModulo1.validarRegistroModulo1 === 'function') {
+      hallazgos = concatenarHallazgos(hallazgos, window.CACModulo1.validarRegistroModulo1(registro), 'CACModulo1');
+    }
+
+    if (
+      tieneAlgunaColumna(registro, ['V17', 'V18', 'V19', 'V20', 'V21', 'V22', 'V23', 'V24']) &&
+      window.CACModulo2 &&
+      typeof window.CACModulo2.validarRegistroModulo2 === 'function'
+    ) {
+      hallazgos = concatenarHallazgos(hallazgos, window.CACModulo2.validarRegistroModulo2(registro), 'CACModulo2');
+    }
+
+    hallazgos = ejecutarModulo(hallazgos, registro, ['V25', 'V26', 'V27', 'V28'], window.CACModulo3, 'CACModulo3');
+    hallazgos = ejecutarModulo(hallazgos, registro, ['V29'], window.CACModulo4, 'CACModulo4');
+    hallazgos = ejecutarModulo(hallazgos, registro, ['V30', 'V31', 'V32', 'V33'], window.CACModulo5, 'CACModulo5');
+    hallazgos = ejecutarModulo(hallazgos, registro, ['V34', 'V35'], window.CACModulo6, 'CACModulo6');
+    hallazgos = ejecutarModulo(hallazgos, registro, ['V36', 'V37', 'V38', 'V39', 'V40'], window.CACModulo7, 'CACModulo7');
+    hallazgos = ejecutarModulo(hallazgos, registro, ['V41', 'V42', 'V43', 'V44'], window.CACModulo8, 'CACModulo8');
+    hallazgos = ejecutarModulo(hallazgos, registro, ['V45', 'V46', 'V46_1', 'V46_2', 'V46_3', 'V46_4', 'V46_5', 'V46_6', 'V46_7', 'V46_8', 'V47'], window.CACModulo9, 'CACModulo9');
+    hallazgos = ejecutarModulo(hallazgos, registro, ['V48', 'V49', 'V50', 'V51', 'V52'], window.CACModulo10, 'CACModulo10');
+    hallazgos = ejecutarModulo(hallazgos, registro, ['V53', 'V53_1', 'V53_2', 'V53_3', 'V53_4', 'V53_5', 'V53_6', 'V53_7', 'V53_8', 'V53_9'], window.CACModulo11, 'CACModulo11');
+    hallazgos = ejecutarModulo(hallazgos, registro, ['V54', 'V55', 'V56'], window.CACModulo12, 'CACModulo12');
+    hallazgos = ejecutarModulo(hallazgos, registro, ['V57', 'V58', 'V59', 'V60'], window.CACModulo13, 'CACModulo13');
+    hallazgos = ejecutarModulo(hallazgos, registro, ['V61', 'V62', 'V63', 'V64', 'V65'], window.CACModulo14, 'CACModulo14');
+
+    // Módulo 15 · V66-V77
+    hallazgos = ejecutarModulo(
+      hallazgos,
+      registro,
+      ['V66', 'V66_1', 'V66_2', 'V66_3', 'V66_4', 'V66_5', 'V66_6', 'V66_7', 'V66_8', 'V66_9', 'V67', 'V68', 'V69', 'V70', 'V71', 'V72', 'V73', 'V74', 'V75', 'V76', 'V77'],
+      window.CACModulo15,
+      'CACModulo15'
+    );
+
+    // Módulo 16 · V78 en adelante
+    hallazgos = ejecutarModulo(
+      hallazgos,
+      registro,
+      ['V78', 'V79', 'V80'],
+      window.CACModulo16,
+      'CACModulo16'
+    );
+
+    return hallazgos;
+  }
+
   function resolverFilaExcel(registro, filaOriginal, filaEncabezados, indice) {
-    const candidatos = [
-      registro?.__filaExcel,
-      registro?.__fila,
-      filaOriginal?.__filaExcel,
-      filaOriginal?.__fila
-    ];
+    const candidatos = [registro?.__filaExcel, registro?.__fila, filaOriginal?.__filaExcel, filaOriginal?.__fila];
 
     for (const candidato of candidatos) {
       const numero = Number(candidato);
-
-      if (Number.isFinite(numero) && numero > 0) {
-        return numero;
-      }
+      if (Number.isFinite(numero) && numero > 0) return numero;
     }
 
     const encabezado = Number(filaEncabezados || 1);
@@ -413,11 +194,7 @@
       const indiceFilaExcel = resolverFilaExcel(registro, fila, filaEncabezados, indice);
 
       if (typeof onProgreso === 'function') {
-        onProgreso({
-          actual: indice + 1,
-          total,
-          porcentaje: total > 0 ? Math.round(((indice + 1) / total) * 100) : 100
-        });
+        onProgreso({ actual: indice + 1, total, porcentaje: total > 0 ? Math.round(((indice + 1) / total) * 100) : 100 });
       }
 
       return {
@@ -440,15 +217,9 @@
   function construirResumen(resultados) {
     const totalPacientes = resultados.length;
     const conErrores = resultados.filter((resultado) => resultado.errores > 0).length;
-    const conAdvertencias = resultados.filter(
-      (resultado) => resultado.advertencias > 0
-    ).length;
-    const soloConAdvertencias = resultados.filter(
-      (resultado) => resultado.errores === 0 && resultado.advertencias > 0
-    ).length;
-    const sinProblemas = resultados.filter(
-      (resultado) => resultado.errores === 0 && resultado.advertencias === 0
-    ).length;
+    const conAdvertencias = resultados.filter((resultado) => resultado.advertencias > 0).length;
+    const soloConAdvertencias = resultados.filter((resultado) => resultado.errores === 0 && resultado.advertencias > 0).length;
+    const sinProblemas = resultados.filter((resultado) => resultado.errores === 0 && resultado.advertencias === 0).length;
 
     const totalErrores = resultados.reduce((suma, resultado) => suma + resultado.errores, 0);
     const totalAdvertencias = resultados.reduce((suma, resultado) => suma + resultado.advertencias, 0);
@@ -458,16 +229,7 @@
       return a.documento.localeCompare(b.documento);
     });
 
-    return {
-      totalPacientes,
-      conErrores,
-      conAdvertencias,
-      soloConAdvertencias,
-      sinProblemas,
-      totalErrores,
-      totalAdvertencias,
-      resultados: resultadosOrdenados
-    };
+    return { totalPacientes, conErrores, conAdvertencias, soloConAdvertencias, sinProblemas, totalErrores, totalAdvertencias, resultados: resultadosOrdenados };
   }
 
   window.CACEngine = {
