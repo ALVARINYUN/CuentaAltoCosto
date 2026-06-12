@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3k-v81-motivo-ultima-cirugia-01';
+  const VERSION = 'sprint-3k-v82-ips-ultima-cirugia-01';
 
   function texto(valor) {
     if (window.CACTipos && typeof window.CACTipos.texto === 'function') {
@@ -46,6 +46,7 @@
       V79: 'Ubicación temporal de esta primera cirugía en relación al manejo oncológico',
       V80: 'Fecha de realización de la última cirugía o cirugía de reintervención',
       V81: 'Motivo de haber realizado la última cirugía de este periodo de reporte',
+      V82: 'Código de la IPS que realiza la última cirugía en este periodo de reporte',
       CUPS: 'Catálogo CUPS cirugía'
     };
 
@@ -172,6 +173,18 @@
     if (codigo === '98') return 'V81=98 indica No aplica porque sólo hubo una intervención o no hubo cirugías en el periodo.';
     if (!codigo) return 'V81 está vacía.';
     return `V81 tiene el valor ${texto(valor)}.`;
+  }
+
+  function describirValorV82(valor) {
+    const codigo = normalizarCodigo(valor);
+    if (codigo === '98') return 'V82=98 indica No aplica porque sólo hubo una intervención o no hubo cirugías en el periodo.';
+    if (/^\d{12}$/.test(codigo)) return `V82=${codigo} registra un código de habilitación IPS de 12 dígitos para la última cirugía o reintervención.`;
+    if (!codigo) return 'V82 está vacía.';
+    return `V82 tiene el valor ${texto(valor)}.`;
+  }
+
+  function esCodigoIps12(valor) {
+    return /^\d{12}$/.test(normalizarCodigo(valor));
   }
 
   function esFechaISO(valor) {
@@ -942,6 +955,168 @@
     return hallazgos;
   }
 
+
+  // ============================================================
+  // V82. Código de la IPS que realiza la última cirugía en este periodo de reporte
+  // ============================================================
+  function validarV82(registro) {
+    const hallazgos = [];
+    const variable = 'V82';
+    const valorOriginal = registro?.V82;
+    const valor = normalizarCodigo(valorOriginal);
+    const v74 = normalizarCodigo(registro?.V74);
+    const v75 = normalizarCodigo(registro?.V75);
+    const numeroV75 = numeroEnteroPositivo(registro?.V75);
+    const v80 = texto(registro?.V80);
+    const fechaNoAplica = '1845-01-01';
+    const fechaV80 = parseFechaISO(v80);
+    const v80EsFechaReal = Boolean(fechaV80) && v80 !== fechaNoAplica;
+    const v80NoAplica = v80 === fechaNoAplica;
+
+    const datosBase = [
+      dato('V74', registro?.V74, describirValorV74(registro?.V74)),
+      dato('V75', registro?.V75, describirValorV75(registro?.V75)),
+      dato('V76', registro?.V76, describirValorV76(registro?.V76)),
+      dato('V77', registro?.V77, describirValorV77(registro?.V77)),
+      dato('V78', registro?.V78, describirValorV78(registro?.V78)),
+      dato('V79', registro?.V79, describirValorV79(registro?.V79)),
+      dato('V80', registro?.V80, describirValorV80(registro?.V80)),
+      dato('V81', registro?.V81, describirValorV81(registro?.V81)),
+      dato('V82', valorOriginal, describirValorV82(valorOriginal))
+    ];
+
+    if (estaVacio(valorOriginal)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V82-ERROR-001',
+        variable,
+        severidad: 'error',
+        titulo: 'V82 está vacía',
+        mensaje: 'V82 está vacía. Debe registrar el código de habilitación de la IPS que realizó la última cirugía o 98 si no aplica.',
+        regla: 'El instructivo de V82 exige registrar código de habilitación IPS de 12 dígitos, incluido el cero inicial, o 98 cuando sólo hubo una intervención o no hubo cirugías en el periodo.',
+        recomendacion: 'Registre el código IPS de 12 dígitos de la última cirugía o 98 si no aplica.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase,
+        columnasCorregir: ['V82']
+      }));
+      return hallazgos;
+    }
+
+    if (valor !== '98' && !esCodigoIps12(valorOriginal)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V82-ERROR-002',
+        variable,
+        severidad: 'error',
+        titulo: 'V82 tiene formato inválido',
+        mensaje: `V82 tiene el valor ${texto(valorOriginal)}, pero debe ser 98 o un código de habilitación IPS de 12 dígitos incluido el cero inicial.`,
+        regla: 'V82 sólo permite 98 o código IPS de habilitación de 12 dígitos. No acepta 96, 99, texto libre ni códigos con longitud diferente.',
+        recomendacion: 'Corrija V82 con el código de habilitación IPS de 12 dígitos de la última cirugía o 98 si no aplica.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase,
+        columnasCorregir: ['V82']
+      }));
+      return hallazgos;
+    }
+
+    if (v74 === '2' && valor !== '98') {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V82-ERROR-003',
+        variable,
+        severidad: 'error',
+        titulo: 'V74=2, pero V82 registra IPS de última cirugía',
+        mensaje: 'V74=2 indica que el usuario no recibió cirugía en este periodo. En ese caso V82 debe ser 98 porque no aplica IPS de última cirugía o reintervención.',
+        regla: 'Si no hubo cirugía en V74, el código de IPS de última cirugía no aplica.',
+        recomendacion: 'Corrija V82 a 98 o revise V74 si el usuario sí recibió cirugía.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase,
+        columnasCorregir: ['V82']
+      }));
+      return hallazgos;
+    }
+
+    if (v74 === '1' && v75 === '1' && valor !== '98') {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V82-ERROR-004',
+        variable,
+        severidad: 'error',
+        titulo: 'V75=1, pero V82 registra IPS de última cirugía',
+        mensaje: 'V75=1 indica que sólo hubo una intervención en este periodo. En ese caso V82 debe ser 98 porque no aplica IPS de última cirugía o reintervención.',
+        regla: '98 en V82 aplica cuando sólo hubo una intervención en el periodo o cuando no hubo cirugías.',
+        recomendacion: 'Corrija V82 a 98 o revise V75 si hubo más de una intervención.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase,
+        columnasCorregir: ['V82']
+      }));
+      return hallazgos;
+    }
+
+    if (v74 === '1' && Number.isFinite(numeroV75) && numeroV75 > 1) {
+      if (v80EsFechaReal && valor === '98') {
+        hallazgos.push(crearHallazgo({
+          codigo: 'V82-ERROR-006',
+          variable,
+          severidad: 'error',
+          titulo: 'V80 tiene fecha real, pero V82 está en No aplica',
+          mensaje: 'V80 registra una fecha real de última cirugía o reintervención. En ese caso V82 debe registrar el código IPS de 12 dígitos de la institución que realizó esa última cirugía.',
+          regla: 'Si existe fecha real de última cirugía o reintervención, V82 debe identificar la IPS que la realizó.',
+          recomendacion: 'Registre en V82 el código IPS de habilitación de 12 dígitos de la última cirugía o revise V80 si no aplica.',
+          valor: valorOriginal,
+          datosRelacionados: datosBase,
+          columnasCorregir: ['V82']
+        }));
+        return hallazgos;
+      }
+
+      if (valor === '98') {
+        hallazgos.push(crearHallazgo({
+          codigo: 'V82-ERROR-005',
+          variable,
+          severidad: 'error',
+          titulo: 'Hubo más de una intervención, pero V82 está en No aplica',
+          mensaje: 'V74=1 y V75 mayor que 1 indican que hubo más de una intervención. En ese caso V82 debe registrar la IPS que realizó la última cirugía o reintervención, no 98.',
+          regla: 'Cuando hubo más de una cirugía o tiempo quirúrgico, V82 debe contener el código IPS de la última cirugía o reintervención.',
+          recomendacion: 'Registre el código IPS de 12 dígitos de la última cirugía o revise V75 si realmente sólo hubo una intervención.',
+          valor: valorOriginal,
+          datosRelacionados: datosBase,
+          columnasCorregir: ['V82']
+        }));
+        return hallazgos;
+      }
+
+      if (v80NoAplica && valor !== '98') {
+        hallazgos.push(crearHallazgo({
+          codigo: 'V82-ERROR-007',
+          variable,
+          severidad: 'error',
+          titulo: 'V80 no aplica, pero V82 registra IPS',
+          mensaje: 'V80=1845-01-01 indica que no aplica fecha de última cirugía o reintervención. Si no aplica V80, V82 también debe ser 98.',
+          regla: 'V82 debe conservar coherencia con V80: si la última cirugía o reintervención no aplica, la IPS que la realizó tampoco aplica.',
+          recomendacion: 'Corrija V82 a 98 o revise V80 si sí existió una última cirugía o reintervención.',
+          valor: valorOriginal,
+          datosRelacionados: datosBase,
+          columnasCorregir: ['V82']
+        }));
+        return hallazgos;
+      }
+    }
+
+    if (v74 === '1' && Number.isFinite(numeroV75) && numeroV75 > 1 && v80EsFechaReal && esCodigoIps12(valorOriginal)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V82-ADVERTENCIA-001',
+        variable,
+        severidad: 'advertencia',
+        titulo: 'V82 registra IPS de última cirugía',
+        mensaje: 'V82 registra un código IPS de 12 dígitos. Verifique que corresponda a la IPS que realizó la última cirugía o reintervención, no necesariamente a la IPS de la primera cirugía registrada en V77.',
+        regla: 'El instructivo exige registrar la IPS que realiza la última cirugía en este periodo. La trazabilidad debe revisarse contra V80 y el soporte quirúrgico.',
+        recomendacion: 'Revise el soporte quirúrgico de la última cirugía o reintervención y confirme que la IPS corresponda al evento registrado en V80.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase,
+        columnasCorregir: ['V82']
+      }));
+    }
+
+    return hallazgos;
+  }
+
   function validar(registro) {
     let hallazgos = [];
 
@@ -965,6 +1140,11 @@
       hallazgos = hallazgos.concat(validarV81(registro));
     }
 
+    // V82. Código de la IPS que realiza la última cirugía en este periodo de reporte
+    if (Object.prototype.hasOwnProperty.call(registro || {}, 'V82')) {
+      hallazgos = hallazgos.concat(validarV82(registro));
+    }
+
     return hallazgos;
   }
 
@@ -974,6 +1154,7 @@
     validarV78,
     validarV79,
     validarV80,
-    validarV81
+    validarV81,
+    validarV82
   };
 })();

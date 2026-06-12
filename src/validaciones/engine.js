@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3k-v81-engine-modulo16-01';
+  const VERSION = 'sprint-3k-v82-engine-modulo16-01';
 
   function obtenerDocumento(registro) {
     const tipo = CACTipos.textoMayuscula(registro.V5);
@@ -160,7 +160,7 @@
     hallazgos = ejecutarModulo(
       hallazgos,
       registro,
-      ['V78', 'V79', 'V80', 'V81'],
+      ['V78', 'V79', 'V80', 'V81', 'V82'],
       window.CACModulo16,
       'CACModulo16'
     );

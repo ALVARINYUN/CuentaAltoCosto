@@ -25,7 +25,8 @@
     V78: 'Código CUPS de primera cirugía',
     V79: 'Ubicación temporal de primera cirugía',
     V80: 'Fecha de última cirugía o reintervención',
-    V81: 'Motivo de haber realizado la última cirugía de este periodo de reporte'
+    V81: 'Motivo de haber realizado la última cirugía de este periodo de reporte',
+    V82: 'Código de la IPS que realiza la última cirugía en este periodo de reporte'
   };
 
   const ENCABEZADOS_REALES = {
@@ -48,7 +49,8 @@
     V78: 'v78cdigodeprimeraciruga',
     V79: 'v79ubicacintemporaldeestaprimera',
     V80: 'v80fechaderealizacindelltimoproc',
-    V81: 'v81motivodehaberrealizadolaltima'
+    V81: 'v81motivodehaberrealizadolaltima',
+    V82: 'v82cdigoipsultimarealiza'
   };
 
   const MAPA_ENCABEZADOS_A_VARIABLES = {};
@@ -383,5 +385,5 @@
     XLSX.writeFile(workbook, nombreSalida);
   }
 
-  window.CACExportadorExcel = { VERSION_EXPORTADOR: 'sprint-3k-v81-exportador-01', exportarReporte };
+  window.CACExportadorExcel = { VERSION_EXPORTADOR: 'sprint-3k-v82-exportador-01', exportarReporte };
 })();
