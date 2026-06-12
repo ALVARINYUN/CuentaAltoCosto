@@ -17,7 +17,7 @@
     'V54', 'V55', 'V56', 'V57', 'V58', 'V59', 'V60',
     'V61', 'V62', 'V63', 'V64', 'V65',
     'V66', 'V66_1', 'V66_2', 'V66_3', 'V66_4', 'V66_5', 'V66_6', 'V66_7', 'V66_8', 'V66_9',
-    'V67', 'V68', 'V69', 'V70', 'V71', 'V72', 'V73', 'V74', 'V75', 'V76', 'V77', 'V78', 'V79', 'V80', 'V81', 'V82'
+    'V67', 'V68', 'V69', 'V70', 'V71', 'V72', 'V73', 'V74', 'V75', 'V76', 'V77', 'V78', 'V79', 'V80', 'V81', 'V82', 'V83'
   ];
 
   function texto(valor) {
@@ -81,7 +81,7 @@
     const match = limpio.match(/^v(\d{1,3})(?:\D|$)/);
     if (match) {
       const numero = Number(match[1]);
-      if (Number.isInteger(numero) && numero >= 1 && numero <= 81) return `V${numero}`;
+      if (Number.isInteger(numero) && numero >= 1 && numero <= 83) return `V${numero}`;
     }
 
     return texto(valor).toUpperCase();
@@ -125,7 +125,7 @@
     const numeros = variables.map(numeroVariable).filter(Number.isFinite).sort((a, b) => a - b);
 
     let consecutivasDesdeV1 = 0;
-    for (let n = 1; n <= 81; n += 1) {
+    for (let n = 1; n <= 83; n += 1) {
       if (numeros.includes(n)) consecutivasDesdeV1 = n;
       else break;
     }
@@ -147,7 +147,7 @@
       'V53', 'V53_1', 'V53_2', 'V53_3', 'V53_4', 'V53_5', 'V53_6', 'V53_7', 'V53_8', 'V53_9',
       'V54', 'V55', 'V56', 'V57', 'V58', 'V59', 'V60',
       'V61', 'V62', 'V63', 'V64', 'V65',
-      'V66', 'V66_1', 'V66_2', 'V66_3', 'V66_4', 'V66_5', 'V66_6', 'V66_7', 'V66_8', 'V66_9', 'V67', 'V68', 'V69', 'V70', 'V71', 'V72', 'V73', 'V74', 'V75', 'V76', 'V77', 'V78', 'V79', 'V80', 'V81', 'V82', 'V82', 'V81'
+      'V66', 'V66_1', 'V66_2', 'V66_3', 'V66_4', 'V66_5', 'V66_6', 'V66_7', 'V66_8', 'V66_9', 'V67', 'V68', 'V69', 'V70', 'V71', 'V72', 'V73', 'V74', 'V75', 'V76', 'V77', 'V78', 'V79', 'V80', 'V81', 'V82', 'V83', 'V82', 'V81'
     ];
 
     const bonus = bonusVariables.reduce((suma, variable) => suma + (variables.includes(variable) ? 30 : 0), 0);

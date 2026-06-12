@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3k-v82-ips-ultima-cirugia-01';
+  const VERSION = 'sprint-3k-v83-cups-ultima-cirugia-01';
 
   function texto(valor) {
     if (window.CACTipos && typeof window.CACTipos.texto === 'function') {
@@ -47,6 +47,7 @@
       V80: 'Fecha de realización de la última cirugía o cirugía de reintervención',
       V81: 'Motivo de haber realizado la última cirugía de este periodo de reporte',
       V82: 'Código de la IPS que realiza la última cirugía en este periodo de reporte',
+      V83: 'Código de última cirugía en este periodo de reporte',
       CUPS: 'Catálogo CUPS cirugía'
     };
 
@@ -145,6 +146,15 @@
     return `V78 tiene el código ${codigo}.`;
   }
 
+  function describirValorV83(valor, cupsEncontrado = null) {
+    const codigo = normalizarCodigo(valor);
+    const descripcion = descripcionCatalogo(cupsEncontrado);
+    if (codigo === '98') return 'V83=98 indica No aplica porque sólo hubo una intervención o no hubo cirugías en el periodo.';
+    if (!codigo) return 'V83 está vacía.';
+    if (descripcion) return `V83=${codigo} fue encontrado en CUPS cirugía: ${descripcion}.`;
+    return `V83 tiene el código ${codigo}.`;
+  }
+
   function describirValorV79(valor) {
     const codigo = normalizarCodigo(valor);
     if (codigo === '1') return 'V79=1 indica que la cirugía fue parte del manejo inicial para el cáncer.';
@@ -223,6 +233,19 @@
     return /^\d{6}$/.test(codigo);
   }
 
+  function esCodigoCups6Texto(valor) {
+    const codigo = texto(valor)
+      .toUpperCase()
+      .replace(/\s+/g, '')
+      .replace(/\./g, '')
+      .replace(/-/g, '')
+      .trim();
+
+    if (codigo === '98') return false;
+    if (['0', '00', '96', '99'].includes(codigo)) return false;
+    return /^\d{6}$/.test(codigo);
+  }
+
   function esObjeto(valor) {
     return valor && typeof valor === 'object';
   }
@@ -230,6 +253,7 @@
   function esCatalogoCupsOperativo(valor) {
     return esObjeto(valor) && (
       Array.isArray(valor?.grupos?.cirugia?.codigos) ||
+      esObjeto(valor?.grupos?.cirugia?.codigos) ||
       esObjeto(valor?.datos)
     );
   }
@@ -319,31 +343,72 @@
     return grupos.includes('cirugia') && variablesAplica.includes('V78');
   }
 
-  function buscarCupsCirugia(codigo) {
+  function obtenerCodigosGrupoCatalogo(catalogo, grupo) {
+    const codigos = catalogo?.grupos?.[grupo]?.codigos;
+
+    if (Array.isArray(codigos)) {
+      return codigos
+        .map((item) => normalizarCodigo(esObjeto(item) ? (item.codigo || item.CODIGO || item.code || item.valor || '') : item))
+        .filter(Boolean);
+    }
+
+    if (esObjeto(codigos)) {
+      return Object.keys(codigos).map((codigo) => normalizarCodigo(codigo)).filter(Boolean);
+    }
+
+    return [];
+  }
+
+  function obtenerDatoGrupoCatalogo(catalogo, grupo, codigo) {
+    const codigos = catalogo?.grupos?.[grupo]?.codigos;
+
+    if (Array.isArray(codigos)) {
+      const encontrado = codigos.find((item) => normalizarCodigo(esObjeto(item) ? (item.codigo || item.CODIGO || item.code || item.valor || '') : item) === codigo);
+      if (!encontrado) return null;
+      return esObjeto(encontrado) ? encontrado : { codigo: encontrado, grupo };
+    }
+
+    if (esObjeto(codigos)) {
+      const clave = Object.keys(codigos).find((item) => normalizarCodigo(item) === codigo);
+      if (!clave) return null;
+      const encontrado = codigos[clave];
+      return esObjeto(encontrado) ? { codigo: clave, ...encontrado } : { codigo: clave, descripcion: texto(encontrado), grupo };
+    }
+
+    return null;
+  }
+
+  function existeCodigoEnCualquierGrupo(catalogo, codigo) {
+    const grupos = catalogo?.grupos;
+    if (!esObjeto(grupos)) return false;
+
+    return Object.keys(grupos).some((grupo) => obtenerCodigosGrupoCatalogo(catalogo, grupo).includes(codigo));
+  }
+
+  function buscarCupsEnGrupo(codigo, grupo) {
     const catalogos = obtenerCatalogosCupsOperativos();
     let catalogoDisponible = false;
     let existeEnCatalogoGeneral = false;
 
     for (const catalogo of catalogos) {
-      const codigosCirugia = Array.isArray(catalogo?.grupos?.cirugia?.codigos)
-        ? catalogo.grupos.cirugia.codigos.map((item) => normalizarCodigo(item))
-        : [];
+      const codigosGrupo = obtenerCodigosGrupoCatalogo(catalogo, grupo);
+      if (codigosGrupo.length > 0) catalogoDisponible = true;
 
-      if (codigosCirugia.length > 0) catalogoDisponible = true;
+      const estaEnGrupo = codigosGrupo.includes(codigo);
+      const datoGrupo = obtenerDatoGrupoCatalogo(catalogo, grupo, codigo);
+      const datoCatalogo = datoGrupo || obtenerDatoCatalogo(catalogo, codigo);
 
-      const estaEnGrupoCirugia = codigosCirugia.includes(codigo);
-      const datoCatalogo = obtenerDatoCatalogo(catalogo, codigo);
-      if (datoCatalogo) existeEnCatalogoGeneral = true;
+      if (datoCatalogo || existeCodigoEnCualquierGrupo(catalogo, codigo)) {
+        existeEnCatalogoGeneral = true;
+      }
 
-      const aplicaDato = datoCatalogo ? datoAplicaCirugiaV78(datoCatalogo) : true;
-
-      if (estaEnGrupoCirugia && aplicaDato) {
+      if (estaEnGrupo) {
         return {
           disponible: true,
           encontrado: {
             codigo,
-            descripcion: descripcionCatalogo({ dato: datoCatalogo }),
-            dato: datoCatalogo,
+            descripcion: descripcionCatalogo({ dato: datoCatalogo || datoGrupo }),
+            dato: datoCatalogo || datoGrupo,
             catalogo
           },
           existeEnCatalogoGeneral
@@ -356,6 +421,10 @@
       encontrado: null,
       existeEnCatalogoGeneral
     };
+  }
+
+  function buscarCupsCirugia(codigo) {
+    return buscarCupsEnGrupo(codigo, 'cirugia');
   }
 
   function descripcionContieneProcedimientoEspecial(encontrado) {
@@ -1117,6 +1186,197 @@
     return hallazgos;
   }
 
+  // ============================================================
+  // V83. Código de última cirugía en este periodo de reporte
+  // ============================================================
+  function validarV83(registro) {
+    const hallazgos = [];
+    const variable = 'V83';
+    const valorOriginal = registro?.V83;
+    const valor = normalizarCodigo(valorOriginal);
+    const v74 = normalizarCodigo(registro?.V74);
+    const v75 = normalizarCodigo(registro?.V75);
+    const numeroV75 = numeroEnteroPositivo(registro?.V75);
+    const v80 = texto(registro?.V80);
+    const fechaNoAplica = '1845-01-01';
+    const fechaV80 = parseFechaISO(v80);
+    const v80EsFechaReal = Boolean(fechaV80) && v80 !== fechaNoAplica;
+    const v80NoAplica = v80 === fechaNoAplica;
+
+    const resultadoCatalogo = valor && valor !== '98' && esCodigoCups6Texto(valorOriginal)
+      ? buscarCupsCirugia(valor)
+      : { disponible: true, encontrado: null, existeEnCatalogoGeneral: false };
+
+    const datosBase = [
+      dato('V74', registro?.V74, describirValorV74(registro?.V74)),
+      dato('V75', registro?.V75, describirValorV75(registro?.V75)),
+      dato('V76', registro?.V76, describirValorV76(registro?.V76)),
+      dato('V77', registro?.V77, describirValorV77(registro?.V77)),
+      dato('V78', registro?.V78, describirValorV78(registro?.V78)),
+      dato('V79', registro?.V79, describirValorV79(registro?.V79)),
+      dato('V80', registro?.V80, describirValorV80(registro?.V80)),
+      dato('V81', registro?.V81, describirValorV81(registro?.V81)),
+      dato('V82', registro?.V82, describirValorV82(registro?.V82)),
+      dato('V83', valorOriginal, describirValorV83(valorOriginal, resultadoCatalogo.encontrado))
+    ];
+
+    if (estaVacio(valorOriginal)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V83-ERROR-001',
+        variable,
+        severidad: 'error',
+        titulo: 'V83 está vacía',
+        mensaje: 'V83 está vacía. Debe registrar el código CUPS de la última cirugía o 98 si no aplica.',
+        regla: 'El instructivo de V83 exige registrar el código de procedimiento CUPS de la última cirugía, o 98 cuando sólo hubo una intervención o no hubo cirugías en este periodo.',
+        recomendacion: 'Registre el CUPS quirúrgico de la última cirugía o 98 si no aplica.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase,
+        columnasCorregir: ['V83']
+      }));
+      return hallazgos;
+    }
+
+    if (valor !== '98' && !esCodigoCups6Texto(valorOriginal)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V83-ERROR-002',
+        variable,
+        severidad: 'error',
+        titulo: 'V83 tiene formato CUPS inválido',
+        mensaje: `V83 tiene el valor ${texto(valorOriginal)}, pero debe ser 98 o un código CUPS de cirugía de 6 dígitos conservado como texto.`,
+        regla: 'V83 permite 98 o código CUPS quirúrgico de 6 dígitos. No acepta 96, 99, texto libre ni códigos que hayan perdido ceros iniciales.',
+        recomendacion: 'Corrija V83 usando un CUPS de cirugía del archivo operativo SISCAC y conserve el código como texto en Excel.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase,
+        columnasCorregir: ['V83']
+      }));
+      return hallazgos;
+    }
+
+    if (v74 === '2' && valor !== '98') {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V83-ERROR-003',
+        variable,
+        severidad: 'error',
+        titulo: 'V74=2, pero V83 registra CUPS de última cirugía',
+        mensaje: 'V74=2 indica que el usuario no recibió cirugía en este periodo. En ese caso V83 debe ser 98 porque no aplica CUPS de última cirugía o reintervención.',
+        regla: 'Si no hubo cirugía en V74, el código CUPS de última cirugía no aplica.',
+        recomendacion: 'Corrija V83 a 98 o revise V74 si el usuario sí recibió cirugía.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase,
+        columnasCorregir: ['V83']
+      }));
+      return hallazgos;
+    }
+
+    if (v74 === '1' && v75 === '1' && valor !== '98') {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V83-ERROR-004',
+        variable,
+        severidad: 'error',
+        titulo: 'V75=1, pero V83 registra CUPS de última cirugía',
+        mensaje: 'V75=1 indica que sólo hubo una intervención en este periodo. En ese caso V83 debe ser 98 porque no aplica CUPS de última cirugía o reintervención.',
+        regla: '98 en V83 aplica cuando sólo hubo una intervención en el periodo o cuando no hubo cirugías.',
+        recomendacion: 'Corrija V83 a 98 o revise V75 si hubo más de una intervención.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase,
+        columnasCorregir: ['V83']
+      }));
+      return hallazgos;
+    }
+
+    if (v74 === '1' && Number.isFinite(numeroV75) && numeroV75 > 1) {
+      if (v80EsFechaReal && valor === '98') {
+        hallazgos.push(crearHallazgo({
+          codigo: 'V83-ERROR-006',
+          variable,
+          severidad: 'error',
+          titulo: 'V80 tiene fecha real, pero V83 está en No aplica',
+          mensaje: 'V80 registra una fecha real de última cirugía o reintervención. En ese caso V83 debe registrar el CUPS quirúrgico de esa última cirugía.',
+          regla: 'Si existe fecha real de última cirugía o reintervención, V83 debe identificar el procedimiento CUPS realizado.',
+          recomendacion: 'Registre en V83 el CUPS de cirugía correspondiente a la última cirugía o revise V80 si no aplica.',
+          valor: valorOriginal,
+          datosRelacionados: datosBase,
+          columnasCorregir: ['V83']
+        }));
+        return hallazgos;
+      }
+
+      if (valor === '98') {
+        hallazgos.push(crearHallazgo({
+          codigo: 'V83-ERROR-005',
+          variable,
+          severidad: 'error',
+          titulo: 'Hubo más de una intervención, pero V83 está en No aplica',
+          mensaje: 'V74=1 y V75 mayor que 1 indican que hubo más de una intervención. En ese caso V83 debe registrar el CUPS de la última cirugía o reintervención, no 98.',
+          regla: 'Cuando hubo más de una cirugía o tiempo quirúrgico, V83 debe contener el CUPS quirúrgico de la última cirugía o reintervención.',
+          recomendacion: 'Registre el CUPS de cirugía de la última intervención o revise V75 si realmente sólo hubo una intervención.',
+          valor: valorOriginal,
+          datosRelacionados: datosBase,
+          columnasCorregir: ['V83']
+        }));
+        return hallazgos;
+      }
+
+      if (v80NoAplica && valor !== '98') {
+        hallazgos.push(crearHallazgo({
+          codigo: 'V83-ERROR-007',
+          variable,
+          severidad: 'error',
+          titulo: 'V80 no aplica, pero V83 registra CUPS',
+          mensaje: 'V80=1845-01-01 indica que no aplica fecha de última cirugía o reintervención. Si no aplica V80, V83 también debe ser 98.',
+          regla: 'V83 debe conservar coherencia con V80: si la última cirugía o reintervención no aplica, el CUPS de esa última cirugía tampoco aplica.',
+          recomendacion: 'Corrija V83 a 98 o revise V80 si sí existió una última cirugía o reintervención.',
+          valor: valorOriginal,
+          datosRelacionados: datosBase,
+          columnasCorregir: ['V83']
+        }));
+        return hallazgos;
+      }
+    }
+
+    if (valor !== '98' && esCodigoCups6Texto(valorOriginal) && !resultadoCatalogo.encontrado) {
+      const mensajeCatalogo = resultadoCatalogo.existeEnCatalogoGeneral
+        ? `V83=${valor} existe en el catálogo CUPS, pero no pertenece al grupo CUPS CIRUGÍA aplicable a V83.`
+        : `V83=${valor} no existe en el grupo CUPS CIRUGÍA aplicable a V83.`;
+
+      hallazgos.push(crearHallazgo({
+        codigo: 'V83-ERROR-008',
+        variable,
+        severidad: 'error',
+        titulo: 'V83 no existe en CUPS cirugía',
+        mensaje: mensajeCatalogo,
+        regla: 'V83 debe validarse contra CACCatalogoCUPS.grupos.cirugia.codigos. Los CUPS de radioterapia no son válidos para esta variable.',
+        recomendacion: 'Verifique el CUPS en SISCAC y asegúrese de usar un código del grupo cirugía para la última cirugía.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase.concat([
+          dato('CUPS', valor, resultadoCatalogo.existeEnCatalogoGeneral
+            ? 'Código encontrado fuera del grupo cirugía; por ejemplo, puede corresponder a radioterapia.'
+            : 'Código no encontrado en CUPS cirugía.')
+        ]),
+        columnasCorregir: ['V83']
+      }));
+      return hallazgos;
+    }
+
+    if (v74 === '1' && Number.isFinite(numeroV75) && numeroV75 > 1 && v80EsFechaReal && resultadoCatalogo.encontrado) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V83-ADVERTENCIA-001',
+        variable,
+        severidad: 'advertencia',
+        titulo: 'V83 tiene CUPS válido; verificar pertinencia quirúrgica',
+        mensaje: 'V83 tiene CUPS válido de cirugía. Verifique que corresponda a la última cirugía o reintervención y al procedimiento con mayor relación con el manejo del cáncer o mayor complejidad dentro de la cirugía.',
+        regla: 'El instructivo recomienda usar el CUPS que tenga mayor relación con el manejo del cáncer o el de mayor complejidad dentro de la cirugía.',
+        recomendacion: 'Revise contra la historia clínica, el soporte quirúrgico de la última cirugía y la trazabilidad con V80, V82 y V78.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase.concat([dato('CUPS', valor, descripcionCatalogo(resultadoCatalogo.encontrado) || 'Código encontrado en CUPS cirugía')]),
+        columnasCorregir: ['V83']
+      }));
+    }
+
+    return hallazgos;
+  }
+
+
   function validar(registro) {
     let hallazgos = [];
 
@@ -1145,6 +1405,11 @@
       hallazgos = hallazgos.concat(validarV82(registro));
     }
 
+    // V83. Código de última cirugía en este periodo de reporte
+    if (Object.prototype.hasOwnProperty.call(registro || {}, 'V83')) {
+      hallazgos = hallazgos.concat(validarV83(registro));
+    }
+
     return hallazgos;
   }
 
@@ -1155,6 +1420,7 @@
     validarV79,
     validarV80,
     validarV81,
-    validarV82
+    validarV82,
+    validarV83
   };
 })();
