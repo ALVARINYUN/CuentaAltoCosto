@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3k-v80-fecha-ultima-cirugia-reintervencion-01';
+  const VERSION = 'sprint-3k-v81-motivo-ultima-cirugia-01';
 
   function texto(valor) {
     if (window.CACTipos && typeof window.CACTipos.texto === 'function') {
@@ -45,6 +45,7 @@
       V78: 'Código CUPS de primera cirugía',
       V79: 'Ubicación temporal de esta primera cirugía en relación al manejo oncológico',
       V80: 'Fecha de realización de la última cirugía o cirugía de reintervención',
+      V81: 'Motivo de haber realizado la última cirugía de este periodo de reporte',
       CUPS: 'Catálogo CUPS cirugía'
     };
 
@@ -159,6 +160,18 @@
     if (/^\d{4}-\d{2}-\d{2}$/.test(fecha)) return `V80=${fecha} registra fecha de última cirugía o reintervención.`;
     if (!fecha) return 'V80 está vacía.';
     return `V80 tiene el valor ${fecha}.`;
+  }
+
+  function describirValorV81(valor) {
+    const codigo = normalizarCodigo(valor);
+    if (codigo === '1') return 'V81=1 indica complementar tratamiento quirúrgico del cáncer no asociado a complicaciones de la primera cirugía.';
+    if (codigo === '2') return 'V81=2 indica complicaciones debidas a la primera cirugía o siguientes.';
+    if (codigo === '3') return 'V81=3 indica complicaciones por otras condiciones médicas no relacionadas con la cirugía.';
+    if (codigo === '5') return 'V81=5 indica 1 y 3: complementar tratamiento quirúrgico y otras condiciones médicas no relacionadas con la cirugía.';
+    if (codigo === '6') return 'V81=6 indica 2 y 3: complicaciones quirúrgicas y otras condiciones médicas no relacionadas con la cirugía.';
+    if (codigo === '98') return 'V81=98 indica No aplica porque sólo hubo una intervención o no hubo cirugías en el periodo.';
+    if (!codigo) return 'V81 está vacía.';
+    return `V81 tiene el valor ${texto(valor)}.`;
   }
 
   function esFechaISO(valor) {
@@ -751,6 +764,184 @@
     return hallazgos;
   }
 
+
+
+  // ============================================================
+  // V81. Motivo de haber realizado la última cirugía de este periodo de reporte
+  // ============================================================
+  function validarV81(registro) {
+    const hallazgos = [];
+    const variable = 'V81';
+    const valorOriginal = registro?.V81;
+    const valor = normalizarCodigo(valorOriginal);
+    const v74 = normalizarCodigo(registro?.V74);
+    const v75 = normalizarCodigo(registro?.V75);
+    const numeroV75 = numeroEnteroPositivo(registro?.V75);
+    const v80 = texto(registro?.V80);
+    const fechaNoAplica = '1845-01-01';
+    const permitidos = ['1', '2', '3', '5', '6', '98'];
+    const fechaV80 = parseFechaISO(v80);
+    const v80EsFechaReal = Boolean(fechaV80) && v80 !== fechaNoAplica;
+    const v80NoAplica = v80 === fechaNoAplica;
+
+    const datosBase = [
+      dato('V74', registro?.V74, describirValorV74(registro?.V74)),
+      dato('V75', registro?.V75, describirValorV75(registro?.V75)),
+      dato('V76', registro?.V76, describirValorV76(registro?.V76)),
+      dato('V77', registro?.V77, describirValorV77(registro?.V77)),
+      dato('V78', registro?.V78, describirValorV78(registro?.V78)),
+      dato('V79', registro?.V79, describirValorV79(registro?.V79)),
+      dato('V80', registro?.V80, describirValorV80(registro?.V80)),
+      dato('V81', valorOriginal, describirValorV81(valorOriginal))
+    ];
+
+    if (estaVacio(valorOriginal)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V81-ERROR-001',
+        variable,
+        severidad: 'error',
+        titulo: 'V81 está vacía',
+        mensaje: 'V81 está vacía. Debe registrar 1, 2, 3, 5, 6 o 98 según aplique.',
+        regla: 'El instructivo de V81 exige registrar el motivo de la última cirugía o cirugía de reintervención, o 98 cuando no aplica.',
+        recomendacion: 'Registre 1, 2, 3, 5 o 6 si hubo más de una intervención. Registre 98 si no hubo cirugía o si sólo hubo una intervención.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase,
+        columnasCorregir: ['V81']
+      }));
+      return hallazgos;
+    }
+
+    if (!permitidos.includes(valor)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V81-ERROR-002',
+        variable,
+        severidad: 'error',
+        titulo: 'V81 tiene un valor fuera del catálogo permitido',
+        mensaje: `V81 tiene el valor ${texto(valorOriginal)}, pero los valores válidos son 1, 2, 3, 5, 6 y 98.`,
+        regla: 'V81 solo permite 1, 2, 3, 5, 6 o 98 según el instructivo.',
+        recomendacion: 'Corrija V81 con un valor permitido: 1 complementar tratamiento quirúrgico, 2 complicación quirúrgica, 3 condición médica no relacionada, 5 opciones 1 y 3, 6 opciones 2 y 3, o 98 no aplica.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase,
+        columnasCorregir: ['V81']
+      }));
+      return hallazgos;
+    }
+
+    if (v74 === '2' && valor !== '98') {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V81-ERROR-003',
+        variable,
+        severidad: 'error',
+        titulo: 'V74=2, pero V81 registra motivo de cirugía',
+        mensaje: 'V74=2 indica que el usuario no recibió cirugía en este periodo. En ese caso V81 debe ser 98 porque no aplica motivo de última cirugía o reintervención.',
+        regla: 'Si no hubo cirugía en V74, el motivo de última cirugía o reintervención no aplica.',
+        recomendacion: 'Corrija V81 a 98 o revise V74 si el usuario sí recibió cirugía.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase,
+        columnasCorregir: ['V81']
+      }));
+      return hallazgos;
+    }
+
+    if (v74 === '1' && v75 === '1' && valor !== '98') {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V81-ERROR-004',
+        variable,
+        severidad: 'error',
+        titulo: 'V75=1, pero V81 registra motivo de última cirugía',
+        mensaje: 'V75=1 indica que sólo hubo una intervención en este periodo. Según el instructivo, V81 debe ser 98 porque no aplica motivo de última cirugía o reintervención.',
+        regla: '98 en V81 aplica cuando sólo hubo una intervención en el periodo o cuando no hubo cirugías.',
+        recomendacion: 'Corrija V81 a 98 o revise V75 si hubo más de una intervención.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase,
+        columnasCorregir: ['V81']
+      }));
+      return hallazgos;
+    }
+
+    if (v74 === '1' && Number.isFinite(numeroV75) && numeroV75 > 1) {
+      if (v80EsFechaReal && valor === '98') {
+        hallazgos.push(crearHallazgo({
+          codigo: 'V81-ERROR-007',
+          variable,
+          severidad: 'error',
+          titulo: 'V80 tiene fecha real, pero V81 está en No aplica',
+          mensaje: 'V80 registra una fecha real de última cirugía o reintervención. En ese caso V81 debe indicar el motivo de esa última cirugía con 1, 2, 3, 5 o 6.',
+          regla: 'Si existe fecha real de última cirugía o reintervención, V81 debe explicar el motivo de esa última cirugía.',
+          recomendacion: 'Registre en V81 el motivo correspondiente: 1, 2, 3, 5 o 6.',
+          valor: valorOriginal,
+          datosRelacionados: datosBase,
+          columnasCorregir: ['V81']
+        }));
+        return hallazgos;
+      }
+
+      if (valor === '98') {
+        hallazgos.push(crearHallazgo({
+          codigo: 'V81-ERROR-005',
+          variable,
+          severidad: 'error',
+          titulo: 'Hubo más de una intervención, pero V81 está en No aplica',
+          mensaje: 'V74=1 y V75 mayor que 1 indican que hubo más de una intervención en este periodo. En ese caso V81 debe registrar el motivo de la última cirugía con 1, 2, 3, 5 o 6, no 98.',
+          regla: 'Cuando hubo más de una cirugía o tiempo quirúrgico, el motivo de la última cirugía o reintervención debe estar documentado en V81.',
+          recomendacion: 'Registre el motivo de la última cirugía o revise V75 si realmente sólo hubo una intervención.',
+          valor: valorOriginal,
+          datosRelacionados: datosBase,
+          columnasCorregir: ['V81']
+        }));
+        return hallazgos;
+      }
+
+      if (v80NoAplica && valor !== '98') {
+        hallazgos.push(crearHallazgo({
+          codigo: 'V81-ERROR-006',
+          variable,
+          severidad: 'error',
+          titulo: 'V80 no aplica, pero V81 registra motivo',
+          mensaje: 'V80=1845-01-01 indica que no aplica fecha de última cirugía o reintervención. Si no aplica V80, V81 también debe ser 98.',
+          regla: 'V81 debe conservar coherencia con V80: si la última cirugía o reintervención no aplica, su motivo tampoco aplica.',
+          recomendacion: 'Corrija V81 a 98 o revise V80 si sí existió una última cirugía o reintervención.',
+          valor: valorOriginal,
+          datosRelacionados: datosBase,
+          columnasCorregir: ['V81']
+        }));
+        return hallazgos;
+      }
+    }
+
+    if (v74 === '1' && Number.isFinite(numeroV75) && numeroV75 > 1 && v80EsFechaReal && ['2', '6'].includes(valor)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V81-ADVERTENCIA-001',
+        variable,
+        severidad: 'advertencia',
+        titulo: 'V81 incluye complicaciones debidas a la cirugía',
+        mensaje: 'V81 indica que el motivo incluye complicaciones debidas a la primera cirugía o siguientes. El valor es permitido, pero se debe verificar soporte clínico de la complicación quirúrgica.',
+        regla: 'El instructivo permite registrar complicaciones quirúrgicas como motivo, pero esta condición debe estar soportada en la historia clínica.',
+        recomendacion: 'Revise el soporte clínico de la complicación quirúrgica y su relación con la primera cirugía o siguientes.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase,
+        columnasCorregir: ['V81']
+      }));
+    }
+
+    if (v74 === '1' && Number.isFinite(numeroV75) && numeroV75 > 1 && v80EsFechaReal && ['3', '5', '6'].includes(valor)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V81-ADVERTENCIA-002',
+        variable,
+        severidad: 'advertencia',
+        titulo: 'V81 incluye condiciones médicas no relacionadas con la cirugía',
+        mensaje: 'V81 indica que el motivo incluye complicaciones por otras condiciones médicas no relacionadas con la cirugía, por ejemplo comorbilidad. El valor es permitido, pero se debe verificar soporte clínico de esa condición.',
+        regla: 'El instructivo permite registrar otras condiciones médicas no relacionadas con la cirugía como motivo, pero deben estar documentadas.',
+        recomendacion: 'Revise la historia clínica, comorbilidad u otra condición médica que justifique el motivo registrado.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase,
+        columnasCorregir: ['V81']
+      }));
+    }
+
+    return hallazgos;
+  }
+
   function validar(registro) {
     let hallazgos = [];
 
@@ -769,6 +960,11 @@
       hallazgos = hallazgos.concat(validarV80(registro));
     }
 
+    // V81. Motivo de haber realizado la última cirugía de este periodo de reporte
+    if (Object.prototype.hasOwnProperty.call(registro || {}, 'V81')) {
+      hallazgos = hallazgos.concat(validarV81(registro));
+    }
+
     return hallazgos;
   }
 
@@ -777,6 +973,7 @@
     validar,
     validarV78,
     validarV79,
-    validarV80
+    validarV80,
+    validarV81
   };
 })();
