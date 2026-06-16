@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3k-v83-engine-modulo16-01';
+  const VERSION = 'sprint-3l-v86-engine-modulo17-01';
 
   function obtenerDocumento(registro) {
     const tipo = CACTipos.textoMayuscula(registro.V5);
@@ -156,13 +156,22 @@
       'CACModulo15'
     );
 
-    // Módulo 16 · V78 en adelante
+    // Módulo 16 · V78-V85 · Cirugía
     hallazgos = ejecutarModulo(
       hallazgos,
       registro,
-      ['V78', 'V79', 'V80', 'V81', 'V82', 'V83'],
+      ['V78', 'V79', 'V80', 'V81', 'V82', 'V83', 'V84', 'V85'],
       window.CACModulo16,
       'CACModulo16'
+    );
+
+    // Módulo 17 · V86 en adelante · Radioterapia
+    hallazgos = ejecutarModulo(
+      hallazgos,
+      registro,
+      ['V86'],
+      window.CACModulo17,
+      'CACModulo17'
     );
 
     return hallazgos;

@@ -27,7 +27,10 @@
     V80: 'Fecha de última cirugía o reintervención',
     V81: 'Motivo de haber realizado la última cirugía de este periodo de reporte',
     V82: 'Código de la IPS que realiza la última cirugía en este periodo de reporte',
-    V83: 'Código de última cirugía en este periodo de reporte'
+    V83: 'Código de última cirugía en este periodo de reporte',
+    V84: 'Ubicación temporal de esta última cirugía en relación al manejo oncológico',
+    V85: 'Estado vital al finalizar la única o última cirugía',
+    V86: 'Recibió algún tipo de radioterapia en el periodo actual'
   };
 
   const ENCABEZADOS_REALES = {
@@ -52,7 +55,10 @@
     V80: 'v80fechaderealizacindelltimoproc',
     V81: 'v81motivodehaberrealizadolaltima',
     V82: 'v82cdigoipsultimarealiza',
-    V83: 'v83cdigodeltimaciruga'
+    V83: 'v83cdigodeltimaciruga',
+    V84: 'v84ubicacintemporaldeestaltimaci',
+    V85: 'v85estadovitalalfinalizarlanicao',
+    V86: 'v86recibielusuarioalgntipoderadi'
   };
 
   const MAPA_ENCABEZADOS_A_VARIABLES = {};
@@ -387,5 +393,5 @@
     XLSX.writeFile(workbook, nombreSalida);
   }
 
-  window.CACExportadorExcel = { VERSION_EXPORTADOR: 'sprint-3k-v83-exportador-01', exportarReporte };
+  window.CACExportadorExcel = { VERSION_EXPORTADOR: 'sprint-3l-v86-exportador-01', exportarReporte };
 })();

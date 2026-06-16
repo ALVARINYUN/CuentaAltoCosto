@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3k-v83-cups-ultima-cirugia-01';
+  const VERSION = 'sprint-3k-v85-estado-vital-cirugia-01';
 
   function texto(valor) {
     if (window.CACTipos && typeof window.CACTipos.texto === 'function') {
@@ -48,6 +48,8 @@
       V81: 'Motivo de haber realizado la última cirugía de este periodo de reporte',
       V82: 'Código de la IPS que realiza la última cirugía en este periodo de reporte',
       V83: 'Código de última cirugía en este periodo de reporte',
+      V84: 'Ubicación temporal de esta última cirugía en relación al manejo oncológico',
+      V85: 'Estado vital al finalizar la única o última cirugía de este periodo de reporte',
       CUPS: 'Catálogo CUPS cirugía'
     };
 
@@ -153,6 +155,25 @@
     if (!codigo) return 'V83 está vacía.';
     if (descripcion) return `V83=${codigo} fue encontrado en CUPS cirugía: ${descripcion}.`;
     return `V83 tiene el código ${codigo}.`;
+  }
+
+  function describirValorV84(valor) {
+    const codigo = normalizarCodigo(valor);
+    if (codigo === '1') return 'V84=1 indica que la última cirugía fue parte del manejo inicial curativo del cáncer.';
+    if (codigo === '5') return 'V84=5 indica manejo de recaída.';
+    if (codigo === '6') return 'V84=6 indica manejo de enfermedad metastásica.';
+    if (codigo === '98') return 'V84=98 indica No aplica porque sólo hubo una intervención o no hubo cirugías en el periodo.';
+    if (!codigo) return 'V84 está vacía.';
+    return `V84 tiene el valor ${texto(valor)}.`;
+  }
+
+  function describirValorV85(valor) {
+    const codigo = normalizarCodigo(valor);
+    if (codigo === '1') return 'V85=1 indica que el usuario estaba vivo al finalizar la única o última cirugía.';
+    if (codigo === '2') return 'V85=2 indica que el usuario estaba fallecido al finalizar la única o última cirugía.';
+    if (codigo === '98') return 'V85=98 indica No aplica porque no hubo cirugía en el periodo.';
+    if (!codigo) return 'V85 está vacía.';
+    return `V85 tiene el valor ${texto(valor)}.`;
   }
 
   function describirValorV79(valor) {
@@ -1377,6 +1398,281 @@
   }
 
 
+  // ============================================================
+  // V84. Ubicación temporal de esta última cirugía en relación al manejo oncológico
+  // ============================================================
+  function validarV84(registro) {
+    const hallazgos = [];
+    const variable = 'V84';
+    const valorOriginal = registro?.V84;
+    const valor = normalizarCodigo(valorOriginal);
+    const v74 = normalizarCodigo(registro?.V74);
+    const v75 = normalizarCodigo(registro?.V75);
+    const numeroV75 = numeroEnteroPositivo(registro?.V75);
+    const v80 = texto(registro?.V80);
+    const fechaNoAplica = '1845-01-01';
+    const fechaV80 = parseFechaISO(v80);
+    const v80EsFechaReal = Boolean(fechaV80) && v80 !== fechaNoAplica;
+    const v80NoAplica = v80 === fechaNoAplica;
+    const permitidos = ['1', '5', '6', '98'];
+
+    const datosBase = [
+      dato('V74', registro?.V74, describirValorV74(registro?.V74)),
+      dato('V75', registro?.V75, describirValorV75(registro?.V75)),
+      dato('V76', registro?.V76, describirValorV76(registro?.V76)),
+      dato('V77', registro?.V77, describirValorV77(registro?.V77)),
+      dato('V78', registro?.V78, describirValorV78(registro?.V78)),
+      dato('V79', registro?.V79, describirValorV79(registro?.V79)),
+      dato('V80', registro?.V80, describirValorV80(registro?.V80)),
+      dato('V81', registro?.V81, describirValorV81(registro?.V81)),
+      dato('V82', registro?.V82, describirValorV82(registro?.V82)),
+      dato('V83', registro?.V83, describirValorV83(registro?.V83)),
+      dato('V84', valorOriginal, describirValorV84(valorOriginal))
+    ];
+
+    if (estaVacio(valorOriginal)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V84-ERROR-001',
+        variable,
+        severidad: 'error',
+        titulo: 'V84 está vacía',
+        mensaje: 'V84 está vacía. Debe registrar 1, 5, 6 o 98 según la ubicación temporal de la última cirugía.',
+        regla: 'El instructivo de V84 exige clasificar la última cirugía como manejo inicial curativo, manejo de recaída, manejo de enfermedad metastásica o 98 cuando no aplica.',
+        recomendacion: 'Registre 1, 5 o 6 si hubo última cirugía o reintervención. Registre 98 si sólo hubo una intervención o si no hubo cirugías en el periodo.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase,
+        columnasCorregir: ['V84']
+      }));
+      return hallazgos;
+    }
+
+    if (!permitidos.includes(valor)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V84-ERROR-002',
+        variable,
+        severidad: 'error',
+        titulo: 'V84 tiene un valor fuera del catálogo permitido',
+        mensaje: `V84 tiene el valor ${texto(valorOriginal)}, pero los valores válidos son 1, 5, 6 y 98.`,
+        regla: 'V84 sólo permite 1, 5, 6 o 98 según el instructivo.',
+        recomendacion: 'Corrija V84 con un valor permitido: 1 manejo inicial curativo, 5 manejo de recaída, 6 enfermedad metastásica o 98 no aplica.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase,
+        columnasCorregir: ['V84']
+      }));
+      return hallazgos;
+    }
+
+    if (v74 === '2' && valor !== '98') {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V84-ERROR-003',
+        variable,
+        severidad: 'error',
+        titulo: 'V74=2, pero V84 clasifica la última cirugía',
+        mensaje: 'V74=2 indica que el usuario no recibió cirugía en este periodo. En ese caso V84 debe ser 98.',
+        regla: 'Si no hubo cirugía en V74, la ubicación temporal de la última cirugía no aplica.',
+        recomendacion: 'Corrija V84 a 98 o revise V74 si el usuario sí recibió cirugía.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase,
+        columnasCorregir: ['V84']
+      }));
+      return hallazgos;
+    }
+
+    if (v74 === '1' && v75 === '1' && valor !== '98') {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V84-ERROR-004',
+        variable,
+        severidad: 'error',
+        titulo: 'V75=1, pero V84 clasifica la última cirugía',
+        mensaje: 'V75=1 indica que sólo hubo una intervención en este periodo. En ese caso V84 debe ser 98 porque no aplica ubicación temporal de última cirugía o reintervención.',
+        regla: '98 en V84 aplica cuando sólo hubo una intervención en el periodo o cuando no hubo cirugías.',
+        recomendacion: 'Corrija V84 a 98 o revise V75 si hubo más de una intervención.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase,
+        columnasCorregir: ['V84']
+      }));
+      return hallazgos;
+    }
+
+    if (v74 === '1' && Number.isFinite(numeroV75) && numeroV75 > 1) {
+      if (v80EsFechaReal && valor === '98') {
+        hallazgos.push(crearHallazgo({
+          codigo: 'V84-ERROR-006',
+          variable,
+          severidad: 'error',
+          titulo: 'V80 tiene fecha real, pero V84 está en No aplica',
+          mensaje: 'V80 registra una fecha real de última cirugía o reintervención. En ese caso V84 debe clasificar esa última cirugía como 1, 5 o 6.',
+          regla: 'Si existe fecha real de última cirugía o reintervención, V84 debe registrar su ubicación temporal frente al manejo oncológico.',
+          recomendacion: 'Registre 1 si fue manejo inicial curativo, 5 si fue manejo de recaída o 6 si fue manejo de enfermedad metastásica. Revise V80 si no aplica.',
+          valor: valorOriginal,
+          datosRelacionados: datosBase,
+          columnasCorregir: ['V84']
+        }));
+        return hallazgos;
+      }
+
+      if (valor === '98') {
+        hallazgos.push(crearHallazgo({
+          codigo: 'V84-ERROR-005',
+          variable,
+          severidad: 'error',
+          titulo: 'Hubo más de una intervención, pero V84 está en No aplica',
+          mensaje: 'V74=1 y V75 mayor que 1 indican que hubo más de una intervención. En ese caso V84 debe clasificar la última cirugía o reintervención, no 98.',
+          regla: 'Cuando hubo más de una cirugía o tiempo quirúrgico, V84 debe contener la ubicación temporal de la última cirugía frente al manejo oncológico.',
+          recomendacion: 'Registre 1, 5 o 6 según corresponda o revise V75 si realmente sólo hubo una intervención.',
+          valor: valorOriginal,
+          datosRelacionados: datosBase,
+          columnasCorregir: ['V84']
+        }));
+        return hallazgos;
+      }
+
+      if (v80NoAplica && valor !== '98') {
+        hallazgos.push(crearHallazgo({
+          codigo: 'V84-ERROR-007',
+          variable,
+          severidad: 'error',
+          titulo: 'V80 no aplica, pero V84 clasifica la última cirugía',
+          mensaje: 'V80=1845-01-01 indica que no aplica fecha de última cirugía o reintervención. Si no aplica V80, V84 también debe ser 98.',
+          regla: 'V84 debe conservar coherencia con V80: si la última cirugía o reintervención no aplica, su ubicación temporal tampoco aplica.',
+          recomendacion: 'Corrija V84 a 98 o revise V80 si sí existió una última cirugía o reintervención.',
+          valor: valorOriginal,
+          datosRelacionados: datosBase,
+          columnasCorregir: ['V84']
+        }));
+        return hallazgos;
+      }
+    }
+
+    if (v74 === '1' && Number.isFinite(numeroV75) && numeroV75 > 1 && v80EsFechaReal && ['5', '6'].includes(valor)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V84-ADVERTENCIA-001',
+        variable,
+        severidad: 'advertencia',
+        titulo: 'V84 indica recaída o enfermedad metastásica',
+        mensaje: 'V84 indica que la última cirugía corresponde a manejo de recaída o enfermedad metastásica. Verifique que exista soporte clínico para esta ubicación temporal.',
+        regla: 'El instructivo permite registrar 5 o 6, pero la clasificación debe estar sustentada en la historia clínica y en la trazabilidad de la última cirugía.',
+        recomendacion: 'Revise soporte clínico de recaída o enfermedad metastásica y la coherencia con V80, V81, V82 y V83.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase,
+        columnasCorregir: ['V84']
+      }));
+    }
+
+    return hallazgos;
+  }
+
+
+  // ============================================================
+  // V85. Estado vital al finalizar la única o última cirugía de este periodo de reporte
+  // ============================================================
+  function validarV85(registro) {
+    const hallazgos = [];
+    const variable = 'V85';
+    const valorOriginal = registro?.V85;
+    const valor = normalizarCodigo(valorOriginal);
+    const v74 = normalizarCodigo(registro?.V74);
+    const v75 = normalizarCodigo(registro?.V75);
+    const permitidos = ['1', '2', '98'];
+
+    const datosBase = [
+      dato('V74', registro?.V74, describirValorV74(registro?.V74)),
+      dato('V75', registro?.V75, describirValorV75(registro?.V75)),
+      dato('V76', registro?.V76, describirValorV76(registro?.V76)),
+      dato('V77', registro?.V77, describirValorV77(registro?.V77)),
+      dato('V78', registro?.V78, describirValorV78(registro?.V78)),
+      dato('V79', registro?.V79, describirValorV79(registro?.V79)),
+      dato('V80', registro?.V80, describirValorV80(registro?.V80)),
+      dato('V81', registro?.V81, describirValorV81(registro?.V81)),
+      dato('V82', registro?.V82, describirValorV82(registro?.V82)),
+      dato('V83', registro?.V83, describirValorV83(registro?.V83)),
+      dato('V84', registro?.V84, describirValorV84(registro?.V84)),
+      dato('V85', valorOriginal, describirValorV85(valorOriginal))
+    ];
+
+    if (estaVacio(valorOriginal)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V85-ERROR-001',
+        variable,
+        severidad: 'error',
+        titulo: 'V85 está vacía',
+        mensaje: 'V85 está vacía. Debe registrar 1 vivo, 2 fallecido o 98 si no hubo cirugía en el periodo.',
+        regla: 'El instructivo de V85 exige registrar el estado vital al finalizar la única o última cirugía, o 98 si V74=2.',
+        recomendacion: 'Registre 1 si el usuario estaba vivo, 2 si estaba fallecido al finalizar la única o última cirugía, o 98 si V74=2.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase,
+        columnasCorregir: ['V85']
+      }));
+      return hallazgos;
+    }
+
+    if (!permitidos.includes(valor)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V85-ERROR-002',
+        variable,
+        severidad: 'error',
+        titulo: 'V85 tiene un valor fuera del catálogo permitido',
+        mensaje: `V85 tiene el valor ${texto(valorOriginal)}, pero los valores válidos son 1, 2 y 98.`,
+        regla: 'V85 sólo permite 1 vivo, 2 fallecido o 98 no aplica según el instructivo.',
+        recomendacion: 'Corrija V85 con 1, 2 o 98 según corresponda.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase,
+        columnasCorregir: ['V85']
+      }));
+      return hallazgos;
+    }
+
+    if (v74 === '2' && valor !== '98') {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V85-ERROR-003',
+        variable,
+        severidad: 'error',
+        titulo: 'V74=2, pero V85 registra estado vital de cirugía',
+        mensaje: 'V74=2 indica que el usuario no recibió cirugía en este periodo. En ese caso V85 debe ser 98.',
+        regla: 'Si no hubo cirugía en V74, no aplica estado vital al finalizar cirugía.',
+        recomendacion: 'Corrija V85 a 98 o revise V74 si el usuario sí recibió cirugía.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase,
+        columnasCorregir: ['V85']
+      }));
+      return hallazgos;
+    }
+
+    if (v74 === '1' && valor === '98') {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V85-ERROR-004',
+        variable,
+        severidad: 'error',
+        titulo: 'V74=1, pero V85 está en No aplica',
+        mensaje: 'V74=1 indica que el usuario recibió cirugía en este periodo. En ese caso V85 debe registrar 1 vivo o 2 fallecido.',
+        regla: 'V85 aplica tanto para la única cirugía como para la última cirugía del periodo; sólo es 98 cuando V74=2.',
+        recomendacion: 'Registre 1 si estaba vivo o 2 si estaba fallecido al finalizar la única o última cirugía.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase,
+        columnasCorregir: ['V85']
+      }));
+      return hallazgos;
+    }
+
+    if (v74 === '1' && valor === '2') {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V85-ADVERTENCIA-001',
+        variable,
+        severidad: 'advertencia',
+        titulo: 'V85 indica fallecimiento al finalizar la cirugía',
+        mensaje: 'V85=2 indica que el usuario estaba fallecido al finalizar la única o última cirugía. Verifique soporte clínico del desenlace.',
+        regla: 'El instructivo permite V85=2, pero el desenlace debe estar documentado y ser coherente con la atención quirúrgica registrada.',
+        recomendacion: 'Revise historia clínica, nota quirúrgica y soporte del estado vital al finalizar la cirugía.',
+        valor: valorOriginal,
+        datosRelacionados: datosBase,
+        columnasCorregir: ['V85']
+      }));
+    }
+
+    return hallazgos;
+  }
+
+
   function validar(registro) {
     let hallazgos = [];
 
@@ -1410,6 +1706,16 @@
       hallazgos = hallazgos.concat(validarV83(registro));
     }
 
+    // V84. Ubicación temporal de esta última cirugía en relación al manejo oncológico
+    if (Object.prototype.hasOwnProperty.call(registro || {}, 'V84')) {
+      hallazgos = hallazgos.concat(validarV84(registro));
+    }
+
+    // V85. Estado vital al finalizar la única o última cirugía de este periodo de reporte
+    if (Object.prototype.hasOwnProperty.call(registro || {}, 'V85')) {
+      hallazgos = hallazgos.concat(validarV85(registro));
+    }
+
     return hallazgos;
   }
 
@@ -1421,6 +1727,8 @@
     validarV80,
     validarV81,
     validarV82,
-    validarV83
+    validarV83,
+    validarV84,
+    validarV85
   };
 })();
