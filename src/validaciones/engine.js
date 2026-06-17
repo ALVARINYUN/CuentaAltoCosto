@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3l-v86-engine-modulo17-01';
+  const VERSION = 'sprint-3m-v108-engine-modulo18-01';
 
   function obtenerDocumento(registro) {
     const tipo = CACTipos.textoMayuscula(registro.V5);
@@ -165,13 +165,25 @@
       'CACModulo16'
     );
 
-    // Módulo 17 · V86 en adelante · Radioterapia
+    // Módulo 17 · V86-V105 · Radioterapia
     hallazgos = ejecutarModulo(
       hallazgos,
       registro,
-      ['V86'],
+      ['V86', 'V87', 'V88', 'V89', 'V90', 'V91', 'V92', 'V93', 'V94', 'V95', 'V96', 'V97', 'V98', 'V99', 'V100', 'V101', 'V102', 'V103', 'V104', 'V105'],
       window.CACModulo17,
       'CACModulo17'
+    );
+
+    // Módulo 18 · V106-V110 · Trasplante de células progenitoras hematopoyéticas
+    // V106. ¿Recibió el usuario trasplante de células progenitoras hematopoyéticas dentro del periodo de reporte actual?
+    // V107. Tipo de trasplante recibido
+    // V108. Ubicación temporal de este trasplante en relación al manejo oncológico
+    hallazgos = ejecutarModulo(
+      hallazgos,
+      registro,
+      ['V106', 'V107', 'V108'],
+      window.CACModulo18,
+      'CACModulo18'
     );
 
     return hallazgos;

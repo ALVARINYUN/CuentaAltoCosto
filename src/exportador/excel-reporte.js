@@ -30,7 +30,29 @@
     V83: 'Código de última cirugía en este periodo de reporte',
     V84: 'Ubicación temporal de esta última cirugía en relación al manejo oncológico',
     V85: 'Estado vital al finalizar la única o última cirugía',
-    V86: 'Recibió algún tipo de radioterapia en el periodo actual'
+    V86: 'Recibió algún tipo de radioterapia en el periodo actual',
+    V87: 'Número de sesiones de radioterapia recibidas en el periodo',
+    V88: 'Fecha de inicio del primer o único esquema de radioterapia',
+    V89: 'Ubicación temporal del primer o único esquema de radioterapia',
+    V90: 'Tipo de radioterapia aplicada en el primer o único esquema',
+    V91: 'Número de IPS que suministran el primer o único esquema de radioterapia',
+    V92: 'Código de la IPS1 que suministra el primer o único esquema de radioterapia',
+    V93: 'Código de la IPS2 que suministra el primer o único esquema de radioterapia',
+    V94: 'Fecha de finalización del primer o único esquema de radioterapia',
+    V95: 'Características actuales del primer o único esquema de radioterapia',
+    V96: 'Motivo de finalización del primer o único esquema de radioterapia',
+    V97: 'Fecha de inicio del último esquema de radioterapia',
+    V98: 'Ubicación temporal/intención del último esquema de radioterapia',
+    V99: 'Tipo de radioterapia aplicada en el último esquema',
+    V100: 'Número de IPS que suministran el último esquema de radioterapia',
+    V101: 'Código de la IPS1 que suministra el último esquema de radioterapia',
+    V102: 'Código de la IPS2 que suministra el último esquema de radioterapia',
+    V103: 'Fecha de finalización del último esquema de radioterapia',
+    V104: 'Características actuales del último esquema de radioterapia',
+    V105: 'Motivo de finalización del último esquema de radioterapia',
+    V106: 'Recibió trasplante de células progenitoras hematopoyéticas',
+    V107: 'Tipo de trasplante recibido',
+    V108: 'Ubicación temporal de este trasplante en relación al manejo oncológico'
   };
 
   const ENCABEZADOS_REALES = {
@@ -58,7 +80,29 @@
     V83: 'v83cdigodeltimaciruga',
     V84: 'v84ubicacintemporaldeestaltimaci',
     V85: 'v85estadovitalalfinalizarlanicao',
-    V86: 'v86recibielusuarioalgntipoderadi'
+    V86: 'v86recibielusuarioalgntipoderadi',
+    V87: 'v87nmerodeesquemasderadioterapia',
+    V88: 'v88fechadeiniciodeprimeronicoesq',
+    V89: 'v89ubicacintemporaldelprimeronic',
+    V90: 'v90tipoderadioterapiaaplicadaene',
+    V91: 'v91nmerodeipsquesuministranestep',
+    V92: 'v92cdigodelaips1quesuministralar',
+    V93: 'v93cdigodelaips2quesuministralar',
+    V94: 'v94fechadefinalizacindeprimeroni',
+    V95: 'v95caractersticasactualesdeestep',
+    V96: 'v96motivofinalizacinprimeronicoe',
+    V97: 'v97fechadeiniciodelltimoesquemad',
+    V98: 'v98ubicacintemporaldelltimoesque',
+    V99: 'v99tiporadioterapiaaplicadaenlti',
+    V100: 'v100ipsquesuministranltimoesquem',
+    V101: 'v101cdigodelaips1quesuministrala',
+    V102: 'v102cdigodelaips2quesuministrala',
+    V103: 'v103fechadefinalizacindelltimoes',
+    V104: 'v104caractersticasactualesdeeste',
+    V105: 'v105motivofinalizacinltimoesquem',
+    V106: 'v106recibitrasplantedeclulasprog',
+    V107: 'v107tipodetrasplanterecibido',
+    V108: 'v108ubicacintemporaldeestetraspl'
   };
 
   const MAPA_ENCABEZADOS_A_VARIABLES = {};
@@ -393,5 +437,5 @@
     XLSX.writeFile(workbook, nombreSalida);
   }
 
-  window.CACExportadorExcel = { VERSION_EXPORTADOR: 'sprint-3l-v86-exportador-01', exportarReporte };
+  window.CACExportadorExcel = { VERSION_EXPORTADOR: 'sprint-3m-v106-exportador-01', exportarReporte };
 })();

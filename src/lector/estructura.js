@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3l-v86-estructura-01';
+  const VERSION = 'sprint-3m-v108-estructura-01';
 
   const VARIABLES_SPRINT_1 = Array.from({ length: 16 }, (_, i) => `V${i + 1}`);
   const VARIABLES_SPRINT_2A = ['V17', 'V18', 'V19', 'V20', 'V21', 'V22', 'V23', 'V24'];
@@ -21,7 +21,8 @@
   const VARIABLES_SPRINT_3I = ['V67', 'V68', 'V69'];
   const VARIABLES_SPRINT_3J = ['V70', 'V71', 'V72', 'V73'];
   const VARIABLES_SPRINT_3K = ['V74', 'V75', 'V76', 'V77', 'V78', 'V79', 'V80', 'V81', 'V82', 'V83', 'V84', 'V85'];
-  const VARIABLES_SPRINT_3L = ['V86'];
+  const VARIABLES_SPRINT_3L = ['V86', 'V87', 'V88', 'V89', 'V90', 'V91', 'V92', 'V93', 'V94', 'V95', 'V96', 'V97', 'V98', 'V99', 'V100', 'V101', 'V102', 'V103', 'V104', 'V105'];
+  const VARIABLES_SPRINT_3M = ['V106', 'V107', 'V108'];
 
   const VARIABLES_HASTA_2A = [...VARIABLES_SPRINT_1, ...VARIABLES_SPRINT_2A];
   const VARIABLES_HASTA_2B = [...VARIABLES_HASTA_2A, ...VARIABLES_SPRINT_2B];
@@ -118,8 +119,31 @@
   const VARIABLES_HASTA_3K_V85 = [...VARIABLES_HASTA_3K_V84, 'V85'];
   const VARIABLES_HASTA_3K = VARIABLES_HASTA_3K_V85;
   const VARIABLES_HASTA_3L_V86 = [...VARIABLES_HASTA_3K_V85, 'V86'];
-  const VARIABLES_HASTA_3L = VARIABLES_HASTA_3L_V86;
-  const VARIABLES_ESPERADAS = VARIABLES_HASTA_3L_V86;
+  const VARIABLES_HASTA_3L_V87 = [...VARIABLES_HASTA_3L_V86, 'V87'];
+  const VARIABLES_HASTA_3L_V88 = [...VARIABLES_HASTA_3L_V87, 'V88'];
+  const VARIABLES_HASTA_3L_V89 = [...VARIABLES_HASTA_3L_V88, 'V89'];
+  const VARIABLES_HASTA_3L_V90 = [...VARIABLES_HASTA_3L_V89, 'V90'];
+  const VARIABLES_HASTA_3L_V91 = [...VARIABLES_HASTA_3L_V90, 'V91'];
+  const VARIABLES_HASTA_3L_V92 = [...VARIABLES_HASTA_3L_V91, 'V92'];
+  const VARIABLES_HASTA_3L_V93 = [...VARIABLES_HASTA_3L_V92, 'V93'];
+  const VARIABLES_HASTA_3L_V94 = [...VARIABLES_HASTA_3L_V93, 'V94'];
+  const VARIABLES_HASTA_3L_V95 = [...VARIABLES_HASTA_3L_V94, 'V95'];
+  const VARIABLES_HASTA_3L_V96 = [...VARIABLES_HASTA_3L_V95, 'V96'];
+  const VARIABLES_HASTA_3L_V97 = [...VARIABLES_HASTA_3L_V96, 'V97'];
+  const VARIABLES_HASTA_3L_V98 = [...VARIABLES_HASTA_3L_V97, 'V98'];
+  const VARIABLES_HASTA_3L_V99 = [...VARIABLES_HASTA_3L_V98, 'V99'];
+  const VARIABLES_HASTA_3L_V100 = [...VARIABLES_HASTA_3L_V99, 'V100'];
+  const VARIABLES_HASTA_3L_V101 = [...VARIABLES_HASTA_3L_V100, 'V101'];
+  const VARIABLES_HASTA_3L_V102 = [...VARIABLES_HASTA_3L_V101, 'V102'];
+  const VARIABLES_HASTA_3L_V103 = [...VARIABLES_HASTA_3L_V102, 'V103'];
+  const VARIABLES_HASTA_3L_V104 = [...VARIABLES_HASTA_3L_V103, 'V104'];
+  const VARIABLES_HASTA_3L_V105 = [...VARIABLES_HASTA_3L_V104, 'V105'];
+  const VARIABLES_HASTA_3L = VARIABLES_HASTA_3L_V105;
+  const VARIABLES_HASTA_3M_V106 = [...VARIABLES_HASTA_3L_V105, 'V106'];
+  const VARIABLES_HASTA_3M_V107 = [...VARIABLES_HASTA_3M_V106, 'V107'];
+  const VARIABLES_HASTA_3M_V108 = [...VARIABLES_HASTA_3M_V107, 'V108'];
+  const VARIABLES_HASTA_3M = VARIABLES_HASTA_3M_V108;
+  const VARIABLES_ESPERADAS = VARIABLES_HASTA_3M_V108;
 
   function limpiarEncabezado(valor) {
     return String(valor ?? '')
@@ -283,7 +307,115 @@
     v86recibioelusuarioalguntipoderadioterapia: 'V86',
     v86recibielusuarioalguntipoderadioterapia: 'V86',
     v86radioterapia: 'V86',
-    v86recibioradioterapia: 'V86'
+    v86recibioradioterapia: 'V86',
+    v87nmerodeesquemasderadioterapia: 'V87',
+    v87numerodeesquemasderadioterapia: 'V87',
+    v87numerosesionesradioterapia: 'V87',
+    v87numerodesesionesderadioterapia: 'V87',
+    v87numerodesesionesradioterapia: 'V87',
+    v88fechadeiniciodeprimeronicoesq: 'V88',
+    v88fechadeiniciodeprimerounicoesq: 'V88',
+    v88fechadeinicioprimeronicoesquema: 'V88',
+    v88fechadeinicioprimerounicoesquema: 'V88',
+    v88fechainicioprimerounicoesquemaradioterapia: 'V88',
+    v88fechainicioprimeronicoesquemaradioterapia: 'V88',
+    v89ubicacintemporaldelprimeronic: 'V89',
+    v89ubicaciontemporaldelprimerunico: 'V89',
+    v89ubicaciontemporaldelprimerounico: 'V89',
+    v89ubicaciontemporalprimerounicoesquema: 'V89',
+    v89ubicaciontemporalprimeroounicoesquema: 'V89',
+    v89ubicaciontemporalradioterapia: 'V89',
+    v90tipoderadioterapiaaplicadaene: 'V90',
+    v90tipoderadioterapiaaplicadaenesteprimerounicoesquema: 'V90',
+    v90tiporadioterapiaaplicada: 'V90',
+    v90codigocupsradioterapia: 'V90',
+    v90cupsradioterapia: 'V90',
+    v91nmerodeipsquesuministranestep: 'V91',
+    v91numerodeipsquesuministranestep: 'V91',
+    v91numerodeipsquesuministranesteprimerounicoesquema: 'V91',
+    v92cdigodelaips1quesuministralar: 'V92',
+    v92codigodelaips1quesuministralar: 'V92',
+    v92codigodelaips1quesuministraradioterapia: 'V92',
+    v92codigoips1radioterapia: 'V92',
+    v93cdigodelaips2quesuministralar: 'V93',
+    v93codigodelaips2quesuministralar: 'V93',
+    v93codigodelaips2quesuministraradioterapia: 'V93',
+    v93codigoips2radioterapia: 'V93',
+    v94fechadefinalizacindeprimeroni: 'V94',
+    v94fechadefinalizaciondeprimeroni: 'V94',
+    v94fechafinalizacionprimerunicoesquema: 'V94',
+    v94fechafinalizacionradioterapia: 'V94',
+    v95caractersticasactualesdeestep: 'V95',
+    v95caracteristicasactualesdeestep: 'V95',
+    v95caracteristicasactualesradioterapia: 'V95',
+    v95caracteristicasesquemaradioterapia: 'V95',
+    v96motivofinalizacinprimeronicoe: 'V96',
+    v96motivofinalizacionprimeronicoe: 'V96',
+    v96motivodefinalizacionprimeronicoesquema: 'V96',
+    v96motivofinalizacionradioterapia: 'V96',
+    v97fechadeiniciodelltimoesquemad: 'V97',
+    v97fechadeiniciodelultimoesquemad: 'V97',
+    v97fechadeinicioultimoesquema: 'V97',
+    v97fechainicioultimoesquemaradioterapia: 'V97',
+    v97fechainicioradioterapiaultimoesquema: 'V97',
+    v98ubicacintemporaldelltimoesque: 'V98',
+    v98ubicaciontemporaldelultimoesque: 'V98',
+    v98ubicacintemporalintencindelltimoesque: 'V98',
+    v98ubicaciontemporalintenciondelultimoesque: 'V98',
+    v99tiporadioterapiaaplicadaenlti: 'V99',
+    v99tipoderadioterapiaaplicadaenelultimoesquema: 'V99',
+    v99tiporadioterapiaultimoesquema: 'V99',
+    v99cupsradioterapiaultimoesquema: 'V99',
+    v99codigocupsradioterapiaultimoesquema: 'V99',
+    v100ipsquesuministranltimoesquem: 'V100',
+    v100numeroipsquesuministranultimoesquema: 'V100',
+    v100nmerodeipsquesuministranultimoesquema: 'V100',
+    v100ipsultimoesquemaradioterapia: 'V100',
+    v100numeroipsultimoesquema: 'V100',
+    v101cdigodelaips1quesuministrala: 'V101',
+    v101codigoips1quesuministraultimoesquema: 'V101',
+    v101codigoips1ultimoesquemaradioterapia: 'V101',
+    v101codigoips1radioterapiaultimoesquema: 'V101',
+    v101ips1quesuministraultimoesquema: 'V101',
+    v102cdigodelaips2quesuministrala: 'V102',
+    v102codigoips2quesuministraultimoesquema: 'V102',
+    v102codigoips2ultimoesquemaradioterapia: 'V102',
+    v102codigoips2radioterapiaultimoesquema: 'V102',
+    v102ips2quesuministraultimoesquema: 'V102',
+    v103fechadefinalizacindelltimoes: 'V103',
+    v103fechadefinalizaciondelultimoes: 'V103',
+    v103fechafinalizacionultimoesquemaradioterapia: 'V103',
+    v103fechadefinalizacionultimoesquemaradioterapia: 'V103',
+    v103fechafinalizacionradioterapiaultimoesquema: 'V103',
+    v104caractersticasactualesdeeste: 'V104',
+    v104caracteristicasactualesdeeste: 'V104',
+    v104caracteristicasactualesultimoesquema: 'V104',
+    v104caracteristicasactualesultimoesquemaradioterapia: 'V104',
+    v104caracteristicasactualesradioterapiaultimoesquema: 'V104',
+    v105motivofinalizacinltimoesquem: 'V105',
+    v105motivofinalizacionultimoesquem: 'V105',
+    v105motivofinalizacionultimoesquema: 'V105',
+    v105motivofinalizacionradioterapiaultimoesquema: 'V105',
+    v105motivofinalizaciondeltimoesquema: 'V105',
+    v106recibitrasplantedeclulasprog: 'V106',
+    v106recibiotrasplantedeclulasprog: 'V106',
+    v106recibitrasplantedecelulasprog: 'V106',
+    v106recibiotrasplantedecelulasprog: 'V106',
+    v106recibiotrasplantedecelulasprogenitorashematopoyeticas: 'V106',
+    v106recibitrasplantedecelulasprogenitorashematopoyeticas: 'V106',
+    v106trasplantecelulasprogenitorashematopoyeticas: 'V106',
+    v107tipodetrasplanterecibido: 'V107',
+    v107tipotrasplanterecibido: 'V107',
+    v107tipodetrasplante: 'V107',
+    v107trasplanterecibido: 'V107',
+    v108ubicacintemporaldeestetraspl: 'V108',
+    v108ubicaciontemporaldeestetraspl: 'V108',
+    v108ubicacintemporaldeestetrasplante: 'V108',
+    v108ubicaciontemporaldeestetrasplante: 'V108',
+    v108ubicaciontemporaltrasplante: 'V108',
+    v108ubicaciontemporaldetrasplante: 'V108',
+    v91numeroipsradioterapia: 'V91',
+    v91ipsradioterapia: 'V91'
   });
 
   function normalizarEncabezado(valor) {
@@ -320,6 +452,28 @@
   }
 
   const MODOS = [
+    ['V108', 'ACUMULATIVO_V1_V108', VARIABLES_HASTA_3M_V108],
+    ['V107', 'ACUMULATIVO_V1_V107', VARIABLES_HASTA_3M_V107],
+    ['V106', 'ACUMULATIVO_V1_V106', VARIABLES_HASTA_3M_V106],
+    ['V105', 'ACUMULATIVO_V1_V105', VARIABLES_HASTA_3L_V105],
+    ['V104', 'ACUMULATIVO_V1_V104', VARIABLES_HASTA_3L_V104],
+    ['V103', 'ACUMULATIVO_V1_V103', VARIABLES_HASTA_3L_V103],
+    ['V102', 'ACUMULATIVO_V1_V102', VARIABLES_HASTA_3L_V102],
+    ['V101', 'ACUMULATIVO_V1_V101', VARIABLES_HASTA_3L_V101],
+    ['V100', 'ACUMULATIVO_V1_V100', VARIABLES_HASTA_3L_V100],
+    ['V99', 'ACUMULATIVO_V1_V99', VARIABLES_HASTA_3L_V99],
+    ['V98', 'ACUMULATIVO_V1_V98', VARIABLES_HASTA_3L_V98],
+    ['V97', 'ACUMULATIVO_V1_V97', VARIABLES_HASTA_3L_V97],
+    ['V96', 'ACUMULATIVO_V1_V96', VARIABLES_HASTA_3L_V96],
+    ['V95', 'ACUMULATIVO_V1_V95', VARIABLES_HASTA_3L_V95],
+    ['V94', 'ACUMULATIVO_V1_V94', VARIABLES_HASTA_3L_V94],
+    ['V93', 'ACUMULATIVO_V1_V93', VARIABLES_HASTA_3L_V93],
+    ['V92', 'ACUMULATIVO_V1_V92', VARIABLES_HASTA_3L_V92],
+    ['V91', 'ACUMULATIVO_V1_V91', VARIABLES_HASTA_3L_V91],
+    ['V90', 'ACUMULATIVO_V1_V90', VARIABLES_HASTA_3L_V90],
+    ['V89', 'ACUMULATIVO_V1_V89', VARIABLES_HASTA_3L_V89],
+    ['V88', 'ACUMULATIVO_V1_V88', VARIABLES_HASTA_3L_V88],
+    ['V87', 'ACUMULATIVO_V1_V87', VARIABLES_HASTA_3L_V87],
     ['V86', 'ACUMULATIVO_V1_V86', VARIABLES_HASTA_3L_V86],
     ['V85', 'ACUMULATIVO_V1_V85', VARIABLES_HASTA_3K_V85],
     ['V84', 'ACUMULATIVO_V1_V84', VARIABLES_HASTA_3K_V84],
@@ -452,7 +606,7 @@
   window.CACEstructura = {
     version: VERSION,
     VARIABLES_SPRINT_1, VARIABLES_SPRINT_2A, VARIABLES_SPRINT_2B, VARIABLES_SPRINT_2C, VARIABLES_SPRINT_2D, VARIABLES_SPRINT_2E,
-    VARIABLES_SPRINT_3A, VARIABLES_SPRINT_3B, VARIABLES_SPRINT_3C, VARIABLES_SPRINT_3D, VARIABLES_SPRINT_3E, VARIABLES_SPRINT_3F, VARIABLES_SPRINT_3G, VARIABLES_SPRINT_3H, VARIABLES_SPRINT_3H_MODULO15, VARIABLES_SPRINT_3I, VARIABLES_SPRINT_3J, VARIABLES_SPRINT_3K, VARIABLES_SPRINT_3L,
+    VARIABLES_SPRINT_3A, VARIABLES_SPRINT_3B, VARIABLES_SPRINT_3C, VARIABLES_SPRINT_3D, VARIABLES_SPRINT_3E, VARIABLES_SPRINT_3F, VARIABLES_SPRINT_3G, VARIABLES_SPRINT_3H, VARIABLES_SPRINT_3H_MODULO15, VARIABLES_SPRINT_3I, VARIABLES_SPRINT_3J, VARIABLES_SPRINT_3K, VARIABLES_SPRINT_3L, VARIABLES_SPRINT_3M,
     VARIABLES_HASTA_2A, VARIABLES_HASTA_2B, VARIABLES_HASTA_2C, VARIABLES_HASTA_2D, VARIABLES_HASTA_2E,
     VARIABLES_HASTA_3A,
     VARIABLES_HASTA_3B_V41, VARIABLES_HASTA_3B_V42, VARIABLES_HASTA_3B_V43, VARIABLES_HASTA_3B_V44, VARIABLES_HASTA_3B,
@@ -464,7 +618,7 @@
     VARIABLES_HASTA_3H_V61, VARIABLES_HASTA_3H_V62, VARIABLES_HASTA_3H_V63, VARIABLES_HASTA_3H_V64, VARIABLES_HASTA_3H_V65,
     VARIABLES_HASTA_3H_V66, VARIABLES_HASTA_3H_V66_1, VARIABLES_HASTA_3H_V66_2, VARIABLES_HASTA_3H_V66_3, VARIABLES_HASTA_3H_V66_4, VARIABLES_HASTA_3H_V66_5, VARIABLES_HASTA_3H_V66_6, VARIABLES_HASTA_3H_V66_7, VARIABLES_HASTA_3H_V66_8, VARIABLES_HASTA_3H_V66_9, VARIABLES_HASTA_3H,
     VARIABLES_HASTA_3I_V67, VARIABLES_HASTA_3I_V68, VARIABLES_HASTA_3I_V69, VARIABLES_HASTA_3I,
-    VARIABLES_HASTA_3J_V70, VARIABLES_HASTA_3J_V71, VARIABLES_HASTA_3J_V72, VARIABLES_HASTA_3J_V73, VARIABLES_HASTA_3J, VARIABLES_HASTA_3K_V74, VARIABLES_HASTA_3K_V75, VARIABLES_HASTA_3K_V76, VARIABLES_HASTA_3K_V77, VARIABLES_HASTA_3K_V78, VARIABLES_HASTA_3K_V79, VARIABLES_HASTA_3K_V80, VARIABLES_HASTA_3K_V81, VARIABLES_HASTA_3K_V82, VARIABLES_HASTA_3K_V83, VARIABLES_HASTA_3K_V84, VARIABLES_HASTA_3K_V85, VARIABLES_HASTA_3K, VARIABLES_HASTA_3L_V86, VARIABLES_HASTA_3L,
+    VARIABLES_HASTA_3J_V70, VARIABLES_HASTA_3J_V71, VARIABLES_HASTA_3J_V72, VARIABLES_HASTA_3J_V73, VARIABLES_HASTA_3J, VARIABLES_HASTA_3K_V74, VARIABLES_HASTA_3K_V75, VARIABLES_HASTA_3K_V76, VARIABLES_HASTA_3K_V77, VARIABLES_HASTA_3K_V78, VARIABLES_HASTA_3K_V79, VARIABLES_HASTA_3K_V80, VARIABLES_HASTA_3K_V81, VARIABLES_HASTA_3K_V82, VARIABLES_HASTA_3K_V83, VARIABLES_HASTA_3K_V84, VARIABLES_HASTA_3K_V85, VARIABLES_HASTA_3K, VARIABLES_HASTA_3L_V86, VARIABLES_HASTA_3L_V87, VARIABLES_HASTA_3L_V88, VARIABLES_HASTA_3L_V89, VARIABLES_HASTA_3L_V90, VARIABLES_HASTA_3L_V91, VARIABLES_HASTA_3L_V92, VARIABLES_HASTA_3L_V93, VARIABLES_HASTA_3L_V94, VARIABLES_HASTA_3L_V95, VARIABLES_HASTA_3L_V96, VARIABLES_HASTA_3L_V97, VARIABLES_HASTA_3L_V98, VARIABLES_HASTA_3L_V99, VARIABLES_HASTA_3L_V100, VARIABLES_HASTA_3L_V101, VARIABLES_HASTA_3L_V102, VARIABLES_HASTA_3L_V103, VARIABLES_HASTA_3L_V104, VARIABLES_HASTA_3L_V105, VARIABLES_HASTA_3L, VARIABLES_HASTA_3M_V106, VARIABLES_HASTA_3M_V107, VARIABLES_HASTA_3M_V108, VARIABLES_HASTA_3M,
     VARIABLES_ESPERADAS,
     MAPA_ENCABEZADOS,
     MAPA_ENCABEZADOS_SPRINT_1: MAPA_ENCABEZADOS,
@@ -513,6 +667,28 @@
     esEncabezadoV83: crearFuncionEncabezado('V83'),
     esEncabezadoV84: crearFuncionEncabezado('V84'),
     esEncabezadoV85: crearFuncionEncabezado('V85'),
-    esEncabezadoV86: crearFuncionEncabezado('V86')
+    esEncabezadoV86: crearFuncionEncabezado('V86'),
+    esEncabezadoV87: crearFuncionEncabezado('V87'),
+    esEncabezadoV88: crearFuncionEncabezado('V88'),
+    esEncabezadoV89: crearFuncionEncabezado('V89'),
+    esEncabezadoV90: crearFuncionEncabezado('V90'),
+    esEncabezadoV91: crearFuncionEncabezado('V91'),
+    esEncabezadoV92: crearFuncionEncabezado('V92'),
+    esEncabezadoV93: crearFuncionEncabezado('V93'),
+    esEncabezadoV94: crearFuncionEncabezado('V94'),
+    esEncabezadoV95: crearFuncionEncabezado('V95'),
+    esEncabezadoV96: crearFuncionEncabezado('V96'),
+    esEncabezadoV97: crearFuncionEncabezado('V97'),
+    esEncabezadoV98: crearFuncionEncabezado('V98'),
+    esEncabezadoV99: crearFuncionEncabezado('V99'),
+    esEncabezadoV100: crearFuncionEncabezado('V100'),
+    esEncabezadoV101: crearFuncionEncabezado('V101'),
+    esEncabezadoV102: crearFuncionEncabezado('V102'),
+    esEncabezadoV103: crearFuncionEncabezado('V103'),
+    esEncabezadoV104: crearFuncionEncabezado('V104'),
+    esEncabezadoV105: crearFuncionEncabezado('V105'),
+    esEncabezadoV106: crearFuncionEncabezado('V106'),
+    esEncabezadoV107: crearFuncionEncabezado('V107'),
+    esEncabezadoV108: crearFuncionEncabezado('V108')
   };
 })();
