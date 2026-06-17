@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3m-v108-ubicacion-temporal-trasplante-01';
+  const VERSION = 'sprint-3m-v110-codigo-ips-trasplante-01';
 
   function texto(valor) {
     if (window.CACTipos && typeof window.CACTipos.texto === 'function') {
@@ -29,7 +29,8 @@
       V106: '¿Recibió el usuario trasplante de células progenitoras hematopoyéticas dentro del periodo de reporte actual?',
       V107: 'Tipo de trasplante recibido',
       V108: 'Ubicación temporal de este trasplante en relación al manejo oncológico',
-      'V109-V110': 'Variables posteriores del bloque de trasplante de células progenitoras hematopoyéticas'
+      V109: 'Fecha del trasplante',
+      V110: 'Código de la IPS que realizó este trasplante'
     };
 
     return nombres[variable] || variable;
@@ -115,6 +116,28 @@
     return descripciones[codigo] || `V108 tiene el valor ${texto(valor)}.`;
   }
 
+  function describirValorV109(valor) {
+    const fecha = texto(valor);
+
+    if (!fecha) return 'V109 está vacía.';
+    if (fecha === '1845-01-01') return 'V109=1845-01-01 indica No Aplica.';
+    if (esFormatoFecha(valor) && esFechaExistente(valor)) return `V109=${fecha} registra la fecha de realización del trasplante.`;
+
+    return `V109 tiene el valor ${fecha}.`;
+  }
+
+
+  function describirValorV110(valor) {
+    const codigo = normalizarCodigo(valor);
+
+    if (!codigo) return 'V110 está vacía.';
+    if (codigo === '96') return 'V110=96 indica trasplante fuera del país.';
+    if (codigo === '98') return 'V110=98 indica No Aplica.';
+    if (/^\d{12}$/.test(codigo)) return `V110=${codigo} registra código de habilitación de IPS de 12 dígitos.`;
+
+    return `V110 tiene el valor ${texto(valor)}.`;
+  }
+
   function esValorPermitidoV106(valor) {
     return ['1', '98'].includes(normalizarCodigo(valor));
   }
@@ -134,6 +157,56 @@
 
   function esUbicacionRealV108(valor) {
     return ['95', '96', '97'].includes(normalizarCodigo(valor));
+  }
+
+  function esFormatoFecha(valor) {
+    return /^\d{4}-\d{2}-\d{2}$/.test(texto(valor));
+  }
+
+  function esFechaExistente(valor) {
+    const fecha = texto(valor);
+    if (!esFormatoFecha(fecha)) return false;
+
+    const [anio, mes, dia] = fecha.split('-').map(Number);
+    const fechaUTC = new Date(Date.UTC(anio, mes - 1, dia));
+
+    return fechaUTC.getUTCFullYear() === anio &&
+      fechaUTC.getUTCMonth() + 1 === mes &&
+      fechaUTC.getUTCDate() === dia;
+  }
+
+  function esFechaNoAplicaV109(valor) {
+    return texto(valor) === '1845-01-01';
+  }
+
+  function esFechaRealV109(valor) {
+    return esFormatoFecha(valor) && esFechaExistente(valor) && !esFechaNoAplicaV109(valor);
+  }
+
+
+  function esCodigoIPS12V110(valor) {
+    return /^\d{12}$/.test(normalizarCodigo(valor));
+  }
+
+  function esValorNoAplicaV110(valor) {
+    return normalizarCodigo(valor) === '98';
+  }
+
+  function esValorFueraPaisV110(valor) {
+    return normalizarCodigo(valor) === '96';
+  }
+
+  function esValorPermitidoV110(valor) {
+    return esCodigoIPS12V110(valor) || esValorFueraPaisV110(valor) || esValorNoAplicaV110(valor);
+  }
+
+  function pareceCodigoIPSMalLongitudV110(valor) {
+    const codigo = normalizarCodigo(valor);
+    return /^\d+$/.test(codigo) && !['96', '98'].includes(codigo) && codigo.length !== 12;
+  }
+
+  function registraIpsOFueraPaisV110(valor) {
+    return esCodigoIPS12V110(valor) || esValorFueraPaisV110(valor);
   }
 
   // V106. ¿Recibió el usuario trasplante de células progenitoras hematopoyéticas dentro del periodo de reporte actual?
@@ -362,6 +435,255 @@
     return hallazgos;
   }
 
+
+  // V109. Fecha del trasplante
+  function validarV109(registro) {
+    const hallazgos = [];
+    const v106 = registro?.V106;
+    const v107 = registro?.V107;
+    const v108 = registro?.V108;
+    const valor = registro?.V109;
+    const codigoV106 = normalizarCodigo(v106);
+
+    if (estaVacio(valor)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V109-ERROR-001',
+        variable: 'V109',
+        titulo: 'V109 está vacía',
+        mensaje: 'V109 está vacía. Debe registrar la fecha de realización del trasplante en formato AAAA-MM-DD, o 1845-01-01 si no aplica.',
+        regla: 'El instructivo de V109 exige registrar la fecha del trasplante en formato AAAA-MM-DD o 1845-01-01 cuando no aplica.',
+        recomendacion: 'Revise V109 y registre una fecha válida del trasplante o 1845-01-01 si V106 indica No Aplica.',
+        valor,
+        datosRelacionados: [
+          dato('V106', v106, describirValorV106(v106)),
+          dato('V107', v107, describirValorV107(v107)),
+          dato('V108', v108, describirValorV108(v108)),
+          dato('V109', valor, describirValorV109(valor))
+        ],
+        columnasCorregir: ['V109']
+      }));
+      return hallazgos;
+    }
+
+    if (!esFormatoFecha(valor)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V109-ERROR-002',
+        variable: 'V109',
+        titulo: 'V109 no tiene formato de fecha válido',
+        mensaje: 'V109 no tiene el formato permitido. Debe registrar la fecha en formato AAAA-MM-DD o 1845-01-01 si no aplica.',
+        regla: 'El instructivo de V109 exige formato AAAA-MM-DD para la fecha del trasplante.',
+        recomendacion: 'Revise V109 y corrija el formato de la fecha. Ejemplo válido: 2025-03-15.',
+        valor,
+        datosRelacionados: [
+          dato('V106', v106, describirValorV106(v106)),
+          dato('V109', valor, describirValorV109(valor))
+        ],
+        columnasCorregir: ['V109']
+      }));
+      return hallazgos;
+    }
+
+    if (!esFechaExistente(valor)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V109-ERROR-003',
+        variable: 'V109',
+        titulo: 'V109 registra una fecha inexistente',
+        mensaje: 'V109 tiene formato AAAA-MM-DD, pero la fecha registrada no existe en el calendario.',
+        regla: 'V109 debe contener una fecha calendario válida o 1845-01-01 cuando no aplica.',
+        recomendacion: 'Revise V109 y corrija la fecha del trasplante.',
+        valor,
+        datosRelacionados: [
+          dato('V106', v106, describirValorV106(v106)),
+          dato('V109', valor, describirValorV109(valor))
+        ],
+        columnasCorregir: ['V109']
+      }));
+      return hallazgos;
+    }
+
+    if (codigoV106 === '98' && esFechaRealV109(valor)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V109-ERROR-004',
+        variable: 'V109',
+        titulo: 'V109 registra fecha real cuando V106 indica No Aplica',
+        mensaje: 'V109 no corresponde con V106. Si V106=98 indica que no aplica trasplante de células progenitoras hematopoyéticas, V109 debe registrarse como 1845-01-01.',
+        regla: 'V106 define si recibió trasplante. Cuando V106=98, la fecha del trasplante en V109 debe quedar como No Aplica.',
+        recomendacion: 'Corrija V109 y registre 1845-01-01, o revise V106 si el usuario realmente recibió trasplante.',
+        valor,
+        datosRelacionados: [
+          dato('V106', v106, describirValorV106(v106)),
+          dato('V107', v107, describirValorV107(v107)),
+          dato('V108', v108, describirValorV108(v108)),
+          dato('V109', valor, describirValorV109(valor))
+        ],
+        columnasCorregir: ['V109']
+      }));
+    }
+
+    if (codigoV106 === '1' && esFechaNoAplicaV109(valor)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V109-ERROR-005',
+        variable: 'V109',
+        titulo: 'V109 está en No Aplica aunque V106 indica trasplante recibido',
+        mensaje: 'V109 no corresponde con V106. Si V106=1 indica que recibió trasplante, V109 debe registrar la fecha real de realización del trasplante.',
+        regla: 'V106=1 habilita el registro de la fecha del trasplante en V109. En ese caso V109 no debe ser 1845-01-01.',
+        recomendacion: 'Corrija V109 y registre la fecha real del trasplante en formato AAAA-MM-DD.',
+        valor,
+        datosRelacionados: [
+          dato('V106', v106, describirValorV106(v106)),
+          dato('V107', v107, describirValorV107(v107)),
+          dato('V108', v108, describirValorV108(v108)),
+          dato('V109', valor, describirValorV109(valor))
+        ],
+        columnasCorregir: ['V109']
+      }));
+    }
+
+    return hallazgos;
+  }
+
+
+  // V110. Código de la IPS que realizó este trasplante
+  function validarV110(registro) {
+    const hallazgos = [];
+    const v106 = registro?.V106;
+    const v107 = registro?.V107;
+    const v108 = registro?.V108;
+    const v109 = registro?.V109;
+    const valor = registro?.V110;
+    const codigoV106 = normalizarCodigo(v106);
+    const codigoV110 = normalizarCodigo(valor);
+
+    if (estaVacio(valor)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V110-ERROR-001',
+        variable: 'V110',
+        titulo: 'V110 está vacía',
+        mensaje: 'V110 está vacía. Debe registrar el código de habilitación de la IPS que realizó el trasplante, 96 si fue fuera del país o 98 si no aplica.',
+        regla: 'El instructivo de V110 exige registrar un código de habilitación de IPS de 12 dígitos, 96 para trasplante fuera del país o 98 cuando no aplica.',
+        recomendacion: 'Revise V110 y registre un código IPS de 12 dígitos, 96 o 98 según corresponda.',
+        valor,
+        datosRelacionados: [
+          dato('V106', v106, describirValorV106(v106)),
+          dato('V109', v109, describirValorV109(v109)),
+          dato('V110', valor, describirValorV110(valor))
+        ],
+        columnasCorregir: ['V110']
+      }));
+      return hallazgos;
+    }
+
+    if (pareceCodigoIPSMalLongitudV110(valor)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V110-ERROR-003',
+        variable: 'V110',
+        titulo: 'V110 parece código IPS, pero no tiene 12 dígitos',
+        mensaje: 'V110 parece un código de habilitación de IPS, pero no tiene 12 dígitos. El código REPS debe registrarse con 12 dígitos, incluido el cero inicial.',
+        regla: 'El instructivo de V110 exige código de habilitación de IPS de 12 dígitos, o los valores especiales 96 y 98.',
+        recomendacion: 'Revise V110 y registre el código IPS completo de 12 dígitos, 96 si fue fuera del país o 98 si no aplica.',
+        valor,
+        datosRelacionados: [
+          dato('V110', valor, describirValorV110(valor))
+        ],
+        columnasCorregir: ['V110']
+      }));
+      return hallazgos;
+    }
+
+    if (!esValorPermitidoV110(valor)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V110-ERROR-002',
+        variable: 'V110',
+        titulo: 'V110 tiene un valor fuera de catálogo o formato',
+        mensaje: 'V110 tiene un valor no permitido. Sólo se acepta un código IPS de 12 dígitos, 96 para trasplante fuera del país o 98 si no aplica.',
+        regla: 'El instructivo de V110 sólo permite código de habilitación de IPS de 12 dígitos, 96 o 98.',
+        recomendacion: 'Revise V110 y reemplace el valor por un código IPS válido, 96 o 98 según corresponda.',
+        valor,
+        datosRelacionados: [
+          dato('V110', valor, describirValorV110(valor))
+        ],
+        columnasCorregir: ['V110']
+      }));
+      return hallazgos;
+    }
+
+    if (codigoV106 === '98' && registraIpsOFueraPaisV110(valor)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V110-ERROR-004',
+        variable: 'V110',
+        titulo: 'V110 registra IPS o fuera del país cuando V106 indica No Aplica',
+        mensaje: 'V110 no corresponde con V106. Si V106=98 indica que no aplica trasplante de células progenitoras hematopoyéticas, V110 debe registrarse como 98.',
+        regla: 'V106 define si recibió trasplante. Cuando V106=98, las variables del bloque de trasplante deben quedar como No Aplica.',
+        recomendacion: 'Corrija V110 y registre 98, o revise V106 si el usuario realmente recibió trasplante.',
+        valor,
+        datosRelacionados: [
+          dato('V106', v106, describirValorV106(v106)),
+          dato('V107', v107, describirValorV107(v107)),
+          dato('V108', v108, describirValorV108(v108)),
+          dato('V109', v109, describirValorV109(v109)),
+          dato('V110', valor, describirValorV110(valor))
+        ],
+        columnasCorregir: ['V110']
+      }));
+    }
+
+    else if (esFechaNoAplicaV109(v109) && registraIpsOFueraPaisV110(valor)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V110-ERROR-005',
+        variable: 'V110',
+        titulo: 'V110 registra IPS o fuera del país aunque V109 indica No Aplica',
+        mensaje: 'V110 no corresponde con V109. Si V109=1845-01-01 indica que no aplica fecha de trasplante, V110 debe registrarse como 98.',
+        regla: 'V109 registra la fecha del trasplante. Si V109 está en No Aplica, la IPS que realizó el trasplante en V110 también debe quedar en No Aplica.',
+        recomendacion: 'Corrija V110 y registre 98, o revise V109 si sí hubo fecha real de trasplante.',
+        valor,
+        datosRelacionados: [
+          dato('V106', v106, describirValorV106(v106)),
+          dato('V109', v109, describirValorV109(v109)),
+          dato('V110', valor, describirValorV110(valor))
+        ],
+        columnasCorregir: ['V110']
+      }));
+    }
+
+    if (codigoV106 === '1' && codigoV110 === '98') {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V110-ERROR-006',
+        variable: 'V110',
+        titulo: 'V110 está en No Aplica aunque V106 indica trasplante recibido',
+        mensaje: 'V110 no corresponde con V106. Si V106=1 indica que recibió trasplante, V110 debe registrar código IPS de 12 dígitos o 96 si el trasplante fue fuera del país.',
+        regla: 'V106=1 habilita el registro de la IPS que realizó el trasplante en V110. En ese caso V110 no debe ser 98.',
+        recomendacion: 'Corrija V110 y registre el código IPS de 12 dígitos o 96 si fue fuera del país.',
+        valor,
+        datosRelacionados: [
+          dato('V106', v106, describirValorV106(v106)),
+          dato('V109', v109, describirValorV109(v109)),
+          dato('V110', valor, describirValorV110(valor))
+        ],
+        columnasCorregir: ['V110']
+      }));
+    }
+
+    else if (esFechaRealV109(v109) && codigoV110 === '98') {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V110-ERROR-007',
+        variable: 'V110',
+        titulo: 'V110 está en No Aplica aunque V109 registra fecha real',
+        mensaje: 'V110 no corresponde con V109. Si V109 registra una fecha real de trasplante, V110 debe registrar código IPS de 12 dígitos o 96 si el trasplante fue fuera del país.',
+        regla: 'V109 con fecha real indica que el trasplante fue realizado; por eso V110 debe identificar la IPS o indicar 96 si fue fuera del país.',
+        recomendacion: 'Corrija V110 y registre el código IPS de 12 dígitos o 96 si fue fuera del país.',
+        valor,
+        datosRelacionados: [
+          dato('V106', v106, describirValorV106(v106)),
+          dato('V109', v109, describirValorV109(v109)),
+          dato('V110', valor, describirValorV110(valor))
+        ],
+        columnasCorregir: ['V110']
+      }));
+    }
+
+    return hallazgos;
+  }
+
   function validar(registro) {
     let hallazgos = [];
 
@@ -380,6 +702,16 @@
       hallazgos = hallazgos.concat(validarV108(registro));
     }
 
+    // V109. Fecha del trasplante
+    if (Object.prototype.hasOwnProperty.call(registro || {}, 'V109')) {
+      hallazgos = hallazgos.concat(validarV109(registro));
+    }
+
+    // V110. Código de la IPS que realizó este trasplante
+    if (Object.prototype.hasOwnProperty.call(registro || {}, 'V110')) {
+      hallazgos = hallazgos.concat(validarV110(registro));
+    }
+
     return hallazgos;
   }
 
@@ -388,6 +720,8 @@
     validar,
     validarV106,
     validarV107,
-    validarV108
+    validarV108,
+    validarV109,
+    validarV110
   };
 })();

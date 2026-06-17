@@ -52,7 +52,10 @@
     V105: 'Motivo de finalización del último esquema de radioterapia',
     V106: 'Recibió trasplante de células progenitoras hematopoyéticas',
     V107: 'Tipo de trasplante recibido',
-    V108: 'Ubicación temporal de este trasplante en relación al manejo oncológico'
+    V108: 'Ubicación temporal de este trasplante en relación al manejo oncológico',
+    V109: 'Fecha del trasplante',
+    V110: 'Código de la IPS que realizó este trasplante',
+    V111: 'Recibió cirugía reconstructiva en el periodo de reporte actual'
   };
 
   const ENCABEZADOS_REALES = {
@@ -102,7 +105,10 @@
     V105: 'v105motivofinalizacinltimoesquem',
     V106: 'v106recibitrasplantedeclulasprog',
     V107: 'v107tipodetrasplanterecibido',
-    V108: 'v108ubicacintemporaldeestetraspl'
+    V108: 'v108ubicacintemporaldeestetraspl',
+    V109: 'v109fechadetrasplante',
+    V110: 'v110cdigodelaipsquerealizestetra',
+    V111: 'v111elusuariorecibicirugareconst'
   };
 
   const MAPA_ENCABEZADOS_A_VARIABLES = {};
@@ -437,5 +443,5 @@
     XLSX.writeFile(workbook, nombreSalida);
   }
 
-  window.CACExportadorExcel = { VERSION_EXPORTADOR: 'sprint-3m-v106-exportador-01', exportarReporte };
+  window.CACExportadorExcel = { VERSION_EXPORTADOR: 'sprint-3n-v111-exportador-01', exportarReporte };
 })();

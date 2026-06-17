@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3m-v108-engine-modulo18-01';
+  const VERSION = 'sprint-3n-v111-engine-modulo19-01';
 
   function obtenerDocumento(registro) {
     const tipo = CACTipos.textoMayuscula(registro.V5);
@@ -178,12 +178,24 @@
     // V106. ¿Recibió el usuario trasplante de células progenitoras hematopoyéticas dentro del periodo de reporte actual?
     // V107. Tipo de trasplante recibido
     // V108. Ubicación temporal de este trasplante en relación al manejo oncológico
+    // V109. Fecha del trasplante
+    // V110. Código de la IPS que realizó este trasplante
     hallazgos = ejecutarModulo(
       hallazgos,
       registro,
-      ['V106', 'V107', 'V108'],
+      ['V106', 'V107', 'V108', 'V109', 'V110'],
       window.CACModulo18,
       'CACModulo18'
+    );
+
+    // Módulo 19 · V111-V124 · Tratamiento complementario
+    // V111. El usuario, ¿recibió cirugía reconstructiva en el periodo de reporte actual?
+    hallazgos = ejecutarModulo(
+      hallazgos,
+      registro,
+      ['V111'],
+      window.CACModulo19,
+      'CACModulo19'
     );
 
     return hallazgos;
