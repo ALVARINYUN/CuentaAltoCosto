@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3n-v111-engine-modulo19-01';
+  const VERSION = 'sprint-3n-v118-engine-modulo19-01';
 
   function obtenerDocumento(registro) {
     const tipo = CACTipos.textoMayuscula(registro.V5);
@@ -190,10 +190,23 @@
 
     // Módulo 19 · V111-V124 · Tratamiento complementario
     // V111. El usuario, ¿recibió cirugía reconstructiva en el periodo de reporte actual?
+    // V112. Fecha de la cirugía reconstructiva
+    // V113. Código de la IPS que realizó cirugía reconstructiva
+    // V114. ¿El usuario fue valorado en consulta o procedimiento de cuidado paliativo en el periodo de reporte actual?
+    // V114.1. El usuario recibió consulta o procedimiento de cuidado paliativo por médico especialista en cuidado paliativo
+    // V114.2. El usuario recibió consulta o procedimiento de cuidado paliativo por profesional de la salud no médico, incluye psicólogo, especialista en cuidado paliativo
+    // V114.3. El usuario recibió consulta o procedimiento de cuidado paliativo por médico especialista, otra especialidad
+    // V114.4. El usuario recibió consulta o procedimiento de cuidado paliativo por médico general
+    // V114.5. El usuario recibió consulta o procedimiento de cuidado paliativo por trabajo social
+    // V114.6. El usuario recibió consulta o procedimiento de cuidado paliativo por otro profesional de salud no médico no especializado
+    // V115. Fecha de primera consulta o procedimiento de cuidado paliativo en el periodo de reporte actual
+    // V116. Código de la IPS donde recibe la atención de cuidado paliativo en el periodo de reporte actual
+    // V117. ¿Ha sido valorado el usuario por el servicio de psiquiatría en el periodo de reporte actual?
+    // V118. Fecha de primera consulta con el servicio de psiquiatría en el periodo de reporte actual
     hallazgos = ejecutarModulo(
       hallazgos,
       registro,
-      ['V111'],
+      ['V111', 'V112', 'V113', 'V114', 'V114_1', 'V114_2', 'V114_3', 'V114_4', 'V114_5', 'V114_6', 'V115', 'V116', 'V117', 'V118'],
       window.CACModulo19,
       'CACModulo19'
     );

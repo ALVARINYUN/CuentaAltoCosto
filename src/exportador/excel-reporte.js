@@ -55,7 +55,20 @@
     V108: 'Ubicación temporal de este trasplante en relación al manejo oncológico',
     V109: 'Fecha del trasplante',
     V110: 'Código de la IPS que realizó este trasplante',
-    V111: 'Recibió cirugía reconstructiva en el periodo de reporte actual'
+    V111: 'Recibió cirugía reconstructiva en el periodo de reporte actual',
+    V112: 'Fecha de la cirugía reconstructiva',
+    V113: 'Código de la IPS que realizó cirugía reconstructiva',
+    V114: 'Valoración en consulta o procedimiento de cuidado paliativo',
+    V114_1: 'V114.1. Consulta o procedimiento de cuidado paliativo por médico especialista',
+    V114_2: 'V114.2. Consulta o procedimiento de cuidado paliativo por profesional de la salud no médico',
+    V114_3: 'V114.3. Consulta o procedimiento de cuidado paliativo por médico especialista, otra especialidad',
+    V114_4: 'V114.4. Consulta o procedimiento de cuidado paliativo por médico general',
+    V114_5: 'V114.5. Consulta o procedimiento de cuidado paliativo por trabajo social',
+    V114_6: 'V114.6. Consulta o procedimiento de cuidado paliativo por otro profesional de salud no médico no especializado',
+    V115: 'V115. Fecha de primera consulta o procedimiento de cuidado paliativo',
+    V116: 'V116. Código de la IPS donde recibe la atención de cuidado paliativo',
+    V117: 'V117. Valoración por el servicio de psiquiatría',
+    V118: 'V118. Fecha de primera consulta con el servicio de psiquiatría'
   };
 
   const ENCABEZADOS_REALES = {
@@ -108,7 +121,20 @@
     V108: 'v108ubicacintemporaldeestetraspl',
     V109: 'v109fechadetrasplante',
     V110: 'v110cdigodelaipsquerealizestetra',
-    V111: 'v111elusuariorecibicirugareconst'
+    V111: 'v111elusuariorecibicirugareconst',
+    V112: 'v112fechadelaciruga',
+    V113: 'v113cdigodelaipsquerealizcirugar',
+    V114: 'v114valoradoenconsoproccuidadopa',
+    V114_1: 'v1141recibiconsoprocpaliativopor',
+    V114_2: 'v1142recibiconsoprocpaliativopor',
+    V114_3: 'v1143recibiconsoprocpaliativopor',
+    V114_4: 'v1144recibiconsoprocpaliativopor',
+    V114_5: 'v1145recibiconsoprocpaliativopor',
+    V114_6: 'v1146recibiconsoprocpaliativopor',
+    V115: 'v115fechadeprimeraconsultaoproce',
+    V116: 'v116cdigodelaipsdonderecibilapri',
+    V117: 'v117hasidovaloradoelusuarioporel',
+    V118: 'v118fechadeprimeraconsultaconels'
   };
 
   const MAPA_ENCABEZADOS_A_VARIABLES = {};
@@ -170,6 +196,9 @@
 
     const subvariable66 = clave.match(/^v66([1-9])(?:\D|$)/);
     if (subvariable66) return `V66_${subvariable66[1]}`;
+
+    const subvariable114 = clave.match(/^v114([1-9])(?:\D|$)/);
+    if (subvariable114) return `V114_${subvariable114[1]}`;
 
     const prefijoVariable = clave.match(/^v(\d{1,3})(?:\D|$)/);
     if (prefijoVariable) {
@@ -443,5 +472,5 @@
     XLSX.writeFile(workbook, nombreSalida);
   }
 
-  window.CACExportadorExcel = { VERSION_EXPORTADOR: 'sprint-3n-v111-exportador-01', exportarReporte };
+  window.CACExportadorExcel = { VERSION_EXPORTADOR: 'sprint-3n-v118-exportador-01', exportarReporte };
 })();
