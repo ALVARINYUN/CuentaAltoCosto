@@ -68,7 +68,13 @@
     V115: 'V115. Fecha de primera consulta o procedimiento de cuidado paliativo',
     V116: 'V116. Código de la IPS donde recibe la atención de cuidado paliativo',
     V117: 'V117. Valoración por el servicio de psiquiatría',
-    V118: 'V118. Fecha de primera consulta con el servicio de psiquiatría'
+    V118: 'V118. Fecha de primera consulta con el servicio de psiquiatría',
+    V119: 'V119. Código de la IPS donde recibió la primera valoración de psiquiatría',
+    V120: 'V120. Valoración por profesional en nutrición',
+    V121: 'V121. Fecha de consulta inicial con nutrición',
+    V122: 'V122. Código de la IPS donde recibió la valoración por nutrición',
+    V123: 'V123. ¿El usuario recibió soporte nutricional?',
+    V124: 'V124. ¿El usuario ha recibido terapias complementarias para su rehabilitación?'
   };
 
   const ENCABEZADOS_REALES = {
@@ -134,7 +140,13 @@
     V115: 'v115fechadeprimeraconsultaoproce',
     V116: 'v116cdigodelaipsdonderecibilapri',
     V117: 'v117hasidovaloradoelusuarioporel',
-    V118: 'v118fechadeprimeraconsultaconels'
+    V118: 'v118fechadeprimeraconsultaconels',
+    V119: 'v119cdigodelaipsdonderecibilapri',
+    V120: 'v120fuevaloradoelusuarioporprofe',
+    V121: 'v121fechadeconsultainicialconnut',
+    V122: 'v122cdigodelaipsdonderecibilaval',
+    V123: 'v123elusuariorecibisoportenutric',
+    V124: 'v124elusuarioharecibidoterapiasc'
   };
 
   const MAPA_ENCABEZADOS_A_VARIABLES = {};
@@ -472,5 +484,5 @@
     XLSX.writeFile(workbook, nombreSalida);
   }
 
-  window.CACExportadorExcel = { VERSION_EXPORTADOR: 'sprint-3n-v118-exportador-01', exportarReporte };
+  window.CACExportadorExcel = { VERSION_EXPORTADOR: 'sprint-3n-v119-exportador-01', exportarReporte };
 })();

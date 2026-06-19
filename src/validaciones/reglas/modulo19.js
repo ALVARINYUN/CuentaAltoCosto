@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3n-v118-fecha-primera-consulta-psiquiatria-01';
+  const VERSION = 'sprint-3n-v124-terapias-rehabilitacion-01';
   const NO_APLICA_FECHA = '1845-01-01';
 
   function texto(valor) {
@@ -44,7 +44,13 @@
       V115: 'Fecha de primera consulta o procedimiento de cuidado paliativo en el periodo de reporte actual',
       V116: 'Código de la IPS donde recibe la atención de cuidado paliativo en el periodo de reporte actual',
       V117: 'Ha sido valorado el usuario por el servicio de psiquiatría en el periodo de reporte actual',
-      V118: 'Fecha de primera consulta con el servicio de psiquiatría en el periodo de reporte actual'
+      V118: 'Fecha de primera consulta con el servicio de psiquiatría en el periodo de reporte actual',
+      V119: 'Código de la IPS donde recibió la primera valoración de psiquiatría en el periodo de reporte actual',
+      V120: 'Fue valorado el usuario por profesional en nutrición en el periodo de reporte actual',
+      V121: 'Fecha de consulta inicial con nutrición en el periodo de reporte actual',
+      V122: 'Código de la IPS donde recibió la valoración por nutrición en el periodo de reporte actual',
+      V123: 'El usuario recibió soporte nutricional',
+      V124: 'El usuario ha recibido terapias complementarias para su rehabilitación'
     };
 
     return nombres[variable] || variable;
@@ -248,6 +254,92 @@
     return `V118 registra la fecha ${fecha}.`;
   }
 
+
+  function codigoV119(valor) {
+    return texto(valor).trim();
+  }
+
+  function describirValorV119(valor) {
+    const codigo = codigoV119(valor);
+
+    if (!codigo) return 'V119 está vacía.';
+    if (codigo === '98') return 'V119=98 indica No Aplica.';
+    if (/^\d{12}$/.test(codigo)) return `V119 registra el código REPS ${codigo}.`;
+    if (/^\d+$/.test(codigo) && codigo.length < 12) return `V119 registra ${codigo.length} dígitos. El código REPS debe tener 12 dígitos, incluido el cero inicial.`;
+    if (/^\d+$/.test(codigo) && codigo.length > 12) return `V119 registra ${codigo.length} dígitos. El código REPS debe tener exactamente 12 dígitos.`;
+
+    return `V119 tiene el valor ${texto(valor)}.`;
+  }
+
+
+  function describirValorV120(valor) {
+    const codigo = normalizarCodigo(valor);
+
+    if (!codigo) return 'V120 está vacía.';
+    if (codigo === '1') return 'V120=1 indica que el usuario sí fue valorado por profesional en nutrición en el periodo de reporte actual.';
+    if (codigo === '2') return 'V120=2 indica que no fue valorado, pero la valoración por nutrición fue ordenada y está pendiente.';
+    if (codigo === '98') return 'V120=98 indica No Aplica: no se ha ordenado valoración por nutrición.';
+
+    return `V120 tiene el valor ${texto(valor)}.`;
+  }
+
+  function describirValorV121(valor) {
+    const fecha = normalizarFecha(valor);
+
+    if (!fecha) return 'V121 está vacía.';
+    if (fecha === NO_APLICA_FECHA) return 'V121=1845-01-01 indica No Aplica: no hubo consulta inicial con nutrición.';
+
+    return `V121 registra la fecha ${fecha}.`;
+  }
+
+
+  function codigoV122(valor) {
+    return texto(valor).trim();
+  }
+
+  function describirValorV122(valor) {
+    const codigo = codigoV122(valor);
+
+    if (!codigo) return 'V122 está vacía.';
+    if (codigo === '98') return 'V122=98 indica No Aplica.';
+    if (/^\d{12}$/.test(codigo)) return `V122 registra el código REPS ${codigo}.`;
+    if (/^\d+$/.test(codigo) && codigo.length < 12) return `V122 registra ${codigo.length} dígitos. El código REPS debe tener 12 dígitos, incluido el cero inicial.`;
+    if (/^\d+$/.test(codigo) && codigo.length > 12) return `V122 registra ${codigo.length} dígitos. El código REPS debe tener exactamente 12 dígitos.`;
+
+    return `V122 tiene el valor ${texto(valor)}.`;
+  }
+
+  function describirValorV123(valor) {
+    const codigo = normalizarCodigo(valor);
+
+    if (!codigo) return 'V123 está vacía.';
+    if (codigo === '1') return 'V123=1 indica que recibió soporte nutricional enteral.';
+    if (codigo === '2') return 'V123=2 indica que recibió soporte nutricional parenteral.';
+    if (codigo === '3') return 'V123=3 indica que recibió soporte nutricional enteral y parenteral.';
+    if (codigo === '4') return 'V123=4 indica que no recibió soporte nutricional.';
+    if (codigo === '98') return 'V123=98 no está permitido en el instructivo; para no recibió soporte nutricional debe registrarse 4.';
+
+    return `V123 tiene el valor ${texto(valor)}.`;
+  }
+
+
+  function describirValorV124(valor) {
+    const codigo = normalizarCodigo(valor);
+
+    if (!codigo) return 'V124 está vacía.';
+    if (codigo === '1') return 'V124=1 indica que recibió terapia física.';
+    if (codigo === '2') return 'V124=2 indica que recibió terapia de lenguaje.';
+    if (codigo === '3') return 'V124=3 indica que recibió terapia ocupacional.';
+    if (codigo === '4') return 'V124=4 corresponde a una opción eliminada: terapias propuestas, pero no realizadas.';
+    if (codigo === '5') return 'V124=5 indica que recibió terapia física y terapia de lenguaje.';
+    if (codigo === '6') return 'V124=6 indica que recibió terapia física y terapia ocupacional.';
+    if (codigo === '7') return 'V124=7 indica que recibió terapia de lenguaje y terapia ocupacional.';
+    if (codigo === '8') return 'V124=8 indica que recibió terapia física, terapia de lenguaje y terapia ocupacional.';
+    if (codigo === '98') return 'V124=98 indica No Aplica: no se han ordenado terapias.';
+
+    return `V124 tiene el valor ${texto(valor)}.`;
+  }
+
   function esValorPermitidoV111(valor) {
     return ['1', '98'].includes(normalizarCodigo(valor));
   }
@@ -346,8 +438,56 @@
     return esCodigoREPS12V116(valor) || esNoAplicaV116(valor);
   }
 
+
+  function esCodigoREPS12V119(valor) {
+    return /^\d{12}$/.test(codigoV119(valor));
+  }
+
+  function esNoAplicaV119(valor) {
+    return codigoV119(valor) === '98';
+  }
+
+  function esValorPermitidoV119(valor) {
+    return esCodigoREPS12V119(valor) || esNoAplicaV119(valor);
+  }
+
+
+  function esCodigoREPS12V122(valor) {
+    return /^\d{12}$/.test(codigoV122(valor));
+  }
+
+  function esNoAplicaV122(valor) {
+    return codigoV122(valor) === '98';
+  }
+
+  function esValorPermitidoV122(valor) {
+    return esCodigoREPS12V122(valor) || esNoAplicaV122(valor);
+  }
+
   function esValorPermitidoV117(valor) {
     return ['1', '2', '98'].includes(normalizarCodigo(valor));
+  }
+
+
+  function esValorPermitidoV120(valor) {
+    return ['1', '2', '98'].includes(normalizarCodigo(valor));
+  }
+
+  function esValorPermitidoV123(valor) {
+    return ['1', '2', '3', '4'].includes(normalizarCodigo(valor));
+  }
+
+  function esValorPermitidoV124(valor) {
+    return ['1', '2', '3', '5', '6', '7', '8', '98'].includes(normalizarCodigo(valor));
+  }
+
+
+  function esFechaNoAplicaV121(valor) {
+    return normalizarFecha(valor) === NO_APLICA_FECHA;
+  }
+
+  function esFechaRealValidaV121(valor) {
+    return tieneFormatoFecha(valor) && esFechaCalendarioValida(valor) && !esFechaNoAplicaV121(valor);
   }
 
 
@@ -355,6 +495,29 @@
     return Object.prototype.hasOwnProperty.call(registro || {}, 'V117') &&
       !estaVacio(registro?.V117) &&
       esValorPermitidoV117(registro?.V117);
+  }
+
+
+  function v118ValidaParaTrazabilidad(registro) {
+    const valorV118 = registro?.V118;
+    return Object.prototype.hasOwnProperty.call(registro || {}, 'V118') &&
+      !estaVacio(valorV118) &&
+      tieneFormatoFecha(valorV118) &&
+      esFechaCalendarioValida(valorV118);
+  }
+
+  function v120ValidaParaTrazabilidad(registro) {
+    return Object.prototype.hasOwnProperty.call(registro || {}, 'V120') &&
+      !estaVacio(registro?.V120) &&
+      esValorPermitidoV120(registro?.V120);
+  }
+
+  function v121ValidaParaTrazabilidad(registro) {
+    const valorV121 = registro?.V121;
+    return Object.prototype.hasOwnProperty.call(registro || {}, 'V121') &&
+      !estaVacio(valorV121) &&
+      tieneFormatoFecha(valorV121) &&
+      esFechaCalendarioValida(valorV121);
   }
 
   function v115ValidaParaTrazabilidad(registro) {
@@ -1395,7 +1558,418 @@
     return hallazgos;
   }
 
-  function validar(registro) {
+
+
+  // V119. Código de la IPS donde recibió la primera valoración de psiquiatría en el periodo de reporte actual
+  function validarV119(registro) {
+    const hallazgos = [];
+    const valorV119 = registro?.V119;
+    const valorV118 = registro?.V118;
+
+    if (estaVacio(valorV119)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V119-ERROR-001',
+        variable: 'V119',
+        titulo: 'V119 está vacía',
+        mensaje: 'V119 está vacía. Debe registrar el código de habilitación de la IPS donde recibió la primera valoración de psiquiatría, o 98 si no aplica.',
+        regla: 'El instructivo de V119 exige registrar el código de habilitación de IPS disponible en REPS, de 12 dígitos incluido el cero inicial, o 98 cuando no aplica.',
+        recomendacion: 'Revise V119 y registre 98 si no aplica, o un código IPS REPS de exactamente 12 dígitos.',
+        valor: valorV119,
+        datosRelacionados: [
+          dato('V119', valorV119, describirValorV119(valorV119))
+        ],
+        columnasCorregir: ['V119']
+      }));
+      return hallazgos;
+    }
+
+    if (!esValorPermitidoV119(valorV119)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V119-ERROR-002',
+        variable: 'V119',
+        titulo: 'V119 tiene un código IPS inválido',
+        mensaje: 'V119 no es 98 ni un código IPS válido de exactamente 12 dígitos. El instructivo exige registrar código de habilitación IPS de 12 dígitos, incluido el cero inicial, o 98 si no aplica.',
+        regla: 'El instructivo de V119 permite únicamente 98 o código REPS de 12 dígitos. Los códigos con menos de 12 dígitos, más de 12 dígitos, letras, símbolos, decimales o espacios internos no son válidos.',
+        recomendacion: 'Corrija V119. No autocomplete ceros sin verificar el código real en REPS; si el código inicia con cero, debe conservar los 12 dígitos.',
+        valor: valorV119,
+        datosRelacionados: [
+          dato('V119', valorV119, describirValorV119(valorV119))
+        ],
+        columnasCorregir: ['V119']
+      }));
+      return hallazgos;
+    }
+
+    if (!v118ValidaParaTrazabilidad(registro)) {
+      return hallazgos;
+    }
+
+    if (esFechaNoAplicaV118(valorV118) && esCodigoREPS12V119(valorV119)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V119-ERROR-003',
+        variable: 'V119',
+        titulo: 'V119 registra IPS aunque V118 no aplica',
+        mensaje: 'V118 está en 1845-01-01, que significa No Aplica para la primera consulta de psiquiatría. Sin embargo, V119 registra un código IPS. En este caso V119 debe ser 98.',
+        regla: 'La trazabilidad V118→V119 indica que si V118=1845-01-01 no hubo primera consulta de psiquiatría aplicable y V119 debe registrarse como 98.',
+        recomendacion: 'Revise V118 y V119. Si no hubo primera valoración de psiquiatría, registre 98 en V119; si sí hubo valoración, registre fecha real en V118.',
+        valor: valorV119,
+        datosRelacionados: [
+          dato('V118', valorV118, describirValorV118(valorV118)),
+          dato('V119', valorV119, describirValorV119(valorV119))
+        ],
+        columnasCorregir: ['V118', 'V119']
+      }));
+    }
+
+    if (esFechaRealValidaV118(valorV118) && esNoAplicaV119(valorV119)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V119-ERROR-004',
+        variable: 'V119',
+        titulo: 'V119 registra No Aplica aunque V118 tiene fecha real',
+        mensaje: 'V118 registra una fecha real de primera consulta de psiquiatría, pero V119 está en 98. Debe registrar el código IPS de 12 dígitos donde recibió esa primera valoración.',
+        regla: 'La trazabilidad V118→V119 indica que cuando V118 tiene una fecha real válida, V119 debe registrar el código de habilitación IPS de 12 dígitos donde ocurrió la primera valoración de psiquiatría.',
+        recomendacion: 'Revise V119 y registre el código IPS REPS de 12 dígitos, incluido el cero inicial.',
+        valor: valorV119,
+        datosRelacionados: [
+          dato('V118', valorV118, describirValorV118(valorV118)),
+          dato('V119', valorV119, describirValorV119(valorV119))
+        ],
+        columnasCorregir: ['V118', 'V119']
+      }));
+    }
+
+    return hallazgos;
+  }
+
+  
+
+  // V120. ¿Fue valorado el usuario por profesional en nutrición en el periodo de reporte actual?
+  function validarV120(registro) {
+    const hallazgos = [];
+    const valorV120 = registro?.V120;
+
+    if (estaVacio(valorV120)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V120-ERROR-001',
+        variable: 'V120',
+        titulo: 'V120 está vacía',
+        mensaje: 'V120 está vacía. Debe registrar 1 si el usuario fue valorado por profesional en nutrición, 2 si se ordenó pero está pendiente, o 98 si no aplica porque no se ha ordenado valoración por nutrición.',
+        regla: 'El instructivo de V120 exige registrar si el usuario fue valorado por profesional en nutrición en el periodo de reporte actual: 1 si fue valorado, 2 si se ordenó pero está pendiente, o 98 si no se ha ordenado.',
+        recomendacion: 'Revise V120 y registre únicamente 1, 2 o 98 según el instructivo.',
+        valor: valorV120,
+        datosRelacionados: [
+          dato('V120', valorV120, describirValorV120(valorV120))
+        ],
+        columnasCorregir: ['V120']
+      }));
+      return hallazgos;
+    }
+
+    if (!esValorPermitidoV120(valorV120)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V120-ERROR-002',
+        variable: 'V120',
+        titulo: 'V120 tiene un valor fuera de catálogo',
+        mensaje: 'V120 tiene un valor fuera de catálogo. Sólo se permite 1 si fue valorado, 2 si se ordenó pero está pendiente, o 98 si no aplica porque no se ha ordenado valoración por nutrición.',
+        regla: 'El instructivo de V120 sólo permite los valores 1, 2 y 98. No define otros códigos válidos ni trazabilidad con las variables de psiquiatría V117, V118 o V119.',
+        recomendacion: 'Corrija V120 y registre 1, 2 o 98. No use otros valores.',
+        valor: valorV120,
+        datosRelacionados: [
+          dato('V120', valorV120, describirValorV120(valorV120))
+        ],
+        columnasCorregir: ['V120']
+      }));
+    }
+
+    return hallazgos;
+  }
+
+
+  // V121. Fecha de consulta inicial con nutrición en el periodo de reporte actual
+  function validarV121(registro) {
+    const hallazgos = [];
+    const valorV121 = registro?.V121;
+    const valorV120 = registro?.V120;
+    const codigoV120 = normalizarCodigo(valorV120);
+
+    if (estaVacio(valorV121)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V121-ERROR-001',
+        variable: 'V121',
+        titulo: 'V121 está vacía',
+        mensaje: 'V121 está vacía. Debe registrar la fecha de consulta inicial con nutrición en formato AAAA-MM-DD, o 1845-01-01 si no aplica.',
+        regla: 'El instructivo de V121 exige registrar la fecha en que se inició la atención por nutrición en formato AAAA-MM-DD. Si sólo conoce año y mes, debe registrar el día 15. El valor 1845-01-01 significa No Aplica.',
+        recomendacion: 'Revise V121 y registre una fecha válida en formato AAAA-MM-DD, o 1845-01-01 si no aplica.',
+        valor: valorV121,
+        datosRelacionados: [
+          dato('V121', valorV121, describirValorV121(valorV121))
+        ],
+        columnasCorregir: ['V121']
+      }));
+      return hallazgos;
+    }
+
+    if (!tieneFormatoFecha(valorV121)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V121-ERROR-002',
+        variable: 'V121',
+        titulo: 'V121 tiene formato inválido',
+        mensaje: 'V121 tiene un formato inválido. Debe registrar la fecha en formato AAAA-MM-DD.',
+        regla: 'El instructivo de V121 exige registrar la fecha de consulta inicial con nutrición en formato AAAA-MM-DD. Si sólo conoce año y mes, registre el día 15.',
+        recomendacion: 'Corrija V121 usando el formato AAAA-MM-DD; por ejemplo, 2025-03-15, o registre 1845-01-01 si no aplica.',
+        valor: valorV121,
+        datosRelacionados: [
+          dato('V121', valorV121, describirValorV121(valorV121))
+        ],
+        columnasCorregir: ['V121']
+      }));
+      return hallazgos;
+    }
+
+    if (!esFechaCalendarioValida(valorV121)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V121-ERROR-003',
+        variable: 'V121',
+        titulo: 'V121 registra una fecha inexistente',
+        mensaje: 'V121 registra una fecha inexistente. Verifique año, mes y día.',
+        regla: 'Además de cumplir el formato AAAA-MM-DD, la fecha de V121 debe existir en el calendario.',
+        recomendacion: 'Revise V121 y corrija la fecha. Si sólo conoce año y mes, use el día 15.',
+        valor: valorV121,
+        datosRelacionados: [
+          dato('V121', valorV121, describirValorV121(valorV121))
+        ],
+        columnasCorregir: ['V121']
+      }));
+      return hallazgos;
+    }
+
+    if (!v120ValidaParaTrazabilidad(registro)) {
+      return hallazgos;
+    }
+
+    if ((codigoV120 === '2' || codigoV120 === '98') && esFechaRealValidaV121(valorV121)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V121-ERROR-004',
+        variable: 'V121',
+        titulo: 'V121 registra fecha real aunque no hubo valoración efectiva por nutrición',
+        mensaje: 'V121 registra una fecha real, pero V120 indica que la valoración por nutrición está pendiente o no aplica. En ese caso, V121 debe ser 1845-01-01.',
+        regla: 'La trazabilidad V120→V121 indica que si V120=2 (se ordenó, pero está pendiente) o V120=98 (no se ha ordenado valoración), no existe consulta inicial efectiva con nutrición y V121 debe registrarse como 1845-01-01.',
+        recomendacion: 'Revise V120 y V121. Si la consulta aún está pendiente o no se ha ordenado, registre 1845-01-01 en V121; si ya hubo consulta, corrija V120 a 1 y conserve la fecha real.',
+        valor: valorV121,
+        datosRelacionados: [
+          dato('V120', valorV120, describirValorV120(valorV120)),
+          dato('V121', valorV121, describirValorV121(valorV121))
+        ],
+        columnasCorregir: ['V120', 'V121']
+      }));
+    }
+
+    if (codigoV120 === '1' && esFechaNoAplicaV121(valorV121)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V121-ERROR-005',
+        variable: 'V121',
+        titulo: 'V121 registra No Aplica aunque sí hubo valoración por nutrición',
+        mensaje: 'V121 registra 1845-01-01 como No Aplica, pero V120 indica que el usuario sí fue valorado por profesional en nutrición. Debe registrar la fecha real de la consulta inicial.',
+        regla: 'La trazabilidad V120→V121 indica que si V120=1, el usuario sí fue valorado por nutrición y V121 debe contener la fecha real de consulta inicial en formato AAAA-MM-DD.',
+        recomendacion: 'Revise V121 y registre la fecha real de consulta inicial con nutrición. Si realmente no hubo consulta, corrija V120 según corresponda.',
+        valor: valorV121,
+        datosRelacionados: [
+          dato('V120', valorV120, describirValorV120(valorV120)),
+          dato('V121', valorV121, describirValorV121(valorV121))
+        ],
+        columnasCorregir: ['V120', 'V121']
+      }));
+    }
+
+    return hallazgos;
+  }
+
+
+
+  // V122. Código de la IPS donde recibió la valoración por nutrición en el periodo de reporte actual
+  function validarV122(registro) {
+    const hallazgos = [];
+    const valorV122 = registro?.V122;
+    const valorV121 = registro?.V121;
+
+    if (estaVacio(valorV122)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V122-ERROR-001',
+        variable: 'V122',
+        titulo: 'V122 está vacía',
+        mensaje: 'V122 está vacía. Debe registrar el código de habilitación de la IPS donde recibió la valoración por nutrición, o 98 si no aplica.',
+        regla: 'El instructivo de V122 exige registrar el código de habilitación IPS disponible en REPS, de 12 dígitos incluido el cero inicial, o 98 cuando no aplica.',
+        recomendacion: 'Revise V122 y registre 98 si no aplica, o un código IPS REPS de exactamente 12 dígitos.',
+        valor: valorV122,
+        datosRelacionados: [
+          dato('V122', valorV122, describirValorV122(valorV122))
+        ],
+        columnasCorregir: ['V122']
+      }));
+      return hallazgos;
+    }
+
+    if (!esValorPermitidoV122(valorV122)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V122-ERROR-002',
+        variable: 'V122',
+        titulo: 'V122 tiene un código IPS inválido',
+        mensaje: 'V122 no es 98 ni un código IPS válido de exactamente 12 dígitos. El instructivo exige registrar código de habilitación IPS de 12 dígitos, incluido el cero inicial, o 98 si no aplica.',
+        regla: 'El instructivo de V122 permite únicamente 98 o código REPS de 12 dígitos. Los códigos con menos de 12 dígitos, más de 12 dígitos, letras, símbolos, decimales o espacios internos no son válidos.',
+        recomendacion: 'Corrija V122. No autocomplete ceros sin verificar el código real en REPS; si el código inicia con cero, debe conservar los 12 dígitos.',
+        valor: valorV122,
+        datosRelacionados: [
+          dato('V122', valorV122, describirValorV122(valorV122))
+        ],
+        columnasCorregir: ['V122']
+      }));
+      return hallazgos;
+    }
+
+    if (!v121ValidaParaTrazabilidad(registro)) {
+      return hallazgos;
+    }
+
+    if (esFechaNoAplicaV121(valorV121) && esCodigoREPS12V122(valorV122)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V122-ERROR-003',
+        variable: 'V122',
+        titulo: 'V122 registra IPS aunque V121 no aplica',
+        mensaje: 'V121 está en 1845-01-01, que significa No Aplica para la consulta inicial de nutrición. Sin embargo, V122 registra un código IPS. En este caso V122 debe ser 98.',
+        regla: 'La trazabilidad V121→V122 indica que si V121=1845-01-01 no hubo consulta inicial de nutrición aplicable y V122 debe registrarse como 98.',
+        recomendacion: 'Revise V121 y V122. Si no hubo valoración por nutrición, registre 98 en V122; si sí hubo valoración, registre fecha real en V121.',
+        valor: valorV122,
+        datosRelacionados: [
+          dato('V121', valorV121, describirValorV121(valorV121)),
+          dato('V122', valorV122, describirValorV122(valorV122))
+        ],
+        columnasCorregir: ['V121', 'V122']
+      }));
+    }
+
+    if (esFechaRealValidaV121(valorV121) && esNoAplicaV122(valorV122)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V122-ERROR-004',
+        variable: 'V122',
+        titulo: 'V122 registra No Aplica aunque V121 tiene fecha real',
+        mensaje: 'V121 registra una fecha real de consulta inicial con nutrición, pero V122 está en 98. Debe registrar el código IPS de 12 dígitos donde recibió esa valoración.',
+        regla: 'La trazabilidad V121→V122 indica que cuando V121 tiene una fecha real válida, V122 debe registrar el código de habilitación IPS de 12 dígitos donde ocurrió la valoración por nutrición.',
+        recomendacion: 'Revise V122 y registre el código IPS REPS de 12 dígitos, incluido el cero inicial.',
+        valor: valorV122,
+        datosRelacionados: [
+          dato('V121', valorV121, describirValorV121(valorV121)),
+          dato('V122', valorV122, describirValorV122(valorV122))
+        ],
+        columnasCorregir: ['V121', 'V122']
+      }));
+    }
+
+    return hallazgos;
+  }
+
+
+  // V123. ¿El usuario recibió soporte nutricional?
+  function validarV123(registro) {
+    const hallazgos = [];
+    const valorV123 = registro?.V123;
+
+    if (estaVacio(valorV123)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V123-ERROR-001',
+        variable: 'V123',
+        titulo: 'V123 está vacía',
+        mensaje: 'V123 está vacía. Debe registrar 1 si recibió soporte nutricional enteral, 2 si recibió soporte nutricional parenteral, 3 si recibió ambos tipos, o 4 si no recibió soporte nutricional.',
+        regla: 'El instructivo de V123 exige registrar si el usuario recibió soporte nutricional. Las únicas opciones válidas son 1, 2, 3 o 4.',
+        recomendacion: 'Revise V123 y registre 1, 2, 3 o 4 según corresponda. No use 98; para no recibió soporte nutricional, registre 4.',
+        valor: valorV123,
+        datosRelacionados: [
+          dato('V123', valorV123, describirValorV123(valorV123))
+        ],
+        columnasCorregir: ['V123']
+      }));
+      return hallazgos;
+    }
+
+    if (!esValorPermitidoV123(valorV123)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V123-ERROR-002',
+        variable: 'V123',
+        titulo: 'V123 tiene un valor fuera de catálogo',
+        mensaje: 'V123 tiene un valor fuera de catálogo. Sólo se permiten 1, 2, 3 o 4. El valor 98 no está permitido para esta variable.',
+        regla: 'El instructivo de V123 define únicamente: 1 soporte enteral, 2 soporte parenteral, 3 soporte enteral y parenteral, y 4 no recibió soporte nutricional. Las fórmulas nutricionales de administración oral no se reportan como soporte nutricional enteral o parenteral.',
+        recomendacion: 'Corrija V123 usando sólo 1, 2, 3 o 4. Si el usuario no recibió soporte nutricional, registre 4.',
+        valor: valorV123,
+        datosRelacionados: [
+          dato('V123', valorV123, describirValorV123(valorV123))
+        ],
+        columnasCorregir: ['V123']
+      }));
+    }
+
+    return hallazgos;
+  }
+
+
+  // V124. ¿El usuario ha recibido terapias complementarias para su rehabilitación?
+  function validarV124(registro) {
+    const hallazgos = [];
+    const valorV124 = registro?.V124;
+    const codigoV124 = normalizarCodigo(valorV124);
+
+    if (estaVacio(valorV124)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V124-ERROR-001',
+        variable: 'V124',
+        titulo: 'V124 está vacía',
+        mensaje: 'V124 está vacía. Debe registrar 1 terapia física, 2 terapia de lenguaje, 3 terapia ocupacional, 5 terapias 1 y 2, 6 terapias 1 y 3, 7 terapias 2 y 3, 8 terapias 1, 2 y 3, o 98 si no aplica porque no se han ordenado terapias.',
+        regla: 'El instructivo de V124 exige registrar si el usuario ha recibido terapias complementarias para su rehabilitación. Las opciones válidas son 1, 2, 3, 5, 6, 7, 8 o 98.',
+        recomendacion: 'Revise V124 y registre una opción válida según las terapias efectivamente recibidas. No use 4 porque esa opción fue eliminada.',
+        valor: valorV124,
+        datosRelacionados: [
+          dato('V124', valorV124, describirValorV124(valorV124))
+        ],
+        columnasCorregir: ['V124']
+      }));
+      return hallazgos;
+    }
+
+    if (codigoV124 === '4') {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V124-ERROR-003',
+        variable: 'V124',
+        titulo: 'V124 registra la opción 4 eliminada',
+        mensaje: 'V124 tiene el valor 4, pero esa opción fue eliminada. No aplican terapias propuestas, pero no realizadas.',
+        regla: 'La aclaración del instructivo de V124 indica que no aplican terapias propuestas, pero no realizadas; por eso se eliminó la opción 4.',
+        recomendacion: 'Corrija V124. Si recibió terapias, registre 1, 2, 3, 5, 6, 7 u 8 según corresponda. Si no se han ordenado terapias, registre 98.',
+        valor: valorV124,
+        datosRelacionados: [
+          dato('V124', valorV124, describirValorV124(valorV124))
+        ],
+        columnasCorregir: ['V124']
+      }));
+      return hallazgos;
+    }
+
+    if (!esValorPermitidoV124(valorV124)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V124-ERROR-002',
+        variable: 'V124',
+        titulo: 'V124 tiene un valor fuera de catálogo',
+        mensaje: 'V124 tiene un valor fuera de catálogo. Sólo se permiten 1, 2, 3, 5, 6, 7, 8 o 98. El valor 4 no está permitido porque fue eliminado.',
+        regla: 'El instructivo de V124 define únicamente: 1 terapia física, 2 terapia de lenguaje, 3 terapia ocupacional, 5 terapias 1 y 2, 6 terapias 1 y 3, 7 terapias 2 y 3, 8 terapias 1, 2 y 3, y 98 No aplica.',
+        recomendacion: 'Corrija V124 usando sólo 1, 2, 3, 5, 6, 7, 8 o 98. No use 4.',
+        valor: valorV124,
+        datosRelacionados: [
+          dato('V124', valorV124, describirValorV124(valorV124))
+        ],
+        columnasCorregir: ['V124']
+      }));
+    }
+
+    return hallazgos;
+  }
+
+function validar(registro) {
     let hallazgos = [];
 
     // V111. El usuario, ¿recibió cirugía reconstructiva en el periodo de reporte actual?
@@ -1470,6 +2044,36 @@
       hallazgos = hallazgos.concat(validarV118(registro));
     }
 
+    // V119. Código de la IPS donde recibió la primera valoración de psiquiatría en el periodo de reporte actual
+    if (Object.prototype.hasOwnProperty.call(registro || {}, 'V119')) {
+      hallazgos = hallazgos.concat(validarV119(registro));
+    }
+
+    // V120. ¿Fue valorado el usuario por profesional en nutrición en el periodo de reporte actual?
+    if (Object.prototype.hasOwnProperty.call(registro || {}, 'V120')) {
+      hallazgos = hallazgos.concat(validarV120(registro));
+    }
+
+    // V121. Fecha de consulta inicial con nutrición en el periodo de reporte actual
+    if (Object.prototype.hasOwnProperty.call(registro || {}, 'V121')) {
+      hallazgos = hallazgos.concat(validarV121(registro));
+    }
+
+    // V122. Código de la IPS donde recibió la valoración por nutrición en el periodo de reporte actual
+    if (Object.prototype.hasOwnProperty.call(registro || {}, 'V122')) {
+      hallazgos = hallazgos.concat(validarV122(registro));
+    }
+
+    // V123. ¿El usuario recibió soporte nutricional?
+    if (Object.prototype.hasOwnProperty.call(registro || {}, 'V123')) {
+      hallazgos = hallazgos.concat(validarV123(registro));
+    }
+
+    // V124. ¿El usuario ha recibido terapias complementarias para su rehabilitación?
+    if (Object.prototype.hasOwnProperty.call(registro || {}, 'V124')) {
+      hallazgos = hallazgos.concat(validarV124(registro));
+    }
+
     return hallazgos;
   }
 
@@ -1489,6 +2093,12 @@
     validarV115,
     validarV116,
     validarV117,
-    validarV118
+    validarV118,
+    validarV119,
+    validarV120,
+    validarV121,
+    validarV122,
+    validarV123,
+    validarV124
   };
 })();

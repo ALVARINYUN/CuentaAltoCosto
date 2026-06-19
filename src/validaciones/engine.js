@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3n-v118-engine-modulo19-01';
+  const VERSION = 'sprint-3n-v124-engine-modulo19-01';
 
   function obtenerDocumento(registro) {
     const tipo = CACTipos.textoMayuscula(registro.V5);
@@ -203,10 +203,16 @@
     // V116. Código de la IPS donde recibe la atención de cuidado paliativo en el periodo de reporte actual
     // V117. ¿Ha sido valorado el usuario por el servicio de psiquiatría en el periodo de reporte actual?
     // V118. Fecha de primera consulta con el servicio de psiquiatría en el periodo de reporte actual
+    // V119. Código de la IPS donde recibió la primera valoración de psiquiatría en el periodo de reporte actual
+    // V120. ¿Fue valorado el usuario por profesional en nutrición en el periodo de reporte actual?
+    // V121. Fecha de consulta inicial con nutrición en el periodo de reporte actual
+    // V122. Código de la IPS donde recibió la valoración por nutrición en el periodo de reporte actual
+    // V123. ¿El usuario recibió soporte nutricional?
+    // V124. ¿El usuario ha recibido terapias complementarias para su rehabilitación?
     hallazgos = ejecutarModulo(
       hallazgos,
       registro,
-      ['V111', 'V112', 'V113', 'V114', 'V114_1', 'V114_2', 'V114_3', 'V114_4', 'V114_5', 'V114_6', 'V115', 'V116', 'V117', 'V118'],
+      ['V111', 'V112', 'V113', 'V114', 'V114_1', 'V114_2', 'V114_3', 'V114_4', 'V114_5', 'V114_6', 'V115', 'V116', 'V117', 'V118', 'V119', 'V120', 'V121', 'V122', 'V123', 'V124'],
       window.CACModulo19,
       'CACModulo19'
     );
