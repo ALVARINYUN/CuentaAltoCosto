@@ -74,7 +74,16 @@
     V121: 'V121. Fecha de consulta inicial con nutrición',
     V122: 'V122. Código de la IPS donde recibió la valoración por nutrición',
     V123: 'V123. ¿El usuario recibió soporte nutricional?',
-    V124: 'V124. ¿El usuario ha recibido terapias complementarias para su rehabilitación?'
+    V124: 'V124. ¿El usuario ha recibido terapias complementarias para su rehabilitación?',
+    V125: 'V125. Tipo de tratamiento que está recibiendo el usuario a la fecha de corte',
+    V126: 'V126. Resultado final del manejo oncológico en este periodo de reporte',
+    V127: 'V127. Estado vital al finalizar este periodo de reporte',
+    V128: 'V128. Novedad administrativa del usuario respecto al reporte anterior',
+    V129: 'V129. Novedad clínica del usuario a la fecha de corte',
+    V130: 'V130. Fecha de desafiliación de la EAPB',
+    V131: 'V131. Fecha de muerte',
+    V132: 'V132. Causa de muerte',
+    V133: 'V133. Código único de identificación BDUA-BDEX-PVS'
   };
 
   const ENCABEZADOS_REALES = {
@@ -146,7 +155,16 @@
     V121: 'v121fechadeconsultainicialconnut',
     V122: 'v122cdigodelaipsdonderecibilaval',
     V123: 'v123elusuariorecibisoportenutric',
-    V124: 'v124elusuarioharecibidoterapiasc'
+    V124: 'v124elusuarioharecibidoterapiasc',
+    V125: 'v125tipodetratamientoqueestrecib',
+    V126: 'v126resultadofinaldelmanejooncol',
+    V127: 'v127estadovitalalfinalizaresteco',
+    V128: 'v128novedadadministrativarespect',
+    V129: 'v129novedadclnicaalafechadecorte',
+    V130: 'v130fechadedesafiliacindelaeps',
+    V131: 'v131fechademuerte',
+    V132: 'v132causademuerte',
+    V133: 'var133cdigonicodeidentificacinbd'
   };
 
   const MAPA_ENCABEZADOS_A_VARIABLES = {};

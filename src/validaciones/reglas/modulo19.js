@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3n-v124-terapias-rehabilitacion-01';
+  const VERSION = 'sprint-3n-v125-tipo-tratamiento-corte-01';
   const NO_APLICA_FECHA = '1845-01-01';
 
   function texto(valor) {
@@ -50,7 +50,8 @@
       V121: 'Fecha de consulta inicial con nutrición en el periodo de reporte actual',
       V122: 'Código de la IPS donde recibió la valoración por nutrición en el periodo de reporte actual',
       V123: 'El usuario recibió soporte nutricional',
-      V124: 'El usuario ha recibido terapias complementarias para su rehabilitación'
+      V124: 'El usuario ha recibido terapias complementarias para su rehabilitación',
+      V125: 'Tipo de tratamiento que está recibiendo el usuario a la fecha de corte'
     };
 
     return nombres[variable] || variable;
@@ -340,6 +341,28 @@
     return `V124 tiene el valor ${texto(valor)}.`;
   }
 
+
+
+  function describirValorV125(valor) {
+    const codigo = normalizarCodigo(valor);
+
+    if (!codigo) return 'V125 está vacía.';
+    if (codigo === '1') return 'V125=1 indica radioterapia.';
+    if (codigo === '2') return 'V125=2 indica terapia sistémica.';
+    if (codigo === '3') return 'V125=3 indica cirugía.';
+    if (codigo === '4') return 'V125=4 indica radioterapia y terapia sistémica.';
+    if (codigo === '5') return 'V125=5 indica radioterapia y cirugía.';
+    if (codigo === '6') return 'V125=6 indica terapia sistémica y cirugía.';
+    if (codigo === '7') return 'V125=7 indica manejo expectante pretratamiento.';
+    if (codigo === '8') return 'V125=8 indica seguimiento luego de tratamiento durante el periodo.';
+    if (codigo === '9') return 'V125=9 indica antecedente de cáncer.';
+    if (codigo === '10') return 'V125=10 indica radioterapia, terapia sistémica y cirugía.';
+    if (codigo === '11') return 'V125=11 indica manejo de cuidado paliativo o terapia complementaria.';
+    if (codigo === '98') return 'V125=98 indica No Aplica.';
+
+    return `V125 tiene el valor ${texto(valor)}.`;
+  }
+
   function esValorPermitidoV111(valor) {
     return ['1', '98'].includes(normalizarCodigo(valor));
   }
@@ -479,6 +502,10 @@
 
   function esValorPermitidoV124(valor) {
     return ['1', '2', '3', '5', '6', '7', '8', '98'].includes(normalizarCodigo(valor));
+  }
+
+  function esValorPermitidoV125(valor) {
+    return ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '98'].includes(normalizarCodigo(valor));
   }
 
 
@@ -1969,6 +1996,49 @@
     return hallazgos;
   }
 
+
+
+  // V125. Tipo de tratamiento que está recibiendo el usuario a la fecha de corte
+  function validarV125(registro) {
+    const hallazgos = [];
+    const valorV125 = registro?.V125;
+
+    if (estaVacio(valorV125)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V125-ERROR-001',
+        variable: 'V125',
+        titulo: 'V125 está vacía',
+        mensaje: 'V125 está vacía. Debe registrar el tipo de tratamiento que está recibiendo el usuario a la fecha de corte.',
+        regla: 'El instructivo de V125 exige registrar una opción válida: 1 radioterapia, 2 terapia sistémica, 3 cirugía, 4 opciones 1 y 2, 5 opciones 1 y 3, 6 opciones 2 y 3, 7 manejo expectante pretratamiento, 8 seguimiento luego de tratamiento durante el periodo, 9 antecedente de cáncer, 10 opciones 1, 2 y 3, 11 manejo de cuidado paliativo o terapia complementaria, o 98 No Aplica.',
+        recomendacion: 'Revise V125 y registre una opción válida del catálogo. En V125 el valor 4 sí es válido y significa 1 y 2.',
+        valor: valorV125,
+        datosRelacionados: [
+          dato('V125', valorV125, describirValorV125(valorV125))
+        ],
+        columnasCorregir: ['V125']
+      }));
+      return hallazgos;
+    }
+
+    if (!esValorPermitidoV125(valorV125)) {
+      hallazgos.push(crearHallazgo({
+        codigo: 'V125-ERROR-002',
+        variable: 'V125',
+        titulo: 'V125 tiene un valor fuera de catálogo',
+        mensaje: 'V125 tiene un valor fuera de catálogo. Sólo se permiten 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 o 98.',
+        regla: 'El instructivo de V125 define únicamente las opciones 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 y 98. El valor 4 es válido en V125 porque significa radioterapia y terapia sistémica.',
+        recomendacion: 'Corrija V125 usando sólo una opción válida del catálogo. No confunda V125 con V124: en V125 el valor 4 sí está permitido.',
+        valor: valorV125,
+        datosRelacionados: [
+          dato('V125', valorV125, describirValorV125(valorV125))
+        ],
+        columnasCorregir: ['V125']
+      }));
+    }
+
+    return hallazgos;
+  }
+
 function validar(registro) {
     let hallazgos = [];
 
@@ -2074,6 +2144,11 @@ function validar(registro) {
       hallazgos = hallazgos.concat(validarV124(registro));
     }
 
+    // V125. Tipo de tratamiento que está recibiendo el usuario a la fecha de corte
+    if (Object.prototype.hasOwnProperty.call(registro || {}, 'V125')) {
+      hallazgos = hallazgos.concat(validarV125(registro));
+    }
+
     return hallazgos;
   }
 
@@ -2099,6 +2174,7 @@ function validar(registro) {
     validarV121,
     validarV122,
     validarV123,
-    validarV124
+    validarV124,
+    validarV125
   };
 })();

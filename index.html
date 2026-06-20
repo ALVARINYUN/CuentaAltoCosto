@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -10,10 +10,1398 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/estilos.css?v=escala-100-01">
+
+  <style id="estilos-acceso-local">
+    body.app-bloqueada {
+      overflow: hidden;
+    }
+
+    body.app-bloqueada > :not(#pantalla-acceso-local):not(script):not(style) {
+      filter: blur(2px);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .pantalla-acceso-local {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      min-height: 100dvh;
+      padding: 28px;
+      overflow-y: auto;
+      background:
+        radial-gradient(circle at 8% 12%, rgba(62, 198, 161, 0.18), transparent 31%),
+        radial-gradient(circle at 92% 16%, rgba(210, 70, 96, 0.12), transparent 34%),
+        radial-gradient(circle at 48% 94%, rgba(27, 162, 122, 0.12), transparent 35%),
+        linear-gradient(135deg, #eefbf7 0%, #f8fffc 48%, #fff7f9 100%);
+    }
+
+    body.app-bloqueada .pantalla-acceso-local {
+      display: flex;
+    }
+
+    .acceso-shell {
+      width: min(100%, 1080px);
+      display: grid;
+      grid-template-columns: minmax(330px, 0.95fr) minmax(360px, 1fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .acceso-panel-institucional,
+    .acceso-card {
+      position: relative;
+      border-radius: 34px;
+      overflow: hidden;
+      border: 1.5px solid rgba(27, 162, 122, 0.18);
+      box-shadow: 0 28px 80px rgba(13, 43, 36, 0.16);
+      backdrop-filter: blur(18px) saturate(1.2);
+      -webkit-backdrop-filter: blur(18px) saturate(1.2);
+    }
+
+    .acceso-panel-institucional {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 32px;
+      color: #ffffff;
+      background:
+        linear-gradient(135deg, rgba(9, 86, 68, 0.96), rgba(27, 162, 122, 0.92)),
+        radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.28), transparent 30%);
+    }
+
+    .acceso-panel-institucional::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.20), transparent 38%),
+        radial-gradient(circle at 105% 92%, rgba(255,255,255,0.16), transparent 27%);
+      pointer-events: none;
+    }
+
+    .acceso-panel-institucional::after {
+      content: "";
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      right: -118px;
+      bottom: -125px;
+      border-radius: 999px;
+      border: 44px solid rgba(255, 255, 255, 0.10);
+      pointer-events: none;
+    }
+
+    .acceso-panel-institucional > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .acceso-marca {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .acceso-logo {
+      width: 62px;
+      height: 62px;
+      border-radius: 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.96);
+      color: #0a5c47;
+      font-size: 15px;
+      font-weight: 950;
+      letter-spacing: 0.07em;
+      box-shadow: 0 16px 38px rgba(13, 43, 36, 0.22);
+      flex: 0 0 auto;
+    }
+
+    .acceso-brand-texto {
+      display: grid;
+      gap: 4px;
+    }
+
+    .acceso-brand-texto strong {
+      color: #ffffff;
+      font-size: 24px;
+      font-weight: 950;
+      letter-spacing: -0.028em;
+      line-height: 1.03;
+    }
+
+    .acceso-brand-texto span {
+      color: rgba(255, 255, 255, 0.86);
+      font-size: 12px;
+      font-weight: 850;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+    }
+
+    .acceso-kicker-calidad {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      padding: 6px 12px;
+      margin-bottom: 16px;
+      border-radius: 999px;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.17);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+    }
+
+    .acceso-kicker-calidad::before {
+      content: "✓";
+      width: 20px;
+      height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.22);
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .acceso-hero h2 {
+      margin: 0;
+      color: #ffffff;
+      font-size: clamp(31px, 4vw, 44px);
+      line-height: 1.02;
+      font-weight: 950;
+      letter-spacing: -0.05em;
+    }
+
+    .acceso-hero p {
+      margin: 14px 0 0;
+      max-width: 44ch;
+      color: rgba(255, 255, 255, 0.88);
+      font-size: 15px;
+      line-height: 1.65;
+      font-weight: 620;
+    }
+
+    .acceso-pill-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .acceso-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 7px 13px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.23);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 900;
+      backdrop-filter: blur(10px);
+    }
+
+    .acceso-privacidad {
+      margin-top: 30px;
+      padding: 15px 17px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.20);
+      color: rgba(255, 255, 255, 0.90);
+      font-size: 13px;
+      line-height: 1.55;
+      font-weight: 650;
+    }
+
+    .acceso-card {
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .acceso-card-header {
+      padding: 28px 30px 18px;
+      border-bottom: 1px solid rgba(27, 162, 122, 0.12);
+      background:
+        linear-gradient(180deg, rgba(247, 253, 251, 0.98), rgba(255, 255, 255, 0.98));
+    }
+
+    .acceso-card-header h3 {
+      margin: 0;
+      color: #0d2b24;
+      font-size: 24px;
+      font-weight: 950;
+      letter-spacing: -0.025em;
+    }
+
+    .acceso-card-header > p {
+      margin: 7px 0 0;
+      color: #4d7e74;
+      line-height: 1.55;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .acceso-alerta-previa {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 13px;
+      padding: 16px;
+      border-radius: 22px;
+      background:
+        linear-gradient(135deg, rgba(255, 239, 244, 0.98), rgba(255, 247, 249, 0.99));
+      border: 1.5px solid #f2a8b7;
+      box-shadow: 0 12px 30px rgba(210, 70, 96, 0.13);
+    }
+
+    .acceso-alerta-icono {
+      width: 42px;
+      height: 42px;
+      border-radius: 15px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #c8435d, #e86f86);
+      color: #ffffff;
+      font-size: 21px;
+      font-weight: 950;
+      box-shadow: 0 9px 22px rgba(200, 67, 93, 0.28);
+    }
+
+    .acceso-alerta-previa strong {
+      display: block;
+      color: #7a1f35;
+      font-size: 14px;
+      font-weight: 950;
+      margin-bottom: 5px;
+      letter-spacing: -0.01em;
+    }
+
+    .acceso-alerta-previa p {
+      margin: 0;
+      color: #753246;
+      font-size: 13px;
+      line-height: 1.55;
+      font-weight: 680;
+    }
+
+    .acceso-alerta-previa .alerta-nota {
+      margin-top: 8px;
+      color: #8a2f48;
+      font-size: 12.5px;
+      font-weight: 800;
+    }
+
+    .acceso-card-body {
+      padding: 24px 30px 30px;
+    }
+
+    .acceso-form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .acceso-form.oculto {
+      display: none !important;
+    }
+
+    .acceso-campo {
+      display: grid;
+      gap: 7px;
+    }
+
+    .acceso-campo label {
+      color: #1e4a3e;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .acceso-campo input {
+      width: 100%;
+      min-height: 48px;
+      border: 1.5px solid #b8e0d4;
+      border-radius: 16px;
+      background: #ffffff;
+      color: #0d2b24;
+      padding: 13px 15px;
+      outline: none;
+      font-size: 15px;
+      font-family: inherit;
+      font-weight: 650;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+    }
+
+    .acceso-campo input::placeholder {
+      color: #7aa49b;
+      font-weight: 600;
+    }
+
+    .acceso-campo input:focus {
+      border-color: #1ba27a;
+      box-shadow: 0 0 0 4px rgba(27, 162, 122, 0.13);
+      transform: translateY(-1px);
+    }
+
+    .campo-con-clave {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .campo-con-clave input {
+      padding-right: 78px;
+    }
+
+    .btn-ver-clave {
+      position: absolute;
+      right: 7px;
+      top: 50%;
+      transform: translateY(-50%);
+      min-width: 58px;
+      min-height: 34px;
+      border: 1px solid #b8e0d4;
+      border-radius: 999px;
+      background: #edfaf6;
+      color: #0d2b24;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+
+    .btn-ver-clave:hover,
+    .btn-ver-clave:focus-visible {
+      background: #dff7ef;
+      border-color: #1ba27a;
+      color: #0a5c47;
+      outline: none;
+    }
+
+    .acceso-mensaje {
+      min-height: 20px;
+      margin: 0;
+      font-size: 13px;
+      font-weight: 800;
+      color: #4d7e74;
+    }
+
+    .acceso-mensaje.error {
+      color: #7a1f1a;
+    }
+
+    .acceso-mensaje.ok {
+      color: #0a4028;
+    }
+
+    .acceso-acciones {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .acceso-boton {
+      border: 1.5px solid transparent;
+      border-radius: 16px;
+      padding: 13px 20px;
+      min-height: 48px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 950;
+      cursor: pointer;
+      transition: transform 0.14s ease, box-shadow 0.14s ease, background 0.14s ease;
+    }
+
+    .acceso-boton:hover {
+      transform: translateY(-1px);
+    }
+
+    .acceso-boton.primario {
+      color: #fff;
+      background: linear-gradient(135deg, #1ba27a 0%, #3ec6a1 100%);
+      box-shadow: 0 10px 28px rgba(27, 162, 122, 0.28);
+    }
+
+    .acceso-boton.primario:hover {
+      box-shadow: 0 14px 34px rgba(27, 162, 122, 0.34);
+    }
+
+    .acceso-boton.secundario {
+      color: #0d2b24;
+      background: #edfaf6;
+      border-color: #9eddd0;
+    }
+
+    .acceso-local-controles {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .acceso-local-entidad {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 5px 14px;
+      border-radius: 999px;
+      background: #f7fdfb;
+      border: 1.5px solid #b8e0d4;
+      color: #1e4a3e;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .btn-acceso-mini {
+      border: 1.5px solid #9eddd0;
+      background: #ffffff;
+      color: #0d2b24;
+      min-height: 34px;
+      padding: 5px 13px;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .btn-acceso-mini:hover {
+      background: #edfaf6;
+    }
+
+    .modal-configuracion-local {
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(13, 43, 36, 0.28);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .modal-configuracion-local.activo {
+      display: flex;
+    }
+
+    .config-card {
+      width: min(100%, 520px);
+      border-radius: 26px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1.5px solid #b8e0d4;
+      box-shadow: 0 28px 80px rgba(13, 43, 36, 0.18);
+      padding: 26px;
+    }
+
+    .config-card h3 {
+      margin: 0;
+      font-size: 23px;
+      font-weight: 950;
+      color: #0d2b24;
+      letter-spacing: -0.025em;
+    }
+
+    .config-card .config-desc {
+      margin: 7px 0 18px;
+      color: #4d7e74;
+      font-size: 14px;
+      line-height: 1.55;
+      font-weight: 650;
+    }
+
+    @media (max-width: 900px) {
+      .pantalla-acceso-local {
+        align-items: flex-start;
+        padding: 18px;
+      }
+
+      .acceso-shell {
+        grid-template-columns: 1fr;
+        width: min(100%, 580px);
+      }
+
+      .acceso-panel-institucional {
+        padding: 24px;
+      }
+
+      .acceso-hero h2 {
+        font-size: 30px;
+      }
+
+      .acceso-privacidad {
+        margin-top: 20px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .pantalla-acceso-local,
+      .modal-configuracion-local {
+        padding: 12px;
+      }
+
+      .acceso-shell {
+        gap: 12px;
+      }
+
+      .acceso-panel-institucional,
+      .acceso-card,
+      .config-card {
+        border-radius: 24px;
+      }
+
+      .acceso-panel-institucional,
+      .acceso-card-header,
+      .acceso-card-body,
+      .config-card {
+        padding: 18px;
+      }
+
+      .acceso-marca {
+        align-items: flex-start;
+        margin-bottom: 16px;
+      }
+
+      .acceso-logo {
+        width: 52px;
+        height: 52px;
+        border-radius: 17px;
+      }
+
+      .acceso-brand-texto strong {
+        font-size: 20px;
+      }
+
+      .acceso-hero h2 {
+        font-size: 26px;
+      }
+
+      .acceso-hero p,
+      .acceso-card-header > p {
+        font-size: 13.5px;
+      }
+
+      .acceso-alerta-previa {
+        grid-template-columns: 34px 1fr;
+        gap: 10px;
+        padding: 13px;
+        border-radius: 18px;
+      }
+
+      .acceso-alerta-icono {
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+        font-size: 18px;
+      }
+
+      .acceso-alerta-previa p {
+        font-size: 12.5px;
+      }
+
+      .acceso-acciones {
+        flex-direction: column;
+      }
+
+      .acceso-boton {
+        width: 100%;
+      }
+    }
+  </style>
+
+
+
+  <style id="estilos-encabezado-profesional">
+    .encabezado-meta-profesional {
+      display: grid;
+      grid-template-columns: minmax(280px, auto);
+      gap: 10px;
+      justify-items: end;
+      align-items: center;
+      max-width: 720px;
+      margin-left: auto;
+    }
+
+    .meta-sistema-principal {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .meta-kicker {
+      color: #4d7e74;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .meta-version-principal {
+      min-height: 38px;
+      padding: 7px 18px;
+      background: linear-gradient(135deg, #d9f7ef 0%, #bcefe0 100%);
+      border: 1.5px solid #8edeca;
+      color: #0d2b24;
+      font-weight: 900;
+      box-shadow: 0 6px 18px rgba(27, 162, 122, 0.12);
+    }
+
+    .meta-fila-operativa {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .meta-normativa {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .meta-badge-secundario {
+      min-height: 32px;
+      padding: 5px 14px;
+      background: #f7fdfb;
+      border-color: #b8e0d4;
+      color: #1e4a3e;
+      font-weight: 750;
+      box-shadow: none;
+    }
+
+    .acceso-local-controles-pro {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      padding-left: 12px;
+      border-left: 1.5px solid rgba(27, 162, 122, 0.18);
+    }
+
+    .acceso-local-controles-pro.oculto {
+      display: none !important;
+    }
+
+    .acceso-local-entidad-pro {
+      min-height: 32px;
+      padding: 5px 14px;
+      background: #ffffff;
+      border-color: #8ecfc0;
+      color: #0d2b24;
+      font-weight: 900;
+      box-shadow: 0 2px 8px rgba(27, 162, 122, 0.08);
+      max-width: 260px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .acceso-local-acciones {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-acceso-mini.btn-acceso-config {
+      background: #edfaf6;
+      border-color: #9eddd0;
+      color: #0a5c47;
+    }
+
+    .btn-acceso-mini.btn-acceso-config:hover {
+      background: #d9f7ef;
+      border-color: #1ba27a;
+    }
+
+    .btn-acceso-mini.btn-acceso-salir {
+      background: #ffffff;
+      border-color: #d7e9e4;
+      color: #1e4a3e;
+    }
+
+    .btn-acceso-mini.btn-acceso-salir:hover {
+      background: #f7fdfb;
+      border-color: #9eddd0;
+      color: #0d2b24;
+    }
+
+    @media (max-width: 1020px) {
+      .encabezado-contenido {
+        align-items: flex-start;
+      }
+
+      .encabezado-meta-profesional {
+        max-width: 100%;
+        justify-items: flex-start;
+        margin-left: 0;
+      }
+
+      .meta-sistema-principal,
+      .meta-fila-operativa,
+      .meta-normativa,
+      .acceso-local-controles-pro {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .meta-sistema-principal {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .meta-version-principal {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .meta-fila-operativa {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .meta-normativa {
+        justify-content: stretch;
+      }
+
+      .meta-normativa .meta-badge-secundario {
+        flex: 1 1 auto;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .acceso-local-controles-pro {
+        width: 100%;
+        padding-left: 0;
+        border-left: 0;
+        border-top: 1.5px solid rgba(27, 162, 122, 0.16);
+        padding-top: 10px;
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .acceso-local-entidad-pro {
+        width: 100%;
+        max-width: none;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .acceso-local-acciones {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .acceso-local-acciones .btn-acceso-mini {
+        width: 100%;
+      }
+    }
+  </style>
+
+
+  <style id="estilos-panel-calidad-vivo">
+    :root {
+      --calidad-teal: #1ba27a;
+      --calidad-teal-2: #3ec6a1;
+      --calidad-teal-oscuro: #0d2b24;
+      --calidad-menta: #eafff8;
+      --calidad-borde: #9ee6d8;
+      --calidad-texto: #10352d;
+      --calidad-muted: #4d7e74;
+      --calidad-rosado: #d24660;
+      --calidad-rosado-suave: #fff1f4;
+      --calidad-sombra: 0 28px 80px rgba(13, 43, 36, 0.14);
+      --calidad-sombra-media: 0 18px 44px rgba(13, 43, 36, 0.12);
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 9% 12%, rgba(62, 198, 161, 0.17), transparent 30%),
+        radial-gradient(circle at 92% 16%, rgba(210, 70, 96, 0.09), transparent 32%),
+        radial-gradient(circle at 50% 94%, rgba(27, 162, 122, 0.12), transparent 35%),
+        linear-gradient(135deg, #eefbf7 0%, #f8fffc 46%, #fff8fa 100%) !important;
+      color: var(--calidad-texto);
+    }
+
+    .aviso-privacidad {
+      background:
+        linear-gradient(90deg, rgba(230, 255, 248, 0.96), rgba(238, 250, 255, 0.94), rgba(255, 246, 248, 0.94)) !important;
+      border-bottom: 1.5px solid rgba(27, 162, 122, 0.25) !important;
+      box-shadow: 0 10px 30px rgba(13, 43, 36, 0.05);
+    }
+
+    .aviso-contenido {
+      max-width: 1280px;
+    }
+
+    .aviso-icono {
+      background: linear-gradient(135deg, var(--calidad-teal), var(--calidad-teal-2)) !important;
+      box-shadow: 0 12px 24px rgba(27, 162, 122, 0.25);
+    }
+
+    #btn-aceptar-aviso {
+      border: 1.5px solid var(--calidad-teal-2) !important;
+      color: var(--calidad-teal-oscuro) !important;
+      background: rgba(255, 255, 255, 0.82) !important;
+      box-shadow: 0 10px 22px rgba(13, 43, 36, 0.06);
+    }
+
+    #btn-aceptar-aviso:hover {
+      background: var(--calidad-menta) !important;
+      transform: translateY(-1px);
+    }
+
+    .encabezado {
+      background: rgba(255, 255, 255, 0.86) !important;
+      border-bottom: 1.5px solid rgba(27, 162, 122, 0.18) !important;
+      box-shadow: 0 18px 50px rgba(13, 43, 36, 0.07);
+      backdrop-filter: blur(18px) saturate(1.15);
+      -webkit-backdrop-filter: blur(18px) saturate(1.15);
+    }
+
+    .brand-logo {
+      background: linear-gradient(135deg, var(--calidad-teal), var(--calidad-teal-2)) !important;
+      box-shadow: 0 16px 34px rgba(27, 162, 122, 0.28) !important;
+    }
+
+    .brand-texto h1 {
+      color: var(--calidad-teal-oscuro) !important;
+      letter-spacing: -0.035em;
+    }
+
+    .brand-texto span {
+      color: var(--calidad-muted) !important;
+      font-weight: 850;
+      letter-spacing: 0.14em;
+    }
+
+    .meta-version-principal,
+    .meta-badge,
+    .acceso-local-entidad-pro,
+    .btn-acceso-mini {
+      box-shadow: 0 10px 24px rgba(13, 43, 36, 0.06);
+    }
+
+    .meta-version-principal {
+      background: linear-gradient(135deg, #d8fbf0, #bff4e5) !important;
+      border-color: rgba(27, 162, 122, 0.28) !important;
+      color: var(--calidad-teal-oscuro) !important;
+    }
+
+    .contenido-principal {
+      position: relative;
+      padding-top: 36px;
+    }
+
+    .contenido-principal::before {
+      content: "";
+      position: fixed;
+      inset: 180px 0 auto 0;
+      height: 360px;
+      z-index: -1;
+      background:
+        radial-gradient(circle at 18% 22%, rgba(62, 198, 161, 0.12), transparent 30%),
+        radial-gradient(circle at 86% 18%, rgba(210, 70, 96, 0.08), transparent 28%);
+      pointer-events: none;
+    }
+
+    .steps-indicador {
+      gap: 14px !important;
+      margin-bottom: 30px !important;
+    }
+
+    .step-item {
+      min-height: 58px;
+      padding: 10px 22px !important;
+      border-radius: 999px !important;
+      background: rgba(255, 255, 255, 0.88) !important;
+      border: 1.5px solid rgba(27, 162, 122, 0.18) !important;
+      box-shadow: 0 14px 32px rgba(13, 43, 36, 0.08);
+      backdrop-filter: blur(12px);
+      transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+    }
+
+    .step-item:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 42px rgba(13, 43, 36, 0.11);
+    }
+
+    .step-item.activo {
+      background: linear-gradient(135deg, var(--calidad-teal), var(--calidad-teal-2)) !important;
+      border-color: rgba(27, 162, 122, 0.20) !important;
+      box-shadow: 0 18px 42px rgba(27, 162, 122, 0.28);
+      color: #ffffff !important;
+    }
+
+    .step-item.activo .step-texto,
+    .step-item.activo .step-bola {
+      color: #ffffff !important;
+    }
+
+    .step-bola {
+      background: rgba(255, 255, 255, 0.95) !important;
+      border: 1.5px solid rgba(27, 162, 122, 0.26) !important;
+      color: var(--calidad-teal) !important;
+      font-weight: 950 !important;
+    }
+
+    .step-item.activo .step-bola {
+      background: rgba(255, 255, 255, 0.24) !important;
+      border-color: rgba(255, 255, 255, 0.50) !important;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.16);
+    }
+
+    .seccion {
+      position: relative;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.92) !important;
+      border: 1.5px solid rgba(27, 162, 122, 0.22) !important;
+      border-radius: 34px !important;
+      box-shadow: var(--calidad-sombra) !important;
+      backdrop-filter: blur(18px) saturate(1.12);
+      -webkit-backdrop-filter: blur(18px) saturate(1.12);
+    }
+
+    #seccion-carga::before {
+      content: "";
+      position: absolute;
+      width: 320px;
+      height: 320px;
+      right: -130px;
+      top: -160px;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(62, 198, 161, 0.18), transparent 68%);
+      pointer-events: none;
+    }
+
+    #seccion-carga::after {
+      content: "Área de Calidad";
+      position: absolute;
+      top: 28px;
+      right: 32px;
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 15px;
+      border-radius: 999px;
+      color: #7a1f33;
+      background: linear-gradient(135deg, #fff1f4, #ffe1e7);
+      border: 1.5px solid rgba(210, 70, 96, 0.24);
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      box-shadow: 0 12px 28px rgba(210, 70, 96, 0.10);
+      pointer-events: none;
+    }
+
+    .seccion-encabezado {
+      position: relative;
+      z-index: 1;
+    }
+
+    .seccion-numero {
+      width: 66px !important;
+      height: 66px !important;
+      border-radius: 22px !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      background: linear-gradient(135deg, #d8fbf0, #c2f5e7) !important;
+      border: 1.5px solid rgba(27, 162, 122, 0.28) !important;
+      color: var(--calidad-teal-oscuro) !important;
+      box-shadow: 0 16px 34px rgba(27, 162, 122, 0.14);
+      font-weight: 950 !important;
+    }
+
+    .seccion-titulo {
+      color: var(--calidad-teal-oscuro) !important;
+      letter-spacing: -0.035em;
+    }
+
+    .seccion-desc {
+      color: var(--calidad-muted) !important;
+      font-weight: 650;
+    }
+
+    .zona-carga {
+      position: relative;
+      z-index: 1;
+      border: 2px dashed rgba(62, 198, 161, 0.75) !important;
+      border-radius: 26px !important;
+      background:
+        radial-gradient(circle at 48% 30%, rgba(62, 198, 161, 0.13), transparent 28%),
+        linear-gradient(135deg, rgba(232, 255, 248, 0.94), rgba(239, 252, 255, 0.92)) !important;
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.65),
+        0 16px 44px rgba(13, 43, 36, 0.06);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+    }
+
+    .zona-carga:hover,
+    .zona-carga.dragover,
+    .zona-carga.arrastrando {
+      transform: translateY(-2px);
+      border-color: var(--calidad-teal) !important;
+      background:
+        radial-gradient(circle at 50% 30%, rgba(62, 198, 161, 0.19), transparent 30%),
+        linear-gradient(135deg, #e4fff7, #eefbff) !important;
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.75),
+        0 22px 54px rgba(27, 162, 122, 0.14);
+    }
+
+    .zona-carga-interior {
+      position: relative;
+      z-index: 1;
+    }
+
+    .zona-icono {
+      width: 96px !important;
+      height: 96px !important;
+      border-radius: 28px !important;
+      background: linear-gradient(135deg, var(--calidad-teal), var(--calidad-teal-2)) !important;
+      color: #ffffff !important;
+      box-shadow: 0 18px 42px rgba(27, 162, 122, 0.30) !important;
+      font-weight: 950 !important;
+      letter-spacing: -0.02em;
+    }
+
+    .zona-titulo {
+      color: var(--calidad-teal-oscuro) !important;
+      font-size: clamp(20px, 2vw, 26px) !important;
+      font-weight: 950 !important;
+      letter-spacing: -0.035em;
+    }
+
+    .zona-subtitulo,
+    .zona-formatos {
+      color: var(--calidad-muted) !important;
+      font-weight: 750;
+    }
+
+    .btn-primario,
+    #btn-seleccionar,
+    #btn-validar {
+      background: linear-gradient(135deg, var(--calidad-teal), var(--calidad-teal-2)) !important;
+      color: #ffffff !important;
+      border: 1.5px solid rgba(27, 162, 122, 0.18) !important;
+      box-shadow: 0 16px 34px rgba(27, 162, 122, 0.28) !important;
+      border-radius: 16px !important;
+      font-weight: 950 !important;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+    }
+
+    .btn-primario:hover,
+    #btn-seleccionar:hover,
+    #btn-validar:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 20px 44px rgba(27, 162, 122, 0.34) !important;
+      filter: saturate(1.05);
+    }
+
+    .btn-primario:disabled,
+    #btn-validar:disabled {
+      opacity: 0.50 !important;
+      filter: grayscale(0.10);
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    .archivo-info,
+    .selector-hoja,
+    #selector-hoja-contenedor {
+      background: rgba(255, 255, 255, 0.90) !important;
+      border: 1.5px solid rgba(27, 162, 122, 0.20) !important;
+      border-radius: 22px !important;
+      box-shadow: 0 14px 34px rgba(13, 43, 36, 0.07);
+    }
+
+    select,
+    .selector-hoja select {
+      border-color: rgba(27, 162, 122, 0.26) !important;
+      border-radius: 14px !important;
+      background-color: #ffffff !important;
+    }
+
+    @media (max-width: 900px) {
+      .contenido-principal {
+        padding-top: 24px;
+      }
+
+      #seccion-carga::after {
+        position: static;
+        margin: 0 0 18px;
+        width: max-content;
+        max-width: 100%;
+      }
+
+      .steps-indicador {
+        gap: 10px !important;
+      }
+
+      .step-item {
+        min-height: 50px;
+        padding: 9px 16px !important;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .steps-indicador {
+        align-items: stretch;
+      }
+
+      .step-item {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .seccion {
+        border-radius: 26px !important;
+      }
+
+      .seccion-numero {
+        width: 56px !important;
+        height: 56px !important;
+        border-radius: 18px !important;
+      }
+
+      .zona-carga {
+        border-radius: 22px !important;
+      }
+
+      .zona-icono {
+        width: 82px !important;
+        height: 82px !important;
+        border-radius: 24px !important;
+      }
+
+      #btn-seleccionar,
+      #btn-validar {
+        width: 100%;
+      }
+    }
+  </style>
+
+
+  <style id="estilos-kicker-calidad-carga">
+    .seccion-kicker-calidad {
+      display: inline-flex;
+      align-items: center;
+      width: max-content;
+      max-width: 100%;
+      margin: 8px 0 0;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #fff1f4, #ffe2e8);
+      border: 1.5px solid rgba(210, 70, 96, 0.22);
+      color: #7a1f33;
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: 0.035em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 640px) {
+      .seccion-kicker-calidad {
+        font-size: 11px;
+      }
+    }
+  </style>
+
 </head>
 
-<body>
-  <div id="aviso-privacidad" class="aviso-privacidad">
+<body class="app-bloqueada">
+
+  <div id="pantalla-acceso-local" class="pantalla-acceso-local" role="dialog" aria-modal="true" aria-labelledby="acceso-titulo">
+    <div class="acceso-shell">
+      <aside class="acceso-panel-institucional" aria-label="Información institucional del Validador CAC">
+        <div>
+          <div class="acceso-marca">
+            <div class="acceso-logo">CAC</div>
+            <div class="acceso-brand-texto">
+              <strong>Validador CAC</strong>
+              <span>Cuenta de Alto Costo</span>
+            </div>
+          </div>
+
+          <div class="acceso-hero">
+            <span class="acceso-kicker-calidad">Área de Calidad</span>
+            <h2 id="acceso-titulo">Control de Calidad del Reporte CAC</h2>
+            <p>
+              Herramienta local para apoyar la revisión, depuración y consistencia del archivo Excel antes de su análisis y entrega.
+            </p>
+          </div>
+
+          <div class="acceso-pill-row" aria-label="Características principales">
+            <span class="acceso-pill">Procesamiento local</span>
+          </div>
+        </div>
+
+        <div class="acceso-privacidad">
+          La información del Excel permanece en este equipo durante el proceso de validación.
+        </div>
+      </aside>
+
+      <section class="acceso-card" aria-label="Formulario de acceso local">
+        <div class="acceso-card-header">
+          <h3>Ingresar al sistema</h3>
+          <p>Validación local de reporte CAC · Cáncer · V1–V134</p>
+
+          <div class="acceso-alerta-previa" role="note" aria-label="Alerta previa de uso">
+            <span class="acceso-alerta-icono">!</span>
+            <div>
+              <strong>Alerta previa</strong>
+              <p>
+                Antes de utilizar el Validador CAC, tenga a la mano el instructivo oficial original de la Cuenta de Alto Costo.
+                Este documento permite verificar la descripción de las variables, los valores permitidos y la interpretación de errores o advertencias generados por la aplicación.
+              </p>
+              <p class="alerta-nota">
+                Esta herramienta apoya la revisión del Excel, pero no reemplaza el instructivo oficial ni el criterio técnico del personal responsable del reporte.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="acceso-card-body">
+          <form id="form-acceso-inicial" class="acceso-form oculto">
+            <div class="acceso-campo">
+              <label for="setup-entidad">Nombre de la entidad</label>
+              <input id="setup-entidad" type="text" autocomplete="organization" placeholder="Ej. Clínica / IPS / EAPB" />
+            </div>
+
+            <div class="acceso-campo">
+              <label for="setup-usuario">Usuario administrador</label>
+              <input id="setup-usuario" type="text" autocomplete="username" placeholder="Ej. admin" />
+            </div>
+
+            <div class="acceso-campo">
+              <label for="setup-clave">Contraseña</label>
+              <div class="campo-con-clave">
+                <input id="setup-clave" type="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres" />
+                <button class="btn-ver-clave" type="button" data-password-toggle data-target="setup-clave" aria-label="Mostrar contraseña">Ver</button>
+              </div>
+            </div>
+
+            <div class="acceso-campo">
+              <label for="setup-clave-confirmar">Confirmar contraseña</label>
+              <div class="campo-con-clave">
+                <input id="setup-clave-confirmar" type="password" autocomplete="new-password" placeholder="Repita la contraseña" />
+                <button class="btn-ver-clave" type="button" data-password-toggle data-target="setup-clave-confirmar" aria-label="Mostrar contraseña">Ver</button>
+              </div>
+            </div>
+
+            <p id="mensaje-acceso-inicial" class="acceso-mensaje"></p>
+
+            <div class="acceso-acciones">
+              <button class="acceso-boton primario" type="submit">Crear acceso local</button>
+            </div>
+          </form>
+
+          <form id="form-acceso-login" class="acceso-form oculto">
+            <div class="acceso-campo">
+              <label for="login-usuario">Usuario</label>
+              <input id="login-usuario" type="text" autocomplete="username" placeholder="Ingrese su usuario" />
+            </div>
+
+            <div class="acceso-campo">
+              <label for="login-clave">Contraseña</label>
+              <div class="campo-con-clave">
+                <input id="login-clave" type="password" autocomplete="current-password" placeholder="Ingrese su contraseña" />
+                <button class="btn-ver-clave" type="button" data-password-toggle data-target="login-clave" aria-label="Mostrar contraseña">Ver</button>
+              </div>
+            </div>
+
+            <p id="mensaje-acceso-login" class="acceso-mensaje"></p>
+
+            <div class="acceso-acciones">
+              <button class="acceso-boton primario" type="submit">Ingresar</button>
+            </div>
+          </form>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div id="modal-configuracion-local" class="modal-configuracion-local" role="dialog" aria-modal="true" aria-labelledby="config-acceso-titulo">
+    <div class="config-card">
+      <h3 id="config-acceso-titulo">Configuración de acceso local</h3>
+      <p class="config-desc">
+        Actualice el nombre de la entidad, el usuario administrador o la contraseña local del aplicativo.
+      </p>
+
+      <form id="form-configuracion-local" class="acceso-form">
+        <div class="acceso-campo">
+          <label for="config-entidad">Nombre de la entidad</label>
+          <input id="config-entidad" type="text" autocomplete="organization" />
+        </div>
+
+        <div class="acceso-campo">
+          <label for="config-usuario">Usuario administrador</label>
+          <input id="config-usuario" type="text" autocomplete="username" />
+        </div>
+
+        <div class="acceso-campo">
+          <label for="config-clave-actual">Contraseña actual</label>
+          <div class="campo-con-clave">
+            <input id="config-clave-actual" type="password" autocomplete="current-password" />
+            <button class="btn-ver-clave" type="button" data-password-toggle data-target="config-clave-actual" aria-label="Mostrar contraseña">Ver</button>
+          </div>
+        </div>
+
+        <div class="acceso-campo">
+          <label for="config-clave-nueva">Nueva contraseña</label>
+          <div class="campo-con-clave">
+            <input id="config-clave-nueva" type="password" autocomplete="new-password" placeholder="Opcional, mínimo 6 caracteres" />
+            <button class="btn-ver-clave" type="button" data-password-toggle data-target="config-clave-nueva" aria-label="Mostrar contraseña">Ver</button>
+          </div>
+        </div>
+
+        <div class="acceso-campo">
+          <label for="config-clave-confirmar">Confirmar nueva contraseña</label>
+          <div class="campo-con-clave">
+            <input id="config-clave-confirmar" type="password" autocomplete="new-password" />
+            <button class="btn-ver-clave" type="button" data-password-toggle data-target="config-clave-confirmar" aria-label="Mostrar contraseña">Ver</button>
+          </div>
+        </div>
+
+        <p id="mensaje-configuracion-local" class="acceso-mensaje"></p>
+
+        <div class="acceso-acciones">
+          <button id="btn-cerrar-configuracion" class="acceso-boton secundario" type="button">Cancelar</button>
+          <button class="acceso-boton primario" type="submit">Guardar cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<div id="aviso-privacidad" class="aviso-privacidad">
     <div class="aviso-contenido">
       <span class="aviso-icono">!</span>
       <p>
@@ -31,13 +1419,29 @@
         <div class="marca-icono-wrap">CAC</div>
         <div>
           <h1 class="marca-titulo">Validador CAC</h1>
-          <p class="marca-subtitulo">Cuenta Alto Costo</p>
+          <p class="marca-subtitulo">Cuenta de Alto Costo</p>
         </div>
       </div>
-      <div class="encabezado-meta">
-        <span class="meta-badge">Resolución 0247/2014</span>
-        <span class="meta-badge">Instructivo CAC-IEP1-I01</span>
-        <span id="version-app" class="meta-version">Sprint 3N · Tratamiento complementario · V1–V124</span>
+      <div class="encabezado-meta encabezado-meta-profesional" aria-label="Información del sistema y sesión">
+        <div class="meta-sistema-principal">
+          <span class="meta-kicker">Sistema activo</span>
+          <span id="version-app" class="meta-version meta-version-principal">Validación local · Cáncer · V1–V134</span>
+        </div>
+
+        <div class="meta-fila-operativa">
+          <div class="meta-normativa" aria-label="Normativa aplicable">
+            <span class="meta-badge meta-badge-secundario">Resolución 0247/2014</span>
+            <span class="meta-badge meta-badge-secundario">Instructivo CAC-IEP1-I01</span>
+          </div>
+
+          <div id="acceso-local-controles" class="acceso-local-controles acceso-local-controles-pro oculto" aria-label="Sesión local activa">
+            <span id="acceso-local-entidad" class="acceso-local-entidad acceso-local-entidad-pro">Acceso local</span>
+            <div class="acceso-local-acciones">
+              <button id="btn-configuracion-acceso" class="btn-acceso-mini btn-acceso-config" type="button">Configurar</button>
+              <button id="btn-cerrar-sesion" class="btn-acceso-mini btn-acceso-salir" type="button">Salir</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </header>
@@ -54,7 +1458,8 @@
         <div class="seccion-numero">01</div>
         <div>
           <h2 class="seccion-titulo">Cargar archivo</h2>
-          <p class="seccion-desc">Cargue el archivo Excel con los datos CAC para iniciar la validación automática.</p>
+          
+          <p class="seccion-desc">Cargue el archivo Excel para iniciar la revisión local de calidad del reporte CAC.</p>
         </div>
       </div>
 
@@ -106,7 +1511,6 @@
         <div class="seccion-numero">03</div>
         <div>
           <h2 class="seccion-titulo">Resultados</h2>
-          <p class="seccion-desc">Revise los pacientes con errores, advertencias y registros sin hallazgos.</p>
         </div>
         <div class="resultados-acciones">
           <button id="btn-exportar" class="btn btn-primario" type="button">Exportar reporte</button>
@@ -153,6 +1557,8 @@
     <span>Ningún dato sale de este equipo</span>
   </footer>
 
+  <script src="src/ui/acceso-local.js?v=sprint-3o-v134-acceso-local-02"></script>
+
   <script src="libs/xlsx-js-style.bundle.js?v=16"></script>
   <script src="src/validaciones/tipos.js?v=16"></script>
 
@@ -161,8 +1567,8 @@
   <script src="src/catalogos/atc.js?v=1"></script>
   <script src="src/catalogos/cargador.js?v=2"></script>
 
-  <script src="src/lector/estructura.js?v=sprint-3n-v124-estructura-01"></script>
-  <script src="src/lector/excel.js?v=sprint-3n-v124-lector-terapias-01"></script>
+  <script src="src/lector/estructura.js?v=sprint-3o-v134-estructura-01"></script>
+  <script src="src/lector/excel.js?v=sprint-3o-v134-lector-01"></script>
 
   <script src="src/validaciones/reglas/modulo1.js?v=sprint-1-v1-enie-advertencia-02"></script>
   <script src="src/validaciones/reglas/modulo2.js?v=fix-v18-v24-texto-01"></script>
@@ -182,16 +1588,17 @@
   <script src="src/validaciones/reglas/modulo16.js?v=sprint-3k-v85-estado-vital-cirugia-01"></script>
   <script src="src/validaciones/reglas/modulo17.js?v=sprint-3l-v105-motivo-finalizacion-ultimo-esquema-radioterapia-01"></script>
   <script src="src/validaciones/reglas/modulo18.js?v=sprint-3m-v110-codigo-ips-trasplante-01"></script>
-  <script src="src/validaciones/reglas/modulo19.js?v=sprint-3n-v124-terapias-rehabilitacion-01"></script>
+  <script src="src/validaciones/reglas/modulo19.js?v=sprint-3n-v125-tipo-tratamiento-corte-01"></script>
+  <script src="src/validaciones/reglas/modulo20.js?v=sprint-3o-v134-fecha-corte-01"></script>
 
-  <script src="src/validaciones/engine.js?v=sprint-3n-v124-engine-modulo19-01"></script>
+  <script src="src/validaciones/engine.js?v=sprint-3o-v134-engine-modulo20-01"></script>
 
   <script src="src/ui/carga.js?v=16"></script>
   <script src="src/ui/progreso.js?v=16"></script>
-  <script src="src/ui/tabla-resultados.js?v=sprint-2e-v34-v35-resumen-visual-02"></script>
+  <script src="src/ui/tabla-resultados.js?v=sprint-3o-v134-ui-filtros-01"></script>
   <script src="src/ui/buscador.js?v=16"></script>
   <script src="src/ui/buscador-atc.js?v=mejora-ui-buscador-catalogos-03"></script>
-  <script src="src/exportador/excel-reporte.js?v=sprint-3n-v124-exportador-01"></script>
+  <script src="src/exportador/excel-reporte.js?v=sprint-3o-v134-exportador-01"></script>
   <script src="src/main.js?v=sprint-2e-v34-v35-resumen-visual-02"></script>
   <script src="src/ui/reiniciar-flujo.js?v=56"></script>
 </body>

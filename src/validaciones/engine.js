@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3n-v124-engine-modulo19-01';
+  const VERSION = 'sprint-3o-v131-engine-modulo20-01';
 
   function obtenerDocumento(registro) {
     const tipo = CACTipos.textoMayuscula(registro.V5);
@@ -188,7 +188,7 @@
       'CACModulo18'
     );
 
-    // Módulo 19 · V111-V124 · Tratamiento complementario
+    // Módulo 19 · V111-V125 · Tratamiento complementario y situación actual
     // V111. El usuario, ¿recibió cirugía reconstructiva en el periodo de reporte actual?
     // V112. Fecha de la cirugía reconstructiva
     // V113. Código de la IPS que realizó cirugía reconstructiva
@@ -209,12 +209,31 @@
     // V122. Código de la IPS donde recibió la valoración por nutrición en el periodo de reporte actual
     // V123. ¿El usuario recibió soporte nutricional?
     // V124. ¿El usuario ha recibido terapias complementarias para su rehabilitación?
+    // V125. Tipo de tratamiento que está recibiendo el usuario a la fecha de corte
     hallazgos = ejecutarModulo(
       hallazgos,
       registro,
-      ['V111', 'V112', 'V113', 'V114', 'V114_1', 'V114_2', 'V114_3', 'V114_4', 'V114_5', 'V114_6', 'V115', 'V116', 'V117', 'V118', 'V119', 'V120', 'V121', 'V122', 'V123', 'V124'],
+      ['V111', 'V112', 'V113', 'V114', 'V114_1', 'V114_2', 'V114_3', 'V114_4', 'V114_5', 'V114_6', 'V115', 'V116', 'V117', 'V118', 'V119', 'V120', 'V121', 'V122', 'V123', 'V124', 'V125'],
       window.CACModulo19,
       'CACModulo19'
+    );
+
+    // Módulo 20 · V126-V134 · Situación final del periodo de reporte
+    // V126. Resultado final del manejo oncológico en este periodo de reporte
+    // V127. Estado vital al finalizar este periodo de reporte
+    // V128. Novedad administrativa del usuario respecto al reporte anterior
+    // V129. Novedad clínica del usuario a la fecha de corte
+    // V130. Fecha de desafiliación de la EAPB
+    // V131. Fecha de muerte
+    // V132. Causa de muerte
+    // V133. Código único de identificación BDUA-BDEX-PVS
+    // V134. Fecha de Corte
+    hallazgos = ejecutarModulo(
+      hallazgos,
+      registro,
+      ['V126', 'V127', 'V128', 'V129', 'V130', 'V131', 'V132', 'V133', 'V134'],
+      window.CACModulo20,
+      'CACModulo20'
     );
 
     return hallazgos;

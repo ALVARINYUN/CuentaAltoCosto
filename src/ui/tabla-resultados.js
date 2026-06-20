@@ -12,7 +12,9 @@
     detalleAbiertoKey: null,
     paginaDetallePorKey: {},
     hallazgosPorPagina: 1,
-    opcionesHallazgosPorPagina: [1, 2, 5, 10, 15, 20]
+    opcionesHallazgosPorPagina: [1, 2, 5, 10, 15, 20],
+    filtroEstado: 'todos',
+    filtroDocumento: ''
   };
 
   const NOMBRES_VARIABLES = {
@@ -240,6 +242,165 @@
     return 'estado-ok';
   }
 
+  // UI V134 · Filtros visuales por estado.
+  // Criterio de auditoría: si un paciente tiene errores, se clasifica como error
+  // aunque también tenga advertencias. Esto evita doble conteo visual.
+  function obtenerFiltroEstadoResultado(resultado) {
+    const errores = obtenerErrores(resultado);
+    const advertencias = obtenerAdvertencias(resultado);
+
+    if (errores > 0) return 'error';
+    if (advertencias > 0) return 'advertencia';
+    return 'ok';
+  }
+
+  function obtenerConteosFiltros() {
+    const conteos = {
+      todos: ESTADO_TABLA.resultadosOriginales.length,
+      error: 0,
+      advertencia: 0,
+      ok: 0
+    };
+
+    ESTADO_TABLA.resultadosOriginales.forEach((resultado) => {
+      const estado = obtenerFiltroEstadoResultado(resultado);
+
+      if (Object.prototype.hasOwnProperty.call(conteos, estado)) {
+        conteos[estado] += 1;
+      }
+    });
+
+    return conteos;
+  }
+
+  function establecerTextoElemento(id, valor) {
+    const elemento = document.getElementById(id);
+
+    if (elemento) {
+      elemento.textContent = valor;
+    }
+  }
+
+  function crearPanelFiltrosResultados() {
+    if (document.getElementById('filtros-resultados-panel')) return;
+
+    const tarjetas = document.querySelector('.tarjetas-resumen');
+    const buscador = document.querySelector('.buscador-contenedor');
+    const referencia = tarjetas || buscador;
+
+    if (!referencia || !referencia.parentNode) return;
+
+    const panel = document.createElement('div');
+    panel.id = 'filtros-resultados-panel';
+    panel.className = 'filtros-resultados-panel';
+    panel.setAttribute('aria-label', 'Filtros de resultados por estado');
+
+    panel.innerHTML = `
+      <div class="filtros-resultados-titulo">
+        <span class="filtros-resultados-kicker">Vista de auditoría</span>
+        <strong>Filtrar pacientes por estado</strong>
+      </div>
+
+      <div class="filtros-resultados" role="group" aria-label="Filtrar tabla de resultados">
+        <button class="filtro-chip filtro-todos activo" data-filtro-estado="todos" type="button" aria-pressed="true">
+          <span class="filtro-dot" aria-hidden="true"></span>
+          <span>Todos</span>
+          <strong id="filtro-conteo-todos">0</strong>
+        </button>
+
+        <button class="filtro-chip filtro-error" data-filtro-estado="error" type="button" aria-pressed="false">
+          <span class="filtro-dot" aria-hidden="true"></span>
+          <span>Errores</span>
+          <strong id="filtro-conteo-error">0</strong>
+        </button>
+
+        <button class="filtro-chip filtro-advertencia" data-filtro-estado="advertencia" type="button" aria-pressed="false">
+          <span class="filtro-dot" aria-hidden="true"></span>
+          <span>Advertencias</span>
+          <strong id="filtro-conteo-advertencia">0</strong>
+        </button>
+
+        <button class="filtro-chip filtro-ok" data-filtro-estado="ok" type="button" aria-pressed="false">
+          <span class="filtro-dot" aria-hidden="true"></span>
+          <span>Sin problemas</span>
+          <strong id="filtro-conteo-ok">0</strong>
+        </button>
+      </div>
+
+      <p id="filtro-resultados-ayuda" class="filtro-ayuda">
+        Prioridad visual: un paciente con error se clasifica en <strong>Errores</strong>, aunque también tenga advertencias.
+      </p>
+    `;
+
+    if (tarjetas) {
+      tarjetas.insertAdjacentElement('afterend', panel);
+    } else {
+      buscador.insertAdjacentElement('beforebegin', panel);
+    }
+
+    panel.querySelectorAll('[data-filtro-estado]').forEach((boton) => {
+      boton.addEventListener('click', function () {
+        filtrarPorEstado(boton.dataset.filtroEstado || 'todos');
+      });
+    });
+  }
+
+  function actualizarPanelFiltrosResultados() {
+    crearPanelFiltrosResultados();
+
+    const panel = document.getElementById('filtros-resultados-panel');
+    if (!panel) return;
+
+    const conteos = obtenerConteosFiltros();
+
+    establecerTextoElemento('filtro-conteo-todos', conteos.todos);
+    establecerTextoElemento('filtro-conteo-error', conteos.error);
+    establecerTextoElemento('filtro-conteo-advertencia', conteos.advertencia);
+    establecerTextoElemento('filtro-conteo-ok', conteos.ok);
+
+    panel.querySelectorAll('[data-filtro-estado]').forEach((boton) => {
+      const activo = boton.dataset.filtroEstado === ESTADO_TABLA.filtroEstado;
+
+      boton.classList.toggle('activo', activo);
+      boton.setAttribute('aria-pressed', activo ? 'true' : 'false');
+    });
+  }
+
+  function aplicarFiltrosActivos() {
+    const filtroDocumento = texto(ESTADO_TABLA.filtroDocumento).toLowerCase();
+    const filtroEstado = texto(ESTADO_TABLA.filtroEstado) || 'todos';
+
+    let resultados = [...ESTADO_TABLA.resultadosOriginales];
+
+    if (filtroDocumento) {
+      resultados = resultados.filter((resultado) => {
+        const documento = obtenerDocumento(resultado).toLowerCase();
+
+        return documento.includes(filtroDocumento);
+      });
+    }
+
+    if (filtroEstado !== 'todos') {
+      resultados = resultados.filter((resultado) => obtenerFiltroEstadoResultado(resultado) === filtroEstado);
+    }
+
+    ESTADO_TABLA.resultadosFiltrados = ordenarPorFilaExcel(resultados);
+    ESTADO_TABLA.paginaActual = 1;
+    ESTADO_TABLA.detalleAbiertoKey = null;
+    ESTADO_TABLA.paginaDetallePorKey = {};
+
+    actualizarPanelFiltrosResultados();
+    renderizarPaginaActual();
+  }
+
+  function filtrarPorEstado(estado) {
+    const estadosPermitidos = ['todos', 'error', 'advertencia', 'ok'];
+
+    ESTADO_TABLA.filtroEstado = estadosPermitidos.includes(estado) ? estado : 'todos';
+
+    aplicarFiltrosActivos();
+  }
+
   function renderizarResultados(resumen) {
     ESTADO_TABLA.resumen = resumen;
     ESTADO_TABLA.resultadosOriginales = ordenarPorFilaExcel(Array.isArray(resumen.resultados) ? resumen.resultados : []);
@@ -247,9 +408,13 @@
     ESTADO_TABLA.paginaActual = 1;
     ESTADO_TABLA.detalleAbiertoKey = null;
     ESTADO_TABLA.paginaDetallePorKey = {};
+    ESTADO_TABLA.filtroEstado = 'todos';
+    ESTADO_TABLA.filtroDocumento = '';
 
     actualizarResumenVisual(resumen);
     inyectarEstilosPaginacion();
+    crearPanelFiltrosResultados();
+    actualizarPanelFiltrosResultados();
     renderizarPaginaActual();
   }
 
@@ -681,24 +846,9 @@
   }
 
   function filtrarPorDocumento(valor) {
-    const filtro = texto(valor).toLowerCase();
+    ESTADO_TABLA.filtroDocumento = texto(valor).toLowerCase();
 
-    ESTADO_TABLA.paginaActual = 1;
-    ESTADO_TABLA.detalleAbiertoKey = null;
-
-    if (!filtro) {
-      ESTADO_TABLA.resultadosFiltrados = [...ESTADO_TABLA.resultadosOriginales];
-    } else {
-      ESTADO_TABLA.resultadosFiltrados = ESTADO_TABLA.resultadosOriginales.filter((resultado) => {
-        const documento = obtenerDocumento(resultado).toLowerCase();
-
-        return documento.includes(filtro);
-      });
-    }
-
-    ESTADO_TABLA.resultadosFiltrados = ordenarPorFilaExcel(ESTADO_TABLA.resultadosFiltrados);
-
-    renderizarPaginaActual();
+    aplicarFiltrosActivos();
   }
 
   function inyectarEstilosPaginacion() {
@@ -994,7 +1144,160 @@
         background: #f7fcff !important;
       }
 
+      .filtros-resultados-panel {
+        margin: 0 0 20px;
+        padding: 18px;
+        border: 1.5px solid #b8e0d4;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #ffffff 0%, #f0faf7 100%);
+        box-shadow: 0 4px 14px rgba(27, 162, 122, 0.10);
+      }
+
+      .filtros-resultados-titulo {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 14px;
+        color: #0d2b24;
+      }
+
+      .filtros-resultados-titulo strong {
+        font-size: 15px;
+        font-weight: 900;
+      }
+
+      .filtros-resultados-kicker {
+        color: #4d7e74;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .filtros-resultados {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+      }
+
+      .filtro-chip {
+        min-height: 48px;
+        border: 1.5px solid #b8e0d4;
+        border-radius: 999px;
+        padding: 10px 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        background: #ffffff;
+        color: #0d2b24;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 850;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(27, 162, 122, 0.06);
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+      }
+
+      .filtro-chip:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(27, 162, 122, 0.14);
+      }
+
+      .filtro-chip.activo {
+        transform: translateY(-1px);
+      }
+
+      .filtro-chip strong {
+        min-width: 28px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.70);
+        color: inherit;
+        font-size: 13px;
+        font-weight: 900;
+        text-align: center;
+      }
+
+      .filtro-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: currentColor;
+        box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.55);
+      }
+
+      .filtro-todos {
+        border-color: #8edeca;
+        color: #0a5c47;
+        background: #edfaf6;
+      }
+
+      .filtro-todos.activo {
+        border-color: #1ba27a;
+        background: linear-gradient(135deg, #1ba27a 0%, #3ec6a1 100%);
+        color: #ffffff;
+      }
+
+      .filtro-error {
+        border-color: #f5b8b3;
+        color: #7a1f1a;
+        background: #fdf0ef;
+      }
+
+      .filtro-error.activo {
+        border-color: #e05a4e;
+        background: #e05a4e;
+        color: #ffffff;
+      }
+
+      .filtro-advertencia {
+        border-color: #f5d88a;
+        color: #5a3a00;
+        background: #fdf8ec;
+      }
+
+      .filtro-advertencia.activo {
+        border-color: #f0a500;
+        background: #f0a500;
+        color: #3a2000;
+      }
+
+      .filtro-ok {
+        border-color: #7ecfae;
+        color: #0a4028;
+        background: #edfff7;
+      }
+
+      .filtro-ok.activo {
+        border-color: #2db87a;
+        background: #2db87a;
+        color: #ffffff;
+      }
+
+      .filtro-ayuda {
+        margin: 12px 0 0;
+        color: #1e4a3e;
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      .filtro-ayuda strong {
+        color: #0d2b24;
+        font-weight: 900;
+      }
+
       @media (max-width: 768px) {
+        .filtros-resultados {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .filtros-resultados-titulo {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
         .detalle-paciente-header,
         .paginador-resultados,
         .paginador-detalle {
@@ -1013,6 +1316,7 @@
 
   window.CACTablaResultadosUI = {
     renderizarResultados,
-    filtrarPorDocumento
+    filtrarPorDocumento,
+    filtrarPorEstado
   };
 })();
