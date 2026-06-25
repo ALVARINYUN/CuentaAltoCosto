@@ -5,7 +5,7 @@
 **Metodología:** trabajo híbrido por sprints, con cierre funcional por variable o bloque.
 **Herramientas:** Markdown en `docs/`, Git/GitHub y pruebas locales en navegador.
 **Estado funcional actual:** cerrado hasta **V134**.
-**Fase actual:** estabilización, documentación, ajuste de advertencias y auditoría global.
+**Fase actual:** Sprint 4A — Limpieza documental V134.
 **Siguiente variable:** ninguna.
 **Regla principal:** los errores cerrados no se tocan.
 
@@ -16,10 +16,13 @@
 El Validador CAC — Cáncer ya cuenta con validación acumulativa funcional desde **V1 hasta V134**.
 
 La etapa de construcción progresiva de variables está cerrada.
-A partir de este punto, el trabajo se organiza en sprints de estabilización y mejora.
+
+A partir de este punto, el trabajo se organiza en sprints de estabilización, documentación, ajuste de advertencias, auditoría global y mejora de experiencia de usuario.
 
 El backlog ya no debe usarse para listar reglas completas variable por variable.
-Las reglas detalladas viven en la matriz funcional.
+
+Las reglas detalladas deben vivir en una matriz funcional o matriz de reglas de negocio.
+
 El backlog debe servir para gestionar:
 
 * Qué está cerrado.
@@ -45,6 +48,10 @@ El backlog debe servir para gestionar:
 | Fase activa                     | Sprint 4A — Limpieza documental V134      |
 | Siguiente sprint                | Sprint 4B — Ajuste de advertencias en APP |
 | Restricción principal           | No tocar errores cerrados                 |
+
+Ya no debe tratarse el proyecto como cerrado en V66, V86, V124 o V125.
+
+Tampoco debe aparecer V125 como siguiente variable ni V126-V134 como pendientes de implementación.
 
 ---
 
@@ -87,7 +94,8 @@ Crear una aplicación local que permita validar archivos Excel del reporte CAC d
 Los sprints son la unidad principal de trabajo del proyecto.
 
 Hasta V134 se trabajó por sprints de implementación de variables.
-Desde V134 en adelante se trabajará por sprints de estabilización, documentación y mejora.
+
+Desde V134 en adelante se trabajará por sprints de estabilización, documentación, ajuste de advertencias, auditoría y mejora.
 
 ---
 
@@ -272,7 +280,11 @@ Debe contener:
 
 ### 7.4 `docs/matriz_variables_cac_actualizada_v86.md`
 
-Debe contener:
+Este archivo puede existir como documento histórico de matriz.
+
+Aunque conserva nombre con V86, debe revisarse antes de asumir que está completo hasta V134.
+
+Debe verificarse si contiene:
 
 * Variables V1-V134.
 * Tipo de dato.
@@ -284,11 +296,30 @@ Debe contener:
 * Advertencias.
 * Trazabilidad.
 
-Nota: el archivo conserva nombre histórico con V86, pero su contenido debe quedar alineado a V134. Renombrarlo es opcional.
+Renombrarlo es opcional y sólo debe hacerse si no rompe referencias existentes.
 
 ---
 
-### 7.5 `docs/AUDITORIA_PROYECTO.md`
+### 7.5 `docs/MATRIZ_REGLAS_NEGOCIO_V1_V134.md`
+
+Este documento es recomendado para consolidar reglas de negocio V1-V134.
+
+No debe asumirse que ya existe.
+
+Antes de crearlo o consolidarlo, se debe verificar el contenido real de `docs/`.
+
+Comandos recomendados:
+
+```powershell
+Get-ChildItem docs
+
+Test-Path docs\matriz_variables_cac_actualizada_v86.md
+Test-Path docs\MATRIZ_REGLAS_NEGOCIO_V1_V134.md
+```
+
+---
+
+### 7.6 `docs/AUDITORIA_PROYECTO.md`
 
 Debe contener:
 
@@ -301,7 +332,7 @@ Debe contener:
 
 ---
 
-### 7.6 Código fuente
+### 7.7 Código fuente
 
 Debe contener la implementación real:
 
@@ -339,7 +370,7 @@ En este proyecto, el Product Owner y auditor funcional pueden ser la misma perso
 5. No se eliminan errores cerrados.
 6. No se reclasifican errores cerrados.
 7. No se suavizan errores cerrados.
-8. La fase actual trabaja sólo advertencias.
+8. La fase de advertencias trabaja sólo advertencias; los errores cerrados no se tocan.
 9. Un valor permitido por instructivo no debe generar advertencia por sí solo.
 10. Una advertencia puede mantenerse si exige soporte, catálogo, trazabilidad o revisión clínica.
 11. No se debe duplicar la matriz funcional completa en JavaScript.
@@ -379,6 +410,7 @@ En este proyecto, el Product Owner y auditor funcional pueden ser la misma perso
 ## 11. Sprints actuales de trabajo
 
 A partir del cierre de V134, los sprints ya no son de implementación de variables.
+
 Ahora son sprints de estabilización, documentación, auditoría y mejora.
 
 | Sprint                                       | Objetivo                                            | Estado           |
@@ -396,15 +428,15 @@ Ahora son sprints de estabilización, documentación, auditoría y mejora.
 
 **Objetivo:** asegurar que toda la documentación refleje el estado real V1-V134.
 
-| ID       | Item                                                                                 | Prioridad | Estado      | Criterio de aceptación                                     |
-| -------- | ------------------------------------------------------------------------------------ | --------- | ----------- | ---------------------------------------------------------- |
-| SP4A-001 | Actualizar `USER_STORIES.md` a V134                                                  | Alta      | Cerrado     | El documento no indica variables pendientes                |
-| SP4A-002 | Actualizar `USE_CASES.md` a V134                                                     | Alta      | Cerrado     | Los casos cubren V1-V134                                   |
-| SP4A-003 | Actualizar `BACKLOG.md` a V134                                                       | Alta      | En progreso | El backlog muestra sprints actuales 4A-4F                  |
-| SP4A-004 | Revisar matriz funcional V1-V134                                                     | Alta      | Pendiente   | La matriz no contradice el instructivo ni el estado V134   |
-| SP4A-005 | Revisar referencias antiguas a V66, V86, V124 o V125 pendiente                       | Alta      | Pendiente   | No quedan documentos principales con estado desactualizado |
-| SP4A-006 | Confirmar que documentación diferencia backlog, matriz, casos, historias y auditoría | Media     | Pendiente   | Cada documento tiene propósito claro                       |
-| SP4A-007 | Subir cambios documentales a GitHub                                                  | Alta      | Pendiente   | Push realizado sin `dist/` ni archivos innecesarios        |
+| ID       | Item                                                                                 | Prioridad | Estado    | Criterio de aceptación                                                                                 |
+| -------- | ------------------------------------------------------------------------------------ | --------- | --------- | ------------------------------------------------------------------------------------------------------ |
+| SP4A-001 | Actualizar `USER_STORIES.md` a V134                                                  | Alta      | Cerrado   | El documento no indica variables pendientes                                                            |
+| SP4A-002 | Actualizar `USE_CASES.md` a V134                                                     | Alta      | Cerrado   | Los casos cubren V1-V134                                                                               |
+| SP4A-003 | Actualizar `BACKLOG.md` a V134                                                       | Alta      | Cerrado   | El backlog muestra el estado V1-V134 y los sprints actuales 4A-4F                                      |
+| SP4A-004 | Crear o consolidar matriz de reglas de negocio V1-V134                               | Alta      | Pendiente | Se verifica primero qué matriz existe en `docs/` y luego se consolida sin asumir archivos inexistentes |
+| SP4A-005 | Revisar referencias antiguas a V66, V86, V124 o V125 pendiente                       | Alta      | Pendiente | No quedan documentos principales con estado desactualizado                                             |
+| SP4A-006 | Confirmar que documentación diferencia backlog, matriz, casos, historias y auditoría | Media     | Pendiente | Cada documento tiene propósito claro                                                                   |
+| SP4A-007 | Subir cambios documentales a GitHub                                                  | Alta      | Pendiente | Push realizado sin `dist/` ni archivos innecesarios                                                    |
 
 ### Criterio de cierre del Sprint 4A
 
@@ -413,7 +445,8 @@ El Sprint 4A se cierra cuando:
 * `BACKLOG.md` está alineado a V134.
 * `USER_STORIES.md` está alineado a V134.
 * `USE_CASES.md` está alineado a V134.
-* La matriz funcional no contradice el estado V134.
+* `AUDITORIA_PROYECTO.md` es coherente con el cierre V134.
+* La matriz funcional queda verificada o queda como pendiente claro de consolidación.
 * No hay documentos principales diciendo que V125 o V126-V134 están pendientes.
 * El repositorio queda limpio después del push.
 
@@ -468,15 +501,38 @@ Estos valores sólo deben generar advertencia si contradicen una dependencia, un
 
 ## 14. Sprint 4C — Matriz funcional visible en APP
 
-**Objetivo:** facilitar la consulta de la matriz funcional desde la interfaz.
+**Objetivo:** facilitar la consulta de la matriz funcional desde la interfaz, sin duplicar innecesariamente reglas completas dentro del código JavaScript.
 
-| ID       | Item                                                           | Prioridad | Estado    | Criterio de aceptación                        |
-| -------- | -------------------------------------------------------------- | --------- | --------- | --------------------------------------------- |
-| SP4C-001 | Decidir si la matriz se enlaza o se visualiza dentro de la APP | Media     | Pendiente | Decisión documentada                          |
-| SP4C-002 | Agregar acceso visual a matriz funcional                       | Media     | Pendiente | El usuario puede abrir la matriz desde la APP |
-| SP4C-003 | Evitar duplicar matriz completa en JS                          | Alta      | Pendiente | La matriz sigue como documento fuente         |
-| SP4C-004 | Revisar nombre del archivo de matriz                           | Baja      | Opcional  | Se mantiene aclaración o se renombra a V134   |
-| SP4C-005 | Probar acceso local a documentación                            | Media     | Pendiente | El enlace funciona en servidor local          |
+| ID       | Item                                                           | Prioridad | Estado    | Criterio de aceptación                              |
+| -------- | -------------------------------------------------------------- | --------- | --------- | --------------------------------------------------- |
+| SP4C-001 | Verificar si existe matriz funcional o matriz de reglas        | Alta      | Pendiente | Se confirma qué archivos existen en `docs/`         |
+| SP4C-002 | Crear o consolidar documento de matriz V1-V134                 | Alta      | Pendiente | Matriz consolidada sin asumir archivos inexistentes |
+| SP4C-003 | Decidir si la matriz se enlaza o se visualiza dentro de la APP | Media     | Pendiente | Decisión documentada                                |
+| SP4C-004 | Agregar acceso visual a matriz funcional                       | Media     | Pendiente | El usuario puede abrir la matriz desde la APP       |
+| SP4C-005 | Evitar duplicar matriz completa en JS                          | Alta      | Pendiente | La matriz sigue como documento fuente               |
+| SP4C-006 | Revisar nombre del archivo de matriz                           | Baja      | Opcional  | Se mantiene aclaración o se renombra a V134         |
+| SP4C-007 | Probar acceso local a documentación                            | Media     | Pendiente | El enlace funciona en servidor local                |
+
+Campos recomendados para la matriz:
+
+```text
+Variable
+Nombre oficial
+Encabezado real/cortado
+Tipo de dato
+Formato
+Catálogo permitido
+Comodines permitidos
+Dependencias
+Trazabilidad
+Reglas de error
+Reglas de advertencia
+Excepciones
+Severidad
+Código de hallazgo
+Archivo donde se implementa
+Estado
+```
 
 ---
 
@@ -524,30 +580,31 @@ Estos valores sólo deben generar advertencia si contradicen una dependencia, un
 
 ## 18. Pendientes activos consolidados
 
-| Prioridad | Pendiente                                         | Sprint | Estado      |
-| --------- | ------------------------------------------------- | ------ | ----------- |
-| Alta      | Terminar actualización de `BACKLOG.md`            | 4A     | En progreso |
-| Alta      | Revisar matriz funcional V1-V134                  | 4A     | Pendiente   |
-| Alta      | Buscar referencias antiguas a V124/V125 pendiente | 4A     | Pendiente   |
-| Alta      | Levantar advertencias actuales                    | 4B     | Pendiente   |
-| Alta      | Eliminar falsos positivos de advertencias         | 4B     | Pendiente   |
-| Alta      | Confirmar que errores no cambian                  | 4B     | Pendiente   |
-| Media     | Mostrar o enlazar matriz desde APP                | 4C     | Pendiente   |
-| Alta      | Auditar exportador V1-V134                        | 4D     | Pendiente   |
-| Media     | Mejorar redacción de hallazgos                    | 4E     | Pendiente   |
-| Baja      | Renombrar matriz histórica de V86 a V134          | 4C     | Opcional    |
+| Prioridad | Pendiente                                                 | Sprint | Estado    |
+| --------- | --------------------------------------------------------- | ------ | --------- |
+| Alta      | Crear o consolidar matriz de reglas de negocio V1-V134    | 4A/4C  | Pendiente |
+| Alta      | Buscar referencias antiguas a V66/V86/V124/V125 pendiente | 4A     | Pendiente |
+| Alta      | Confirmar separación documental                           | 4A     | Pendiente |
+| Alta      | Subir cambios documentales a GitHub                       | 4A     | Pendiente |
+| Alta      | Levantar advertencias actuales                            | 4B     | Pendiente |
+| Alta      | Eliminar falsos positivos de advertencias                 | 4B     | Pendiente |
+| Alta      | Confirmar que errores no cambian                          | 4B     | Pendiente |
+| Media     | Mostrar o enlazar matriz desde APP                        | 4C     | Pendiente |
+| Alta      | Auditar exportador V1-V134                                | 4D     | Pendiente |
+| Media     | Mejorar redacción de hallazgos                            | 4E     | Pendiente |
+| Baja      | Renombrar matriz histórica de V86 a V134                  | 4C     | Opcional  |
 
 ---
 
 ## 19. Deuda técnica controlada
 
-| Deuda                                          | Riesgo                          | Acción recomendada      |
-| ---------------------------------------------- | ------------------------------- | ----------------------- |
-| Archivo de matriz conserva nombre V86          | Puede confundir                 | Renombrar o aclarar     |
-| Advertencias heredadas de variables anteriores | Puede saturar al usuario        | Revisar en Sprint 4B    |
-| Exportador requiere auditoría global           | Puede marcar celdas incorrectas | Auditar en Sprint 4D    |
-| Documentación dispersa                         | Puede generar incoherencias     | Crear índice documental |
-| Mensajes muy técnicos                          | Puede dificultar uso operativo  | Mejorar en Sprint 4E    |
+| Deuda                                          | Riesgo                          | Acción recomendada                   |
+| ---------------------------------------------- | ------------------------------- | ------------------------------------ |
+| Archivo de matriz puede conservar nombre V86   | Puede confundir                 | Revisar, aclarar o renombrar         |
+| Advertencias heredadas de variables anteriores | Puede saturar al usuario        | Revisar en Sprint 4B                 |
+| Exportador requiere auditoría global           | Puede marcar celdas incorrectas | Auditar en Sprint 4D                 |
+| Documentación dispersa                         | Puede generar incoherencias     | Crear índice documental si se decide |
+| Mensajes muy técnicos                          | Puede dificultar uso operativo  | Mejorar en Sprint 4E                 |
 
 ---
 
@@ -579,22 +636,47 @@ git status --short
 
 Sólo deben aparecer archivos útiles del proyecto.
 
+Comandos recomendados para cerrar esta actualización documental:
+
+```powershell
+git add docs/BACKLOG.md
+git status
+git commit -m "Actualizar backlog operativo del validador a V134"
+git push
+```
+
 ---
 
 ## 21. Criterios para cerrar la fase actual
 
-La fase actual puede cerrarse cuando:
+La fase actual es:
 
-1. La documentación principal esté alineada a V134.
-2. El backlog no indique variables pendientes.
-3. Las historias de usuario estén alineadas a V134.
-4. Los casos de uso estén alineados a V134.
-5. La matriz funcional esté completa y coherente con V134.
-6. La APP no genere advertencias falsas por comodines permitidos.
-7. Los errores cerrados permanezcan intactos.
-8. El exportador haya sido auditado con V1-V134.
-9. `dist/` y archivos de distribución estén fuera de Git.
+```text
+Sprint 4A — Limpieza documental V134
+```
+
+El Sprint 4A puede cerrarse cuando:
+
+1. `BACKLOG.md` esté alineado a V134.
+2. `USER_STORIES.md` esté alineado a V134.
+3. `USE_CASES.md` esté alineado a V134.
+4. `AUDITORIA_PROYECTO.md` sea coherente con el cierre V134.
+5. La matriz funcional esté verificada o quede registrada como pendiente claro de consolidación.
+6. El backlog no indique variables pendientes.
+7. No haya documentos principales diciendo que V125 o V126-V134 están pendientes.
+8. Esté confirmada la separación entre backlog, matriz, casos de uso, historias y auditoría.
+9. Los cambios documentales estén subidos a GitHub.
 10. El repositorio quede limpio después del push.
+
+No hacen parte del cierre de Sprint 4A:
+
+* Ajustar advertencias.
+* Cambiar código de validación.
+* Auditar exportador completo.
+* Modificar reglas de errores.
+* Cambiar lógica de variables cerradas.
+
+Esos puntos corresponden a sprints posteriores.
 
 ---
 
@@ -603,29 +685,39 @@ La fase actual puede cerrarse cuando:
 Continuar en este orden:
 
 ```text
-1. Cerrar Sprint 4A — Limpieza documental V134.
-2. Revisar que no queden documentos con estado antiguo.
-3. Iniciar Sprint 4B — Ajuste de advertencias.
-4. Levantar listado de advertencias actuales.
-5. Clasificar advertencias válidas vs falsos positivos.
-6. Ajustar únicamente advertencias.
-7. Probar base real hoja 2025.
-8. Auditar exportador.
-9. Definir cómo mostrar o enlazar la matriz funcional en la APP.
+1. Guardar este BACKLOG.md corregido.
+2. Ejecutar git status.
+3. Confirmar que sólo aparecen cambios documentales esperados.
+4. Hacer commit y push.
+5. Verificar qué matrices existen realmente en docs/.
+6. Definir si se crea o consolida MATRIZ_REGLAS_NEGOCIO_V1_V134.md.
+7. Cerrar Sprint 4A cuando la documentación principal quede coherente.
+8. Iniciar Sprint 4B — Ajuste de advertencias en APP.
+```
+
+Comandos para verificar matriz:
+
+```powershell
+Get-ChildItem docs
+
+Test-Path docs\matriz_variables_cac_actualizada_v86.md
+Test-Path docs\MATRIZ_REGLAS_NEGOCIO_V1_V134.md
 ```
 
 ---
 
 ## 23. Estado final del backlog
 
-| Concepto                | Estado                                    |
-| ----------------------- | ----------------------------------------- |
-| Avance funcional actual | V1-V134                                   |
-| Variables pendientes    | Ninguna                                   |
-| Fase activa             | Sprint 4A — Limpieza documental V134      |
-| Siguiente sprint        | Sprint 4B — Ajuste de advertencias en APP |
-| Restricción principal   | No tocar errores cerrados                 |
-| Matriz funcional        | V1-V134                                   |
-| Documentación           | En actualización                          |
-| Exportador              | Cerrado, pendiente auditoría global       |
-| Repositorio             | Limpio, con `dist/` ignorado              |
+| Concepto                | Estado                                          |
+| ----------------------- | ----------------------------------------------- |
+| Avance funcional actual | V1-V134                                         |
+| Variables pendientes    | Ninguna                                         |
+| Fase activa             | Sprint 4A — Limpieza documental V134            |
+| Siguiente sprint        | Sprint 4B — Ajuste de advertencias en APP       |
+| Restricción principal   | No tocar errores cerrados                       |
+| Matriz funcional        | Pendiente de verificación/consolidación V1-V134 |
+| Documentación           | En actualización documental                     |
+| Exportador              | Cerrado, pendiente auditoría global             |
+| Repositorio             | Limpio, con `dist/` ignorado                    |
+
+Este backlog reemplaza versiones anteriores que mezclaban bitácora, reglas técnicas, pendientes viejos y estado de variables.
