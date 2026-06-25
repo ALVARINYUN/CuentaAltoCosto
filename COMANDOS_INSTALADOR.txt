@@ -1,0 +1,7 @@
+cd /d D:\cuentaALTOcosto\PROYECTO\validador-cac
+
+npm install
+
+npm start
+
+npm run dist

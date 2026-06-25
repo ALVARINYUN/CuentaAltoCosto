@@ -1,28 +1,46 @@
 {
   "name": "validador-cac",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "directories": {
-    "doc": "docs"
-  },
+  "version": "1.0.2",
+  "description": "Validador CAC - Cuenta de Alto Costo",
+  "main": "electron-main.js",
+  "author": "Área de Calidad",
+  "private": true,
   "scripts": {
-    "test": "playwright test",
-    "test:headed": "playwright test --headed"
+    "start": "electron .",
+    "dist": "electron-builder --win nsis",
+    "dist:portable": "electron-builder --win portable"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ALVARINYUN/CuentaAltoCosto.git"
+  "build": {
+    "appId": "com.calidad.validadorcac",
+    "productName": "Validador CAC",
+    "copyright": "Copyright © 2026 Área de Calidad",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!dist/**/*",
+      "!node_modules/.cache/**/*",
+      "!*.zip",
+      "!*.log"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "artifactName": "Validador-CAC-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Validador CAC"
+    }
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/ALVARINYUN/CuentaAltoCosto/issues"
-  },
-  "homepage": "https://github.com/ALVARINYUN/CuentaAltoCosto#readme",
   "devDependencies": {
-    "@playwright/test": "^1.60.0"
+    "electron": "latest",
+    "electron-builder": "latest"
   }
 }

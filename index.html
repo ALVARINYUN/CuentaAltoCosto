@@ -1235,6 +1235,619 @@
     }
   </style>
 
+
+  <style id="estilos-titulo-login-dinamico">
+    #titulo-panel-acceso {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #titulo-panel-acceso::before {
+      content: "";
+      width: 12px;
+      height: 12px;
+      display: inline-block;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #1ba27a, #3ec6a1);
+      box-shadow: 0 0 0 5px rgba(27, 162, 122, 0.12);
+      flex: 0 0 auto;
+    }
+
+    #descripcion-panel-acceso {
+      max-width: 58ch;
+    }
+  </style>
+
+
+  <style id="estilos-tabs-acceso-integrado">
+    .acceso-card {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .acceso-card-header {
+      padding-top: 22px !important;
+    }
+
+    .acceso-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      width: 100%;
+      padding: 6px;
+      margin: 0 0 18px;
+      border-radius: 22px;
+      background: rgba(13, 43, 36, 0.055);
+      border: 1.5px solid rgba(27, 162, 122, 0.13);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.75);
+    }
+
+    .acceso-tab {
+      min-height: 52px;
+      border: 0;
+      border-radius: 18px;
+      padding: 10px 14px;
+      background: transparent;
+      color: #6a7482;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 950;
+      letter-spacing: -0.015em;
+      cursor: pointer;
+      transition: background 0.16s ease, color 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .acceso-tab:hover {
+      color: #0d2b24;
+      transform: translateY(-1px);
+    }
+
+    .acceso-tab.activo {
+      color: #4d2c27;
+      background: linear-gradient(180deg, #ffffff, #fbfffd);
+      box-shadow: 0 12px 28px rgba(13, 43, 36, 0.10);
+    }
+
+    #titulo-panel-acceso {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 0 !important;
+    }
+
+    #titulo-panel-acceso::before {
+      content: "";
+      width: 11px;
+      height: 11px;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #1ba27a, #3ec6a1);
+      box-shadow: 0 0 0 5px rgba(27, 162, 122, 0.12);
+    }
+
+    #descripcion-panel-acceso {
+      max-width: 58ch;
+    }
+
+    .aviso-primer-registro {
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: #fff7f8;
+      border: 1.5px solid rgba(210, 70, 96, 0.18);
+      color: #7a1f33;
+      font-size: 12.5px;
+      font-weight: 800;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 560px) {
+      .acceso-tabs {
+        border-radius: 18px;
+      }
+
+      .acceso-tab {
+        min-height: 48px;
+        border-radius: 14px;
+        padding: 9px 10px;
+        font-size: 14px;
+      }
+    }
+  </style>
+
+
+  <style id="estilos-login-compacto-fijo">
+    .pantalla-acceso-local {
+      padding: 16px !important;
+      align-items: center !important;
+      justify-content: center !important;
+      overflow: hidden !important;
+    }
+
+    .acceso-shell {
+      width: min(100%, 980px) !important;
+      max-height: calc(100dvh - 32px) !important;
+      grid-template-columns: minmax(280px, 0.78fr) minmax(360px, 1fr) !important;
+      gap: 16px !important;
+      align-items: stretch !important;
+    }
+
+    .acceso-panel-institucional,
+    .acceso-card {
+      max-height: calc(100dvh - 32px) !important;
+      border-radius: 26px !important;
+    }
+
+    .acceso-panel-institucional {
+      min-height: 0 !important;
+      padding: 24px !important;
+      overflow: hidden !important;
+    }
+
+    .acceso-card {
+      overflow: hidden !important;
+      display: flex !important;
+      flex-direction: column !important;
+    }
+
+    .acceso-card-header {
+      flex: 0 0 auto !important;
+      padding: 18px 22px 14px !important;
+    }
+
+    .acceso-card-body {
+      flex: 1 1 auto !important;
+      min-height: 0 !important;
+      overflow-y: auto !important;
+      padding: 16px 22px 22px !important;
+      scrollbar-width: thin;
+    }
+
+    .acceso-card-body::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .acceso-card-body::-webkit-scrollbar-thumb {
+      background: rgba(27, 162, 122, 0.30);
+      border-radius: 999px;
+    }
+
+    .acceso-marca {
+      margin-bottom: 18px !important;
+    }
+
+    .acceso-logo {
+      width: 52px !important;
+      height: 52px !important;
+      border-radius: 17px !important;
+    }
+
+    .acceso-brand-texto strong {
+      font-size: 21px !important;
+    }
+
+    .acceso-brand-texto span {
+      font-size: 11px !important;
+    }
+
+    .acceso-hero h2 {
+      font-size: clamp(27px, 3.2vw, 36px) !important;
+      line-height: 1.04 !important;
+    }
+
+    .acceso-hero p {
+      margin-top: 12px !important;
+      font-size: 14px !important;
+      line-height: 1.55 !important;
+    }
+
+    .acceso-pill-row {
+      margin-top: 20px !important;
+    }
+
+    .acceso-privacidad {
+      margin-top: 22px !important;
+      padding: 12px 14px !important;
+      font-size: 12.5px !important;
+    }
+
+    .acceso-tabs {
+      min-height: auto !important;
+      margin-bottom: 14px !important;
+      border-radius: 18px !important;
+    }
+
+    .acceso-tab {
+      min-height: 44px !important;
+      border-radius: 14px !important;
+      font-size: 14px !important;
+      padding: 8px 12px !important;
+    }
+
+    #titulo-panel-acceso,
+    .acceso-card-header h3 {
+      font-size: 24px !important;
+      margin-bottom: 7px !important;
+      line-height: 1.16 !important;
+    }
+
+    #descripcion-panel-acceso,
+    .acceso-card-header p {
+      font-size: 13px !important;
+      line-height: 1.45 !important;
+    }
+
+    .acceso-alerta-previa {
+      margin-top: 14px !important;
+      padding: 12px !important;
+      border-radius: 18px !important;
+      grid-template-columns: 36px 1fr !important;
+      gap: 10px !important;
+    }
+
+    .acceso-alerta-icono {
+      width: 36px !important;
+      height: 36px !important;
+      border-radius: 12px !important;
+      font-size: 18px !important;
+    }
+
+    .acceso-alerta-previa strong {
+      font-size: 13.5px !important;
+      margin-bottom: 3px !important;
+    }
+
+    .acceso-alerta-previa p {
+      font-size: 12.3px !important;
+      line-height: 1.45 !important;
+    }
+
+    .acceso-alerta-previa .alerta-nota {
+      margin-top: 6px !important;
+      font-size: 12px !important;
+    }
+
+    .acceso-form {
+      gap: 11px !important;
+    }
+
+    .aviso-primer-registro {
+      padding: 10px 12px !important;
+      font-size: 12px !important;
+      border-radius: 14px !important;
+    }
+
+    .acceso-campo {
+      gap: 5px !important;
+    }
+
+    .acceso-campo label {
+      font-size: 12.5px !important;
+    }
+
+    .acceso-campo input {
+      min-height: 44px !important;
+      border-radius: 14px !important;
+      padding: 11px 14px !important;
+      font-size: 14px !important;
+    }
+
+    .acceso-campo-password input {
+      padding-right: 86px !important;
+    }
+
+    .btn-toggle-password {
+      min-height: 30px !important;
+      padding: 5px 10px !important;
+      font-size: 11.5px !important;
+      right: 8px !important;
+    }
+
+    .acceso-boton {
+      min-height: 44px !important;
+      border-radius: 14px !important;
+      padding: 11px 18px !important;
+    }
+
+    .acceso-mensaje {
+      min-height: 16px !important;
+      font-size: 12px !important;
+    }
+
+    @media (max-height: 760px) and (min-width: 901px) {
+      .acceso-shell {
+        grid-template-columns: minmax(240px, 0.62fr) minmax(380px, 1fr) !important;
+        width: min(100%, 900px) !important;
+      }
+
+      .acceso-panel-institucional {
+        padding: 18px !important;
+      }
+
+      .acceso-hero h2 {
+        font-size: 28px !important;
+      }
+
+      .acceso-hero p,
+      .acceso-privacidad {
+        font-size: 12.5px !important;
+      }
+
+      .acceso-pill-row {
+        margin-top: 14px !important;
+      }
+
+      .acceso-card-header {
+        padding: 14px 18px 12px !important;
+      }
+
+      .acceso-card-body {
+        padding: 12px 18px 16px !important;
+      }
+
+      .acceso-alerta-previa {
+        margin-top: 10px !important;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .pantalla-acceso-local {
+        align-items: flex-start !important;
+        overflow-y: auto !important;
+      }
+
+      .acceso-shell {
+        width: min(100%, 560px) !important;
+        max-height: none !important;
+        grid-template-columns: 1fr !important;
+      }
+
+      .acceso-panel-institucional,
+      .acceso-card {
+        max-height: none !important;
+      }
+
+      .acceso-card-body {
+        overflow-y: visible !important;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .pantalla-acceso-local {
+        padding: 10px !important;
+      }
+
+      .acceso-shell {
+        gap: 10px !important;
+      }
+
+      .acceso-panel-institucional,
+      .acceso-card {
+        border-radius: 22px !important;
+      }
+
+      .acceso-panel-institucional,
+      .acceso-card-header,
+      .acceso-card-body {
+        padding: 16px !important;
+      }
+
+      .acceso-hero h2 {
+        font-size: 25px !important;
+      }
+
+      #titulo-panel-acceso,
+      .acceso-card-header h3 {
+        font-size: 22px !important;
+      }
+    }
+  </style>
+
+
+  <style id="estilos-login-registro-ajustado">
+    /* Corrección final: el registro no debe cortarse en escritorio */
+    @media (min-width: 901px) {
+      .pantalla-acceso-local {
+        padding: 12px !important;
+        overflow: hidden !important;
+      }
+
+      .acceso-shell {
+        width: min(100%, 1060px) !important;
+        max-height: calc(100dvh - 24px) !important;
+        grid-template-columns: minmax(300px, 0.70fr) minmax(430px, 1fr) !important;
+        gap: 14px !important;
+      }
+
+      .acceso-panel-institucional,
+      .acceso-card {
+        max-height: calc(100dvh - 24px) !important;
+      }
+
+      .acceso-panel-institucional {
+        padding: 20px !important;
+      }
+
+      .acceso-marca {
+        margin-bottom: 14px !important;
+      }
+
+      .acceso-hero h2 {
+        font-size: clamp(25px, 2.7vw, 34px) !important;
+      }
+
+      .acceso-hero p {
+        font-size: 13px !important;
+        line-height: 1.45 !important;
+      }
+
+      .acceso-pill-row {
+        margin-top: 14px !important;
+      }
+
+      .acceso-privacidad {
+        padding: 10px 12px !important;
+        font-size: 12px !important;
+        line-height: 1.42 !important;
+      }
+
+      .acceso-card-header {
+        padding: 12px 18px 10px !important;
+      }
+
+      .acceso-card-body {
+        padding: 10px 18px 14px !important;
+        overflow-y: auto !important;
+      }
+
+      .acceso-tabs {
+        margin-bottom: 10px !important;
+        padding: 5px !important;
+      }
+
+      .acceso-tab {
+        min-height: 38px !important;
+        font-size: 13px !important;
+      }
+
+      #titulo-panel-acceso,
+      .acceso-card-header h3 {
+        font-size: 23px !important;
+        margin-bottom: 4px !important;
+      }
+
+      #descripcion-panel-acceso,
+      .acceso-card-header p {
+        font-size: 12.5px !important;
+        line-height: 1.36 !important;
+      }
+
+      .acceso-alerta-previa {
+        margin-top: 10px !important;
+        padding: 10px !important;
+        border-radius: 16px !important;
+        grid-template-columns: 32px 1fr !important;
+      }
+
+      .acceso-alerta-icono {
+        width: 32px !important;
+        height: 32px !important;
+        border-radius: 11px !important;
+        font-size: 17px !important;
+      }
+
+      .acceso-alerta-previa strong {
+        font-size: 13px !important;
+      }
+
+      .acceso-alerta-previa p {
+        font-size: 11.7px !important;
+        line-height: 1.34 !important;
+      }
+
+      .acceso-alerta-previa .alerta-nota {
+        margin-top: 4px !important;
+        font-size: 11.6px !important;
+      }
+
+      #form-acceso-inicial {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 12px !important;
+        row-gap: 9px !important;
+        align-items: start;
+      }
+
+      #form-acceso-inicial.oculto {
+        display: none !important;
+      }
+
+      #form-acceso-inicial .aviso-primer-registro,
+      #form-acceso-inicial #mensaje-acceso-inicial,
+      #form-acceso-inicial .acceso-acciones {
+        grid-column: 1 / -1;
+      }
+
+      #form-acceso-inicial .aviso-primer-registro {
+        padding: 8px 10px !important;
+        font-size: 11.7px !important;
+        line-height: 1.32 !important;
+      }
+
+      .acceso-campo {
+        gap: 4px !important;
+      }
+
+      .acceso-campo label {
+        font-size: 12px !important;
+      }
+
+      .acceso-campo input {
+        min-height: 40px !important;
+        padding: 9px 12px !important;
+        font-size: 13px !important;
+        border-radius: 13px !important;
+      }
+
+      .acceso-campo-password input {
+        padding-right: 76px !important;
+      }
+
+      .btn-toggle-password {
+        min-height: 28px !important;
+        padding: 4px 9px !important;
+        font-size: 11px !important;
+      }
+
+      .acceso-boton {
+        min-height: 42px !important;
+        padding: 10px 18px !important;
+      }
+
+      #form-acceso-inicial .acceso-acciones {
+        margin-top: 2px !important;
+      }
+
+      #form-acceso-inicial .acceso-boton.primario {
+        width: min(100%, 320px);
+        margin-left: auto;
+      }
+    }
+
+    @media (max-width: 900px) {
+      #form-acceso-inicial {
+        grid-template-columns: 1fr !important;
+      }
+
+      #form-acceso-inicial .acceso-boton.primario {
+        width: 100%;
+      }
+    }
+  </style>
+
+
+  <style id="estilos-boton-inicio-sesion-centrado">
+    #form-acceso-login .acceso-acciones,
+    #form-acceso-inicial .acceso-acciones {
+      justify-content: center !important;
+    }
+
+    #form-acceso-login .acceso-boton.primario,
+    #form-acceso-inicial .acceso-boton.primario {
+      width: min(100%, 320px) !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      text-align: center !important;
+    }
+
+    @media (max-width: 560px) {
+      #form-acceso-login .acceso-boton.primario,
+      #form-acceso-inicial .acceso-boton.primario {
+        width: 100% !important;
+      }
+    }
+  </style>
+
 </head>
 
 <body class="app-bloqueada">
@@ -1271,8 +1884,13 @@
 
       <section class="acceso-card" aria-label="Formulario de acceso local">
         <div class="acceso-card-header">
-          <h3>Ingresar al sistema</h3>
-          <p>Validación local de reporte CAC · Cáncer · V1–V134</p>
+          <div class="acceso-tabs" role="tablist" aria-label="Acceso local">
+            <button id="tab-login" class="acceso-tab" type="button" role="tab" aria-selected="false">Iniciar sesión</button>
+            <button id="tab-registro" class="acceso-tab" type="button" role="tab" aria-selected="false">Registrarse</button>
+          </div>
+
+          <h3 id="titulo-panel-acceso">Inicio de sesión</h3>
+          <p id="descripcion-panel-acceso">Ingrese con el usuario local configurado para acceder al Validador CAC.</p>
 
           <div class="acceso-alerta-previa" role="note" aria-label="Alerta previa de uso">
             <span class="acceso-alerta-icono">!</span>
@@ -1287,7 +1905,6 @@
               </p>
             </div>
           </div>
-        </div>
 
         <div class="acceso-card-body">
           <form id="form-acceso-inicial" class="acceso-form oculto">
@@ -1341,7 +1958,7 @@
             <p id="mensaje-acceso-login" class="acceso-mensaje"></p>
 
             <div class="acceso-acciones">
-              <button class="acceso-boton primario" type="submit">Ingresar</button>
+              <button class="acceso-boton primario" type="submit">Iniciar sesión</button>
             </div>
           </form>
         </div>
@@ -1458,7 +2075,6 @@
         <div class="seccion-numero">01</div>
         <div>
           <h2 class="seccion-titulo">Cargar archivo</h2>
-          
           <p class="seccion-desc">Cargue el archivo Excel para iniciar la revisión local de calidad del reporte CAC.</p>
         </div>
       </div>
@@ -1595,11 +2211,158 @@
 
   <script src="src/ui/carga.js?v=16"></script>
   <script src="src/ui/progreso.js?v=16"></script>
-  <script src="src/ui/tabla-resultados.js?v=sprint-3o-v134-ui-filtros-01"></script>
+  <script src="src/ui/tabla-resultados.js?v=sprint-3o-v134-resumen-blindado-sin-solo-02"></script>
   <script src="src/ui/buscador.js?v=16"></script>
   <script src="src/ui/buscador-atc.js?v=mejora-ui-buscador-catalogos-03"></script>
   <script src="src/exportador/excel-reporte.js?v=sprint-3o-v134-exportador-01"></script>
   <script src="src/main.js?v=sprint-2e-v34-v35-resumen-visual-02"></script>
   <script src="src/ui/reiniciar-flujo.js?v=56"></script>
+
+  <script id="fix-resumen-sin-solo-advertencias">
+    (function () {
+      function leerNumero(id) {
+        var el = document.getElementById(id);
+        if (!el) return null;
+        var n = parseInt(String(el.textContent || '').replace(/\D+/g, ''), 10);
+        return Number.isFinite(n) ? n : null;
+      }
+
+      function corregirResumenSinSoloAdvertencias() {
+        var resumen = document.getElementById('resultados-resumen');
+        if (!resumen) return;
+
+        var texto = resumen.textContent || '';
+        if (!/solo advertencias/i.test(texto)) return;
+
+        var total = leerNumero('total-pacientes');
+        var errores = leerNumero('pacientes-error');
+        if (errores === null) errores = leerNumero('total-errores');
+
+        var advertencias = leerNumero('pacientes-advertencia');
+        if (advertencias === null) advertencias = leerNumero('total-advertencias');
+
+        var ok = leerNumero('pacientes-ok');
+        if (ok === null) ok = leerNumero('total-ok');
+
+        if ([total, errores, advertencias, ok].some(function (v) { return v === null; })) return;
+
+        var hallazgos = '';
+        var matchHallazgos = texto.match(/Errores detectados:[\s\S]*$/i);
+        if (matchHallazgos) {
+          hallazgos = '<br><span class="resumen-hallazgos">' + matchHallazgos[0] + '</span>';
+        }
+
+        resumen.innerHTML =
+          'Validación completa. Se procesaron <strong>' + total + '</strong> pacientes. ' +
+          '<strong>' + errores + '</strong> tienen errores, ' +
+          '<strong>' + advertencias + '</strong> tienen advertencias y ' +
+          '<strong>' + ok + '</strong> no tienen hallazgos.' +
+          hallazgos;
+      }
+
+      window.addEventListener('load', corregirResumenSinSoloAdvertencias);
+      document.addEventListener('click', function () {
+        window.setTimeout(corregirResumenSinSoloAdvertencias, 50);
+      });
+      window.setInterval(corregirResumenSinSoloAdvertencias, 800);
+    })();
+  </script>
+
+
+  <script id="fix-orden-resultados-catalogos">
+    (function () {
+      function esTextoCatalogos(texto) {
+        return /Consultar\s+cat[aá]logos/i.test(texto || '');
+      }
+
+      function esBloqueCatalogos(el) {
+        if (!el || !el.textContent) return false;
+
+        var texto = el.textContent || '';
+        return esTextoCatalogos(texto) &&
+          /ATC/i.test(texto) &&
+          /CIE-?10/i.test(texto) &&
+          /CUPS/i.test(texto) &&
+          !/03\s*Resultados/i.test(texto);
+      }
+
+      function buscarBloqueCatalogos() {
+        var elementos = Array.prototype.slice.call(document.querySelectorAll('body *'));
+
+        for (var i = 0; i < elementos.length; i += 1) {
+          var el = elementos[i];
+
+          if (!esTextoCatalogos(el.textContent)) continue;
+
+          var actual = el;
+          var mejor = null;
+
+          while (actual && actual !== document.body && actual !== document.documentElement) {
+            if (esBloqueCatalogos(actual)) {
+              mejor = actual;
+            }
+
+            var padre = actual.parentElement;
+
+            if (!padre) break;
+
+            var padreTexto = padre.textContent || '';
+            var padreIncluyeResultados = /03\s*Resultados/i.test(padreTexto) || /Resultados/i.test(padreTexto);
+
+            if (padreIncluyeResultados && mejor) {
+              return mejor;
+            }
+
+            actual = padre;
+          }
+
+          if (mejor) return mejor;
+        }
+
+        return null;
+      }
+
+      function moverCatalogosDebajoDeResultados() {
+        var resultados = document.getElementById('seccion-resultados');
+        if (!resultados) return;
+
+        var catalogos = buscarBloqueCatalogos();
+        if (!catalogos || catalogos === resultados) return;
+
+        if (resultados.contains(catalogos)) {
+          resultados.insertAdjacentElement('afterend', catalogos);
+          return;
+        }
+
+        if (resultados.nextElementSibling !== catalogos) {
+          resultados.insertAdjacentElement('afterend', catalogos);
+        }
+      }
+
+      function programarMovimiento() {
+        moverCatalogosDebajoDeResultados();
+        window.setTimeout(moverCatalogosDebajoDeResultados, 50);
+        window.setTimeout(moverCatalogosDebajoDeResultados, 200);
+        window.setTimeout(moverCatalogosDebajoDeResultados, 800);
+      }
+
+      document.addEventListener('DOMContentLoaded', programarMovimiento);
+      window.addEventListener('load', programarMovimiento);
+
+      document.addEventListener('click', function () {
+        window.setTimeout(moverCatalogosDebajoDeResultados, 80);
+      });
+
+      var observer = new MutationObserver(function () {
+        moverCatalogosDebajoDeResultados();
+      });
+
+      observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true
+      });
+    })();
+  </script>
+
 </body>
 </html>

@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  const VERSION = 'sprint-3o-v134-acceso-local-02';
+  const VERSION = 'sprint-3o-v134-acceso-local-19';
   const STORAGE_KEY = 'CAC_ACCESO_LOCAL_V1';
   const SESSION_KEY = 'CAC_SESION_LOCAL_V1';
 
@@ -17,6 +17,25 @@
     el.textContent = mensaje || '';
     el.classList.remove('error', 'ok');
     if (tipo) el.classList.add(tipo);
+  }
+
+  function limpiarMensajesAcceso() {
+    setMensaje('mensaje-acceso-inicial', '');
+    setMensaje('mensaje-acceso-login', '');
+  }
+
+  function actualizarTabsAcceso(modo) {
+    const tabLogin = obtener('tab-login');
+    const tabRegistro = obtener('tab-registro');
+    if (!tabLogin || !tabRegistro) return;
+
+    const esLogin = modo === 'login';
+
+    tabLogin.classList.toggle('activo', esLogin);
+    tabRegistro.classList.toggle('activo', !esLogin);
+
+    tabLogin.setAttribute('aria-selected', esLogin ? 'true' : 'false');
+    tabRegistro.setAttribute('aria-selected', esLogin ? 'false' : 'true');
   }
 
   function generarSalt() {
@@ -108,8 +127,28 @@
     return texto(clave).length >= 6;
   }
 
+  function actualizarPanelAcceso(modo) {
+    const titulo = obtener('titulo-panel-acceso');
+    const descripcion = obtener('descripcion-panel-acceso');
+
+    if (!titulo || !descripcion) return;
+
+    actualizarTabsAcceso(modo);
+
+    if (modo === 'setup') {
+      titulo.textContent = 'Registre el acceso local';
+      descripcion.textContent = 'Configure la entidad, el usuario administrador y la contraseña inicial del Validador CAC.';
+      return;
+    }
+
+    titulo.textContent = 'Accede a tu cuenta';
+    descripcion.textContent = 'Ingrese con el usuario local configurado para continuar en el Validador CAC.';
+  }
+
   function mostrarFormularioInicial() {
     aplicarEstadoBloqueado();
+    limpiarMensajesAcceso();
+    actualizarPanelAcceso('setup');
     mostrar(obtener('form-acceso-inicial'));
     ocultar(obtener('form-acceso-login'));
     window.setTimeout(() => obtener('setup-entidad')?.focus(), 80);
@@ -117,6 +156,8 @@
 
   function mostrarFormularioLogin() {
     aplicarEstadoBloqueado();
+    limpiarMensajesAcceso();
+    actualizarPanelAcceso('login');
     ocultar(obtener('form-acceso-inicial'));
     mostrar(obtener('form-acceso-login'));
     const config = leerConfig();
@@ -255,6 +296,19 @@
     obtener('btn-cerrar-sesion')?.addEventListener('click', cerrarSesion);
     obtener('btn-cerrar-configuracion')?.addEventListener('click', cerrarConfiguracion);
     obtener('form-configuracion-local')?.addEventListener('submit', guardarConfiguracion);
+
+    obtener('tab-login')?.addEventListener('click', function () {
+      if (!leerConfig()) {
+        mostrarFormularioInicial();
+        setMensaje('mensaje-acceso-inicial', 'Primero registre el acceso local de la entidad.', 'error');
+        return;
+      }
+      mostrarFormularioLogin();
+    });
+
+    obtener('tab-registro')?.addEventListener('click', function () {
+      mostrarFormularioInicial();
+    });
 
     obtener('modal-configuracion-local')?.addEventListener('click', function (evento) {
       if (evento.target === evento.currentTarget) cerrarConfiguracion();

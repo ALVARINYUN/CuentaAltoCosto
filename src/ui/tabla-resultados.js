@@ -140,6 +140,54 @@
     return 'Sin problemas';
   }
 
+
+  function calcularConteosPacientesDirectos(resultados) {
+    const lista = Array.isArray(resultados) ? resultados : [];
+
+    return lista.reduce((conteos, resultado) => {
+      const errores = obtenerErrores(resultado);
+      const advertencias = obtenerAdvertencias(resultado);
+
+      conteos.total += 1;
+      if (errores > 0) conteos.conErrores += 1;
+      if (advertencias > 0) conteos.conAdvertencias += 1;
+      if (errores === 0 && advertencias === 0) conteos.sinProblemas += 1;
+
+      return conteos;
+    }, {
+      total: 0,
+      conErrores: 0,
+      conAdvertencias: 0,
+      sinProblemas: 0
+    });
+  }
+
+  function calcularClasificacionPacientes(resultados) {
+    const lista = Array.isArray(resultados) ? resultados : [];
+
+    return lista.reduce((conteos, resultado) => {
+      const errores = obtenerErrores(resultado);
+      const advertencias = obtenerAdvertencias(resultado);
+
+      conteos.todos += 1;
+
+      if (errores > 0) {
+        conteos.error += 1;
+      } else if (advertencias > 0) {
+        conteos.advertencia += 1;
+      } else {
+        conteos.ok += 1;
+      }
+
+      return conteos;
+    }, {
+      todos: 0,
+      error: 0,
+      advertencia: 0,
+      ok: 0
+    });
+  }
+
   function crearKeyResultado(resultado, indiceGlobal) {
     const fila = obtenerFilaExcel(resultado);
     const documento = obtenerDocumento(resultado);
@@ -148,69 +196,38 @@
   }
 
   function actualizarResumenVisual(resumen) {
-    const totalFilas = resumen.totalPacientes ?? resumen.resultados?.length ?? 0;
+    const resultados = Array.isArray(resumen.resultados) ? resumen.resultados : [];
+    const pacientes = calcularConteosPacientesDirectos(resultados);
 
-    // Estas tarjetas cuentan filas/pacientes, no hallazgos individuales.
-    // Un mismo paciente puede aparecer en “Con errores” y en “Con advertencias”
-    // si tiene ambos tipos de hallazgo.
-    const filasConErrores = resumen.conErrores
-      ?? resumen.resultados?.filter((r) => obtenerErrores(r) > 0).length
-      ?? 0;
-
-    const filasConAdvertencias = resumen.conAdvertencias
-      ?? resumen.resultados?.filter((r) => obtenerAdvertencias(r) > 0).length
-      ?? 0;
-
-    const filasSoloConAdvertencias = resumen.soloConAdvertencias
-      ?? resumen.resultados?.filter((r) => obtenerErrores(r) === 0 && obtenerAdvertencias(r) > 0).length
-      ?? 0;
-
-    const filasSinHallazgos = resumen.sinProblemas
-      ?? resumen.resultados?.filter((r) => obtenerErrores(r) === 0 && obtenerAdvertencias(r) === 0).length
-      ?? 0;
-
-    // Estos sí cuentan hallazgos individuales.
-    const totalErroresDetectados = resumen.totalErrores
-      ?? resumen.resultados?.reduce((total, r) => total + obtenerErrores(r), 0)
-      ?? 0;
-
-    const totalAdvertenciasDetectadas = resumen.totalAdvertencias
-      ?? resumen.resultados?.reduce((total, r) => total + obtenerAdvertencias(r), 0)
-      ?? 0;
-
+    const totalErroresDetectados = resultados.reduce((total, r) => total + obtenerErrores(r), 0);
+    const totalAdvertenciasDetectadas = resultados.reduce((total, r) => total + obtenerAdvertencias(r), 0);
     const totalHallazgosDetectados = totalErroresDetectados + totalAdvertenciasDetectadas;
 
     const totalPacientesEl = document.getElementById('total-pacientes');
-
-    // Compatibilidad con nombres de IDs usados en distintas versiones del index.html.
-    // El HTML actual usa pacientes-error / pacientes-advertencia / pacientes-ok.
-    // Versiones anteriores usaban total-errores / total-advertencias / total-ok.
     const totalErroresEl = document.getElementById('pacientes-error') || document.getElementById('total-errores');
-    const totalAdvertenciasEl = document.getElementById('pacientes-advertencia') || document.getElementById('total-advertencias');
+    const totalAdvertenciasEl =
+      document.getElementById('pacientes-advertencia') ||
+      document.getElementById('total-advertencias') ||
+      document.getElementById('pacientes-solo-advertencia');
     const totalOkEl = document.getElementById('pacientes-ok') || document.getElementById('total-ok');
     const resumenEl = document.getElementById('resultados-resumen');
 
-    if (totalPacientesEl) totalPacientesEl.textContent = totalFilas;
-    if (totalErroresEl) totalErroresEl.textContent = filasConErrores;
-    if (totalAdvertenciasEl) totalAdvertenciasEl.textContent = filasConAdvertencias;
-    if (totalOkEl) totalOkEl.textContent = filasSinHallazgos;
+    if (totalPacientesEl) totalPacientesEl.textContent = pacientes.total;
+    if (totalErroresEl) totalErroresEl.textContent = pacientes.conErrores;
+    if (totalAdvertenciasEl) totalAdvertenciasEl.textContent = pacientes.conAdvertencias;
+    if (totalOkEl) totalOkEl.textContent = pacientes.sinProblemas;
 
     if (resumenEl) {
       resumenEl.innerHTML = `
-        Validación completa. Se procesaron <strong>${totalFilas}</strong> filas del Excel.
-        <strong>${filasConErrores}</strong> filas tienen al menos un error,
-        <strong>${filasConAdvertencias}</strong> filas tienen al menos una advertencia,
-        <strong>${filasSoloConAdvertencias}</strong> filas tienen solo advertencias y
-        <strong>${filasSinHallazgos}</strong> filas no tienen hallazgos.
+        Validación completa. Se procesaron <strong>${pacientes.total}</strong> pacientes.
+        <strong>${pacientes.conErrores}</strong> tienen errores,
+        <strong>${pacientes.conAdvertencias}</strong> tienen advertencias y
+        <strong>${pacientes.sinProblemas}</strong> no tienen hallazgos.
         <br>
         <span class="resumen-hallazgos">
           Errores detectados: <strong>${totalErroresDetectados}</strong> ·
           Advertencias detectadas: <strong>${totalAdvertenciasDetectadas}</strong> ·
           Hallazgos totales: <strong>${totalHallazgosDetectados}</strong>
-        </span>
-        <br>
-        <span class="resumen-nota">
-          Nota: las tarjetas superiores cuentan filas/pacientes. Una misma fila puede tener varios errores o advertencias.
         </span>
       `;
     }
@@ -254,23 +271,28 @@
     return 'ok';
   }
 
+  function coincideFiltroEstadoResultado(resultado, filtroEstado) {
+    const errores = obtenerErrores(resultado);
+    const advertencias = obtenerAdvertencias(resultado);
+
+    if (filtroEstado === 'error') return errores > 0;
+    if (filtroEstado === 'advertencia') return advertencias > 0;
+    if (filtroEstado === 'ok') return errores === 0 && advertencias === 0;
+
+    return true;
+  }
+
   function obtenerConteosFiltros() {
-    const conteos = {
-      todos: ESTADO_TABLA.resultadosOriginales.length,
-      error: 0,
-      advertencia: 0,
-      ok: 0
+    // Misma regla del panel superior:
+    // contar pacientes directos por condición. Los grupos pueden cruzarse.
+    const pacientes = calcularConteosPacientesDirectos(ESTADO_TABLA.resultadosOriginales);
+
+    return {
+      todos: pacientes.total,
+      error: pacientes.conErrores,
+      advertencia: pacientes.conAdvertencias,
+      ok: pacientes.sinProblemas
     };
-
-    ESTADO_TABLA.resultadosOriginales.forEach((resultado) => {
-      const estado = obtenerFiltroEstadoResultado(resultado);
-
-      if (Object.prototype.hasOwnProperty.call(conteos, estado)) {
-        conteos[estado] += 1;
-      }
-    });
-
-    return conteos;
   }
 
   function establecerTextoElemento(id, valor) {
@@ -316,7 +338,7 @@
 
         <button class="filtro-chip filtro-advertencia" data-filtro-estado="advertencia" type="button" aria-pressed="false">
           <span class="filtro-dot" aria-hidden="true"></span>
-          <span>Advertencias</span>
+          <span>Con advertencias</span>
           <strong id="filtro-conteo-advertencia">0</strong>
         </button>
 
@@ -328,8 +350,7 @@
       </div>
 
       <p id="filtro-resultados-ayuda" class="filtro-ayuda">
-        Prioridad visual: un paciente con error se clasifica en <strong>Errores</strong>, aunque también tenga advertencias.
-      </p>
+        Los filtros cuentan pacientes igual que el panel superior. Un paciente puede aparecer en <strong>Errores</strong> y también en <strong>Con advertencias</strong> si tiene ambos tipos de hallazgos.</p>
     `;
 
     if (tarjetas) {
@@ -381,7 +402,7 @@
     }
 
     if (filtroEstado !== 'todos') {
-      resultados = resultados.filter((resultado) => obtenerFiltroEstadoResultado(resultado) === filtroEstado);
+      resultados = resultados.filter((resultado) => coincideFiltroEstadoResultado(resultado, filtroEstado));
     }
 
     ESTADO_TABLA.resultadosFiltrados = ordenarPorFilaExcel(resultados);
@@ -399,6 +420,26 @@
     ESTADO_TABLA.filtroEstado = estadosPermitidos.includes(estado) ? estado : 'todos';
 
     aplicarFiltrosActivos();
+  }
+
+
+  function sincronizarTarjetasConFiltros() {
+    // Las tarjetas superiores muestran pacientes directos:
+    // con errores y con advertencias pueden cruzarse.
+    const pacientes = calcularConteosPacientesDirectos(ESTADO_TABLA.resultadosOriginales);
+
+    const totalPacientesEl = document.getElementById('total-pacientes');
+    const totalErroresEl = document.getElementById('pacientes-error') || document.getElementById('total-errores');
+    const totalAdvertenciasEl =
+      document.getElementById('pacientes-advertencia') ||
+      document.getElementById('total-advertencias') ||
+      document.getElementById('pacientes-solo-advertencia');
+    const totalOkEl = document.getElementById('pacientes-ok') || document.getElementById('total-ok');
+
+    if (totalPacientesEl) totalPacientesEl.textContent = pacientes.total;
+    if (totalErroresEl) totalErroresEl.textContent = pacientes.conErrores;
+    if (totalAdvertenciasEl) totalAdvertenciasEl.textContent = pacientes.conAdvertencias;
+    if (totalOkEl) totalOkEl.textContent = pacientes.sinProblemas;
   }
 
   function renderizarResultados(resumen) {
@@ -449,7 +490,9 @@
       const documento = obtenerDocumento(resultado);
       const filaExcel = obtenerFilaExcel(resultado);
       const errores = obtenerErrores(resultado);
+      const erroresVista = ESTADO_TABLA.filtroEstado === 'advertencia' ? 0 : errores;
       const advertencias = obtenerAdvertencias(resultado);
+      const advertenciasVista = ESTADO_TABLA.filtroEstado === 'error' ? 0 : advertencias;
       const estado = obtenerEstado(resultado);
       const claseEstado = crearClaseEstado(resultado);
       const detalleAbierto = ESTADO_TABLA.detalleAbiertoKey === key;
@@ -461,8 +504,8 @@
           <strong>Fila Excel ${escaparHTML(filaExcel)}</strong>
           <div class="texto-secundario-tabla">${escaparHTML(documento)}</div>
         </td>
-        <td>${errores}</td>
-        <td>${advertencias}</td>
+        <td>${escaparHTML(erroresVista)}</td>
+        <td>${escaparHTML(advertenciasVista)}</td>
         <td><span class="badge-estado ${claseEstado}">${escaparHTML(estado)}</span></td>
         <td>
           <button class="btn btn-secundario btn-pequeño btn-detalle-paciente" data-key="${escaparHTML(key)}" data-indice="${indiceGlobal}">
@@ -503,8 +546,22 @@
     });
   }
 
+  function obtenerHallazgosVisibles(resultado) {
+    const hallazgos = Array.isArray(resultado.hallazgos) ? resultado.hallazgos : [];
+
+    if (ESTADO_TABLA.filtroEstado === 'error') {
+      return hallazgos.filter((hallazgo) => hallazgo.severidad === 'error');
+    }
+
+    if (ESTADO_TABLA.filtroEstado === 'advertencia') {
+      return hallazgos.filter((hallazgo) => hallazgo.severidad === 'advertencia');
+    }
+
+    return hallazgos;
+  }
+
   function construirDetallePaginado(resultado, key) {
-    const hallazgos = ordenarHallazgos(Array.isArray(resultado.hallazgos) ? resultado.hallazgos : []);
+    const hallazgos = ordenarHallazgos(obtenerHallazgosVisibles(resultado));
     const filaExcel = obtenerFilaExcel(resultado);
     const documento = obtenerDocumento(resultado);
     const totalHallazgos = hallazgos.length;
@@ -524,7 +581,7 @@
       return `
         <div class="detalle-paciente-paginado detalle-ok">
           <h3>Fila Excel ${escaparHTML(filaExcel)} · ${escaparHTML(documento)}</h3>
-          <p>No se encontraron errores ni advertencias para este registro.</p>
+          <p>No se encontraron hallazgos para la vista seleccionada.</p>
         </div>
       `;
     }
