@@ -520,3 +520,349 @@ No se deben documentar reglas inventadas.
 Este documento no está vacío ni inconcluso: queda creado como matriz oficial de reglas de negocio, con estructura completa, reglas generales, reglas conocidas por bloque y control de consolidación.
 
 Lo que queda pendiente es la consolidación variable por variable, que debe hacerse de forma segura por bloques para evitar errores, duplicidades o reglas inventadas.
+
+---
+
+# Reglas de negocio variable por variable — Sprint 1 — V1-V16 Identificación
+
+**Fuente técnica:** `src/validaciones/reglas/modulo1.js`  
+**Estado:** Consolidado desde código implementado  
+**Alcance:** V1-V16  
+**Nota:** Esta sección sí documenta reglas variable por variable. No reemplaza las reglas futuras V17-V134, que deben consolidarse desde sus módulos correspondientes.
+
+---
+
+## V1 — Primer nombre
+
+| Campo | Detalle |
+|---|---|
+| Variable | V1 |
+| Nombre oficial | Primer nombre |
+| Tipo de dato | Texto |
+| Formato | Mayúscula sostenida, sin números ni caracteres no permitidos |
+| Catálogo permitido | No aplica |
+| Comodines permitidos | No aplica |
+| Dependencias | Ninguna |
+| Trazabilidad | Identificación básica del usuario |
+| Reglas de error | Vacío: `V1-ERROR-001`; minúsculas: `V1-ERROR-002`; números: `V1-ERROR-003`; símbolos: `V1-ERROR-004`; punto: `V1-ERROR-005`; tilde: `V1-ERROR-006`; diéresis: `V1-ERROR-008`; apóstrofe: `V1-ERROR-009` |
+| Reglas de advertencia | Letra Ñ: `V1-ERROR-007` con severidad advertencia; espacios dobles: `V1-ADVERTENCIA-010`; espacios al inicio o final: `V1-ADVERTENCIA-011` |
+| Excepciones | La Ñ no se bloquea como error real; se deja como advertencia de revisión contra BDUA o soporte |
+| Archivo implementador | `src/validaciones/reglas/modulo1.js` |
+| Estado | Cerrada funcional |
+
+---
+
+## V2 — Segundo nombre
+
+| Campo | Detalle |
+|---|---|
+| Variable | V2 |
+| Nombre oficial | Segundo nombre |
+| Tipo de dato | Texto |
+| Formato | Mayúscula sostenida |
+| Catálogo permitido | No aplica |
+| Comodines permitidos | `NONE` |
+| Dependencias | Ninguna |
+| Trazabilidad | Identificación básica del usuario |
+| Reglas de error | Vacío: `V2-ERROR-001`; comodín mal escrito: `V2-ERROR-002`; minúsculas: `V2-ERROR-003`; números: `V2-ERROR-004`; símbolos: `V2-ERROR-005`; punto: `V2-ERROR-006`; tilde: `V2-ERROR-007`; guion: `V2-ERROR-008`; numeral `#`: `V2-ERROR-009` |
+| Reglas de advertencia | Espacios dobles: `V2-ADVERTENCIA-010`; espacios al inicio o final: `V2-ADVERTENCIA-011` |
+| Excepciones | `NONE` es válido si está escrito exactamente así, en mayúscula |
+| Archivo implementador | `src/validaciones/reglas/modulo1.js` |
+| Estado | Cerrada funcional |
+
+---
+
+## V3 — Primer apellido
+
+| Campo | Detalle |
+|---|---|
+| Variable | V3 |
+| Nombre oficial | Primer apellido |
+| Tipo de dato | Texto |
+| Formato | Mayúscula sostenida |
+| Catálogo permitido | No aplica |
+| Comodines permitidos | No aplica |
+| Dependencias | Ninguna |
+| Trazabilidad | Identificación básica del usuario |
+| Reglas de error | Vacío: `V3-ERROR-001`; minúsculas: `V3-ERROR-002`; números: `V3-ERROR-003`; símbolos: `V3-ERROR-004`; punto: `V3-ERROR-005`; tilde: `V3-ERROR-006`; guion: `V3-ERROR-007`; numeral `#`: `V3-ERROR-008` |
+| Reglas de advertencia | Espacios dobles: `V3-ADVERTENCIA-009`; espacios al inicio o final: `V3-ADVERTENCIA-010` |
+| Excepciones | No aplica |
+| Archivo implementador | `src/validaciones/reglas/modulo1.js` |
+| Estado | Cerrada funcional |
+
+---
+
+## V4 — Segundo apellido
+
+| Campo | Detalle |
+|---|---|
+| Variable | V4 |
+| Nombre oficial | Segundo apellido |
+| Tipo de dato | Texto |
+| Formato | Mayúscula sostenida |
+| Catálogo permitido | No aplica |
+| Comodines permitidos | `NOAP` |
+| Dependencias | Ninguna |
+| Trazabilidad | Identificación básica del usuario |
+| Reglas de error | Vacío: `V4-ERROR-001`; comodín mal escrito: `V4-ERROR-002`; minúsculas: `V4-ERROR-003`; números: `V4-ERROR-004`; símbolos: `V4-ERROR-005`; punto: `V4-ERROR-006`; tilde: `V4-ERROR-007`; guion: `V4-ERROR-008`; numeral `#`: `V4-ERROR-009` |
+| Reglas de advertencia | Espacios dobles: `V4-ADVERTENCIA-010`; espacios al inicio o final: `V4-ADVERTENCIA-011` |
+| Excepciones | `NOAP` es válido si está escrito exactamente así, en mayúscula |
+| Archivo implementador | `src/validaciones/reglas/modulo1.js` |
+| Estado | Cerrada funcional |
+
+---
+
+## V5 — Tipo de identificación
+
+| Campo | Detalle |
+|---|---|
+| Variable | V5 |
+| Nombre oficial | Tipo de identificación |
+| Tipo de dato | Catálogo |
+| Formato | Código en mayúscula |
+| Catálogo permitido | `CC`, `CE`, `CD`, `PA`, `SC`, `PT`, `PE`, `RC`, `TI`, `CN`, `AS`, `MS`, `DE`, `SI` |
+| Comodines permitidos | No aplica |
+| Dependencias | V6, V7, V10 |
+| Trazabilidad | El tipo de identificación condiciona el formato de V6 y algunas advertencias por edad |
+| Reglas de error | Vacío: `V5-ERROR-001`; fuera de catálogo: `V5-ERROR-002`; minúscula: `V5-ERROR-003`; si V5=`AS` y V10 no es `S`: `V5-ERROR-004`; si V5=`MS` y V10 no es `S`: `V5-ERROR-005` |
+| Reglas de advertencia | `CN` con más de 28 días desde nacimiento: `V5-ADVERTENCIA-006`; `RC` en paciente adulto: `V5-ADVERTENCIA-007`; `TI` en paciente adulto: `V5-ADVERTENCIA-008` |
+| Excepciones | `SI` es permitido, pero genera advertencia en V6 por calidad del dato |
+| Archivo implementador | `src/validaciones/reglas/modulo1.js` |
+| Estado | Cerrada funcional |
+
+---
+
+## V6 — Número de identificación
+
+| Campo | Detalle |
+|---|---|
+| Variable | V6 |
+| Nombre oficial | Número de identificación |
+| Tipo de dato | Texto / numérico según V5 |
+| Formato | Depende del tipo de identificación registrado en V5 |
+| Catálogo permitido | No aplica |
+| Comodines permitidos | No aplica |
+| Dependencias | V5 |
+| Trazabilidad | V6 se valida según el tipo documental de V5 |
+| Reglas de error | Vacío general: `V6-ERROR-001`; caracteres no permitidos: `V6-ERROR-002`; CC no numérica: `V6-ERROR-003`; TI no numérica: `V6-ERROR-004`; RC no numérica: `V6-ERROR-005`; CE no numérica: `V6-ERROR-006` |
+| Reglas especiales AS/MS | Si V5=`AS` o `MS`, V6 debe ser consecutivo interno numérico; vacío: `V6-ERROR-AS-001` o `V6-ERROR-MS-001`; no numérico: `V6-ERROR-AS-002` o `V6-ERROR-MS-002`; más de 17 caracteres: `V6-ERROR-AS-003` o `V6-ERROR-MS-003`; menor a 10 dígitos: `V6-ADVERTENCIA-AS-004` o `V6-ADVERTENCIA-MS-004` |
+| Reglas de advertencia | CC con longitud menor a 6 o mayor a 10: `V6-ADVERTENCIA-008`; TI menor a 6 o mayor a 11: `V6-ADVERTENCIA-009`; RC menor a 8: `V6-ADVERTENCIA-010`; V5=`SI`: `V6-ADVERTENCIA-011` |
+| Excepciones | Para tipos alfanuméricos se permiten letras, números y guion cuando aplique |
+| Archivo implementador | `src/validaciones/reglas/modulo1.js` |
+| Estado | Cerrada funcional |
+
+---
+
+## V7 — Fecha de nacimiento
+
+| Campo | Detalle |
+|---|---|
+| Variable | V7 |
+| Nombre oficial | Fecha de nacimiento |
+| Tipo de dato | Fecha |
+| Formato | `AAAA-MM-DD` |
+| Catálogo permitido | No aplica |
+| Comodines permitidos | No aplica |
+| Dependencias | V5, V9, V16 |
+| Trazabilidad | Se usa para calcular edad y validar coherencias con V5, V9 y V16 |
+| Reglas de error | Vacía: `V7-ERROR-001`; formato incorrecto: `V7-ERROR-002`; fecha imposible: `V7-ERROR-003` |
+| Reglas de advertencia | Edad calculada mayor a 120 años: `V7-ADVERTENCIA-006` |
+| Excepciones | No aplica |
+| Archivo implementador | `src/validaciones/reglas/modulo1.js` |
+| Estado | Cerrada funcional |
+
+---
+
+## V8 — Sexo
+
+| Campo | Detalle |
+|---|---|
+| Variable | V8 |
+| Nombre oficial | Sexo |
+| Tipo de dato | Catálogo |
+| Formato | Código en mayúscula |
+| Catálogo permitido | `M`, `F` |
+| Comodines permitidos | No aplica |
+| Dependencias | Ninguna |
+| Trazabilidad | Identificación básica del usuario |
+| Reglas de error | Vacío: `V8-ERROR-001`; fuera de catálogo: `V8-ERROR-002`; minúscula: `V8-ERROR-003` |
+| Reglas de advertencia | No aplica |
+| Excepciones | No aplica |
+| Archivo implementador | `src/validaciones/reglas/modulo1.js` |
+| Estado | Cerrada funcional |
+
+---
+
+## V9 — Ocupación
+
+| Campo | Detalle |
+|---|---|
+| Variable | V9 |
+| Nombre oficial | Ocupación |
+| Tipo de dato | Código numérico |
+| Formato | 4 dígitos |
+| Catálogo permitido | Código CIUO de 4 dígitos o comodín permitido |
+| Comodines permitidos | `9999`, `9998` |
+| Dependencias | V7 |
+| Trazabilidad | La edad calculada desde V7 se usa para revisar ocupación en menores |
+| Reglas de error | Vacía: `V9-ERROR-001`; no tiene 4 dígitos: `V9-ERROR-002`; contiene letras o símbolos: `V9-ERROR-003` |
+| Reglas de advertencia | Menor de edad con ocupación diferente de `9998`: `V9-ADVERTENCIA-006` |
+| Excepciones | `9998` aplica cuando no corresponde ocupación; `9999` aplica como comodín permitido según regla implementada |
+| Archivo implementador | `src/validaciones/reglas/modulo1.js` |
+| Estado | Cerrada funcional |
+
+---
+
+## V10 — Régimen de afiliación
+
+| Campo | Detalle |
+|---|---|
+| Variable | V10 |
+| Nombre oficial | Régimen de afiliación |
+| Tipo de dato | Catálogo |
+| Formato | Código en mayúscula |
+| Catálogo permitido | `C`, `S`, `P`, `E`, `N`, `I` |
+| Comodines permitidos | No aplica |
+| Dependencias | V5, V16 |
+| Trazabilidad | AS/MS en V5 exigen régimen `S`; V16 puede generar advertencia relacionada con régimen |
+| Reglas de error | Vacío: `V10-ERROR-001`; fuera de catálogo: `V10-ERROR-002`; minúscula: `V10-ERROR-003` |
+| Reglas de advertencia | Participa en `V16-ADVERTENCIA-007` cuando fecha de afiliación es anterior a 1995-01-01 |
+| Excepciones | No aplica |
+| Archivo implementador | `src/validaciones/reglas/modulo1.js` |
+| Estado | Cerrada funcional |
+
+---
+
+## V11 — Código de la EPS
+
+| Campo | Detalle |
+|---|---|
+| Variable | V11 |
+| Nombre oficial | Código de la EPS |
+| Tipo de dato | Texto / código |
+| Formato | Código de EPS/EAPB o entidad territorial |
+| Catálogo permitido | Pendiente de catálogo específico en código |
+| Comodines permitidos | No documentado en módulo 1 |
+| Dependencias | Ninguna |
+| Trazabilidad | Identificación administrativa del usuario |
+| Reglas de error | Vacío: `V11-ERROR-001` |
+| Reglas de advertencia | No aplica en módulo 1 |
+| Excepciones | El módulo 1 sólo valida obligatoriedad; no valida catálogo de EPS |
+| Archivo implementador | `src/validaciones/reglas/modulo1.js` |
+| Estado | Cerrada funcional |
+
+---
+
+## V12 — Pertenencia étnica
+
+| Campo | Detalle |
+|---|---|
+| Variable | V12 |
+| Nombre oficial | Pertenencia étnica |
+| Tipo de dato | Catálogo numérico |
+| Formato | Número |
+| Catálogo permitido | `1`, `2`, `3`, `4`, `5`, `6` |
+| Comodines permitidos | No aplica |
+| Dependencias | Ninguna |
+| Trazabilidad | Identificación poblacional del usuario |
+| Reglas de error | Vacía: `V12-ERROR-001`; fuera de catálogo: `V12-ERROR-002`; no numérica: `V12-ERROR-003` |
+| Reglas de advertencia | No aplica |
+| Excepciones | No aplica |
+| Archivo implementador | `src/validaciones/reglas/modulo1.js` |
+| Estado | Cerrada funcional |
+
+---
+
+## V13 — Grupo poblacional
+
+| Campo | Detalle |
+|---|---|
+| Variable | V13 |
+| Nombre oficial | Grupo poblacional |
+| Tipo de dato | Catálogo numérico |
+| Formato | Número |
+| Catálogo permitido | `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, `10`, `11`, `12`, `13`, `14`, `15`, `16`, `31`, `32`, `33`, `34`, `35`, `36`, `37`, `38`, `39`, `50`, `51`, `52`, `53`, `54`, `55`, `56`, `57`, `58`, `59`, `60`, `61`, `62`, `63` |
+| Comodines permitidos | No aplica |
+| Dependencias | Ninguna |
+| Trazabilidad | Identificación poblacional del usuario |
+| Reglas de error | Vacío: `V13-ERROR-001`; fuera de catálogo: `V13-ERROR-002`; no numérico: `V13-ERROR-003` |
+| Reglas de advertencia | No aplica |
+| Excepciones | No aplica |
+| Archivo implementador | `src/validaciones/reglas/modulo1.js` |
+| Estado | Cerrada funcional |
+
+---
+
+## V14 — Municipio de residencia
+
+| Campo | Detalle |
+|---|---|
+| Variable | V14 |
+| Nombre oficial | Municipio de residencia |
+| Tipo de dato | Código DIVIPOLA |
+| Formato | 5 dígitos numéricos |
+| Catálogo permitido | Código DIVIPOLA municipal |
+| Comodines permitidos | No aplica |
+| Dependencias | Ninguna |
+| Trazabilidad | Identificación territorial del usuario |
+| Reglas de error | Vacío: `V14-ERROR-001`; no tiene 5 dígitos: `V14-ERROR-002`; contiene letras, espacios o símbolos: `V14-ERROR-003` |
+| Reglas de advertencia | No aplica |
+| Excepciones | No aplica |
+| Archivo implementador | `src/validaciones/reglas/modulo1.js` |
+| Estado | Cerrada funcional |
+
+---
+
+## V15 — Número telefónico
+
+| Campo | Detalle |
+|---|---|
+| Variable | V15 |
+| Nombre oficial | Número telefónico |
+| Tipo de dato | Texto numérico |
+| Formato | Uno o dos teléfonos; si hay dos, separados por guion medio |
+| Catálogo permitido | No aplica |
+| Comodines permitidos | `0` |
+| Dependencias | Ninguna |
+| Trazabilidad | Dato de contacto del usuario |
+| Reglas de error | Vacío sin usar `0`: `V15-ERROR-001`; más de dos teléfonos: `V15-ERROR-002`; caracteres no permitidos: `V15-ERROR-003`; separador incorrecto como coma, punto y coma, slash o barra vertical: `V15-ERROR-004` |
+| Reglas de advertencia | Teléfono posiblemente incompleto: `V15-ADVERTENCIA-005`; teléfono con longitud inusual mayor a 10 dígitos: `V15-ADVERTENCIA-006`; uso de `0` sin teléfono reportado: `V15-ADVERTENCIA-007` |
+| Excepciones | El módulo elimina espacios internos para evitar falsos positivos cuando la BD entrega teléfonos como `3154247281 - 3104879168` |
+| Archivo implementador | `src/validaciones/reglas/modulo1.js` |
+| Estado | Cerrada funcional |
+
+---
+
+## V16 — Fecha de afiliación
+
+| Campo | Detalle |
+|---|---|
+| Variable | V16 |
+| Nombre oficial | Fecha de afiliación |
+| Tipo de dato | Fecha |
+| Formato | `AAAA-MM-DD` |
+| Catálogo permitido | No aplica |
+| Comodines permitidos | No aplica |
+| Dependencias | V7, V10 |
+| Trazabilidad | La fecha de afiliación no puede ser anterior a la fecha de nacimiento |
+| Reglas de error | Vacía: `V16-ERROR-001`; formato incorrecto: `V16-ERROR-002`; fecha imposible: `V16-ERROR-003`; fecha de afiliación anterior al nacimiento: `V16-ERROR-004` |
+| Reglas de advertencia | Fecha de afiliación anterior a `1995-01-01`: `V16-ADVERTENCIA-007` |
+| Excepciones | La fecha anterior a 1995 no se bloquea automáticamente; queda como advertencia de revisión contra BDUA o soporte |
+| Archivo implementador | `src/validaciones/reglas/modulo1.js` |
+| Estado | Cerrada funcional |
+
+---
+
+## Estado de consolidación del bloque V1-V16
+
+| Elemento | Estado |
+|---|---|
+| Variables documentadas | V1-V16 |
+| Fuente usada | `src/validaciones/reglas/modulo1.js` |
+| Reglas de error | Consolidadas desde código |
+| Reglas de advertencia | Consolidadas desde código |
+| Dependencias | Consolidadas desde código |
+| Estado del bloque | Consolidado desde implementación |
+| Errores modificados | No |
+| Advertencias modificadas | No |
+
