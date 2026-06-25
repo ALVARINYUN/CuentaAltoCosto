@@ -1,10 +1,10 @@
-# Historias de Usuario — Validador CAC
+﻿# Historias de Usuario — Validador CAC
 
-**Proyecto:** Validador CAC — Cáncer
-**Versión:** 4.0
-**Estado actual:** avance funcional validado hasta **V134**
-**Siguiente fase:** ajuste de advertencias en APP, documentación y auditoría global
-**Fecha de actualización:** Junio 2026
+**Proyecto:** Validador CAC — Cáncer  
+**Versión:** 4.1  
+**Estado actual:** avance funcional validado hasta **V134**  
+**Siguiente fase:** ajuste de advertencias en APP, documentación y auditoría global  
+**Fecha de actualización:** Junio 2026  
 
 ---
 
@@ -12,15 +12,15 @@
 
 Este documento reúne las historias de usuario del **Validador CAC — Cáncer**.
 
-Su función es orientar el desarrollo desde las necesidades reales del proceso: cargar archivos, validar información, revisar hallazgos, exportar reportes, consultar la matriz funcional y mantener trazabilidad técnica y documental.
+Su función es orientar el desarrollo desde las necesidades reales del proceso: cargar archivos, validar información, revisar hallazgos, exportar reportes, consultar documentación funcional y mantener trazabilidad técnica y documental.
 
-Esta versión deja el backlog alineado con el estado actual del proyecto: validación acumulativa cerrada de **V1 a V134** y fase actual enfocada en depurar advertencias sin modificar errores cerrados.
+Esta versión deja las historias de usuario alineadas con el estado actual del proyecto: validación acumulativa cerrada de **V1 a V134** y fase actual enfocada en depurar advertencias sin modificar errores cerrados.
 
 ---
 
-## 2. Reglas del backlog
+## 2. Reglas de las historias de usuario
 
-1. No se reutilizan IDs.
+1. Los IDs de historias se mantienen ordenados en esta versión documental.
 2. Cada historia debe tener valor funcional claro.
 3. Cada sprint debe entregar algo usable.
 4. Las validaciones se implementan por bloques funcionales.
@@ -28,34 +28,35 @@ Esta versión deja el backlog alineado con el estado actual del proyecto: valida
 6. No se inventan reglas.
 7. Las variables cerradas no se rompen al agregar o ajustar otras.
 8. Los errores cerrados no se modifican en la fase actual.
-9. La fase actual se enfoca sólo en advertencias, especialmente falsos positivos por comodines permitidos.
+9. La fase de advertencias se enfoca sólo en advertencias, especialmente falsos positivos por comodines permitidos.
 10. Si un valor está permitido por instructivo y no tiene condición adicional, no debe generar advertencia.
 11. Si un valor permitido exige soporte, catálogo, trazabilidad o revisión clínica, puede mantenerse como advertencia justificada.
 12. La documentación debe reflejar el estado real del sistema: **V1-V134 cerrado funcionalmente**.
-13. La matriz funcional debe mantenerse como fuente documental central.
-14. No se debe duplicar la matriz en JavaScript si ya existe como documento `.md`.
+13. La matriz de variables debe mantenerse como inventario documental de variables.
+14. La matriz de reglas de negocio debe mantenerse como fuente documental de reglas, trazabilidad, errores, advertencias y excepciones.
+15. No se debe duplicar la matriz completa en JavaScript si ya existe como documento `.md`.
 
 ---
 
 ## 3. Perfiles
 
-| Perfil                     | Descripción                                                          |
-| -------------------------- | -------------------------------------------------------------------- |
-| Digitador                  | Registra, corrige o carga datos de pacientes.                        |
-| Analista de calidad        | Revisa errores, advertencias y soportes antes del reporte.           |
-| Auditor CAC                | Verifica cumplimiento frente al instructivo y soportes.              |
-| Coordinador del programa   | Consulta indicadores, avance y calidad del dato.                     |
-| Administrador              | Mantiene catálogos, documentación y configuración.                   |
+| Perfil | Descripción |
+|---|---|
+| Digitador | Registra, corrige o carga datos de pacientes. |
+| Analista de calidad | Revisa errores, advertencias y soportes antes del reporte. |
+| Auditor CAC | Verifica cumplimiento frente al instructivo y soportes. |
+| Coordinador del programa | Consulta indicadores, avance y calidad del dato. |
+| Administrador | Mantiene catálogos, documentación y configuración. |
 | Desarrollador / mantenedor | Actualiza reglas, módulos, catálogos, documentación y exportaciones. |
 
 ---
 
 # Historias de usuario funcionales
 
-## HU-004 — Cargar archivo Excel CAC
+## HU-001 — Cargar archivo Excel CAC
 
-**Como** analista de calidad,
-**quiero** cargar un archivo Excel del reporte CAC,
+**Como** analista de calidad,  
+**quiero** cargar un archivo Excel del reporte CAC,  
 **para** validarlo localmente antes del envío.
 
 **Criterios de aceptación:**
@@ -71,10 +72,10 @@ Esta versión deja el backlog alineado con el estado actual del proyecto: valida
 
 ---
 
-## HU-005 — Validar estructura del archivo cargado
+## HU-002 — Validar estructura del archivo cargado
 
-**Como** analista de calidad,
-**quiero** que el sistema reconozca la estructura del Excel,
+**Como** analista de calidad,  
+**quiero** que el sistema reconozca la estructura del Excel,  
 **para** saber si la hoja puede validarse correctamente.
 
 **Criterios de aceptación:**
@@ -91,10 +92,10 @@ Esta versión deja el backlog alineado con el estado actual del proyecto: valida
 
 ---
 
-## HU-010 — Validar identificación V1-V16
+## HU-003 — Validar identificación V1-V16
 
-**Como** analista de calidad,
-**quiero** validar los datos de identificación del usuario,
+**Como** analista de calidad,  
+**quiero** validar los datos de identificación del usuario,  
 **para** detectar inconsistencias básicas antes de revisar los módulos clínicos.
 
 **Criterios de aceptación:**
@@ -110,10 +111,10 @@ Esta versión deja el backlog alineado con el estado actual del proyecto: valida
 
 ---
 
-## HU-011 — Validar diagnóstico V17-V44
+## HU-004 — Validar diagnóstico V17-V44
 
-**Como** analista de calidad,
-**quiero** validar diagnóstico, estadificación y antecedentes,
+**Como** analista de calidad,  
+**quiero** validar diagnóstico, estadificación y antecedentes,  
 **para** revisar coherencia clínica inicial del cáncer reportado.
 
 **Criterios de aceptación:**
@@ -132,10 +133,10 @@ Esta versión deja el backlog alineado con el estado actual del proyecto: valida
 
 ---
 
-## HU-012 — Validar terapia sistémica V45-V73
+## HU-005 — Validar terapia sistémica V45-V73
 
-**Como** analista de calidad,
-**quiero** validar terapia sistémica e intratecal,
+**Como** analista de calidad,  
+**quiero** validar terapia sistémica e intratecal,  
 **para** revisar esquemas, ciclos, medicamentos, IPS, fechas y finalización.
 
 **Criterios de aceptación:**
@@ -160,10 +161,10 @@ Esta versión deja el backlog alineado con el estado actual del proyecto: valida
 
 ---
 
-## HU-013 — Validar cirugía V74-V85
+## HU-006 — Validar cirugía V74-V85
 
-**Como** analista de calidad,
-**quiero** validar las cirugías realizadas durante el periodo,
+**Como** analista de calidad,  
+**quiero** validar las cirugías realizadas durante el periodo,  
 **para** revisar procedimientos quirúrgicos, IPS, fechas y estado vital quirúrgico.
 
 **Criterios de aceptación:**
@@ -182,10 +183,10 @@ Esta versión deja el backlog alineado con el estado actual del proyecto: valida
 
 ---
 
-## HU-014 — Validar radioterapia V86-V105
+## HU-007 — Validar radioterapia V86-V105
 
-**Como** analista de calidad,
-**quiero** validar radioterapia del periodo,
+**Como** analista de calidad,  
+**quiero** validar radioterapia del periodo,  
 **para** revisar sesiones, esquemas, IPS, CUPS, fechas y finalización.
 
 **Criterios de aceptación:**
@@ -205,10 +206,10 @@ Esta versión deja el backlog alineado con el estado actual del proyecto: valida
 
 ---
 
-## HU-015 — Validar trasplante V106-V110
+## HU-008 — Validar trasplante V106-V110
 
-**Como** analista de calidad,
-**quiero** validar trasplante de células progenitoras hematopoyéticas,
+**Como** analista de calidad,  
+**quiero** validar trasplante de células progenitoras hematopoyéticas,  
 **para** revisar si fue realizado, su tipo, ubicación, fecha e IPS.
 
 **Criterios de aceptación:**
@@ -227,10 +228,10 @@ Esta versión deja el backlog alineado con el estado actual del proyecto: valida
 
 ---
 
-## HU-016 — Validar tratamiento complementario V111-V124
+## HU-009 — Validar tratamiento complementario V111-V124
 
-**Como** analista de calidad,
-**quiero** validar tratamiento complementario,
+**Como** analista de calidad,  
+**quiero** validar tratamiento complementario,  
 **para** revisar cirugía reconstructiva, cuidado paliativo, psiquiatría, nutrición, soporte nutricional y terapias complementarias.
 
 **Criterios de aceptación:**
@@ -254,10 +255,10 @@ Esta versión deja el backlog alineado con el estado actual del proyecto: valida
 
 ---
 
-## HU-017 — Validar situación final V125-V134
+## HU-010 — Validar situación final V125-V134
 
-**Como** analista de calidad,
-**quiero** validar la situación final del usuario a la fecha de corte,
+**Como** analista de calidad,  
+**quiero** validar la situación final del usuario a la fecha de corte,  
 **para** revisar tratamiento actual, resultado, estado vital, novedades, fechas administrativas y cierre del reporte.
 
 **Criterios de aceptación:**
@@ -280,10 +281,10 @@ Esta versión deja el backlog alineado con el estado actual del proyecto: valida
 
 ---
 
-## HU-021 — Cargar catálogo ATC
+## HU-011 — Cargar catálogo ATC
 
-**Como** desarrollador o mantenedor,
-**quiero** cargar y usar el catálogo ATC,
+**Como** desarrollador o mantenedor,  
+**quiero** cargar y usar el catálogo ATC,  
 **para** validar medicamentos antineoplásicos y terapias hormonales reportadas.
 
 **Criterios de aceptación:**
@@ -299,10 +300,10 @@ Esta versión deja el backlog alineado con el estado actual del proyecto: valida
 
 ---
 
-## HU-022 — Cargar catálogo CUPS
+## HU-012 — Cargar catálogo CUPS
 
-**Como** desarrollador o mantenedor,
-**quiero** usar catálogo CUPS,
+**Como** desarrollador o mantenedor,  
+**quiero** usar catálogo CUPS,  
 **para** validar procedimientos quirúrgicos y radioterapia.
 
 **Criterios de aceptación:**
@@ -317,10 +318,10 @@ Esta versión deja el backlog alineado con el estado actual del proyecto: valida
 
 ---
 
-## HU-023 — Cargar catálogo CIE-10
+## HU-013 — Cargar catálogo CIE-10
 
-**Como** desarrollador o mantenedor,
-**quiero** usar catálogo CIE-10,
+**Como** desarrollador o mantenedor,  
+**quiero** usar catálogo CIE-10,  
 **para** validar diagnóstico principal y antecedentes.
 
 **Criterios de aceptación:**
@@ -335,10 +336,10 @@ Esta versión deja el backlog alineado con el estado actual del proyecto: valida
 
 ---
 
-## HU-027 — Ver cumplimiento general
+## HU-014 — Ver cumplimiento general
 
-**Como** coordinador o analista de calidad,
-**quiero** ver un resumen general de la validación,
+**Como** coordinador o analista de calidad,  
+**quiero** ver un resumen general de la validación,  
 **para** conocer rápidamente el estado del archivo.
 
 **Criterios de aceptación:**
@@ -355,10 +356,10 @@ Esta versión deja el backlog alineado con el estado actual del proyecto: valida
 
 ---
 
-## HU-030 — Exportar Excel de validación
+## HU-015 — Exportar Excel de validación
 
-**Como** analista de calidad,
-**quiero** exportar el Excel validado con marcas,
+**Como** analista de calidad,  
+**quiero** exportar el Excel validado con marcas,  
 **para** revisar o compartir evidencia de errores y advertencias.
 
 **Criterios de aceptación:**
@@ -376,10 +377,10 @@ Esta versión deja el backlog alineado con el estado actual del proyecto: valida
 
 ---
 
-## HU-035 — Mensajes de error claros
+## HU-016 — Mensajes de error claros
 
-**Como** analista de calidad,
-**quiero** recibir mensajes claros y operativos,
+**Como** analista de calidad,  
+**quiero** recibir mensajes claros y operativos,  
 **para** entender qué corregir y en qué variable.
 
 **Criterios de aceptación:**
@@ -395,10 +396,10 @@ Esta versión deja el backlog alineado con el estado actual del proyecto: valida
 
 ---
 
-## HU-036 — Funcionamiento local y privacidad
+## HU-017 — Funcionamiento local y privacidad
 
-**Como** responsable del proceso,
-**quiero** que la validación funcione localmente,
+**Como** responsable del proceso,  
+**quiero** que la validación funcione localmente,  
 **para** proteger la información de pacientes.
 
 **Criterios de aceptación:**
@@ -413,10 +414,10 @@ Esta versión deja el backlog alineado con el estado actual del proyecto: valida
 
 ---
 
-## HU-039 — Ejecutar aplicación localmente
+## HU-018 — Ejecutar aplicación localmente
 
-**Como** usuario del proyecto,
-**quiero** abrir la aplicación en servidor local,
+**Como** usuario del proyecto,  
+**quiero** abrir la aplicación en servidor local,  
 **para** validar archivos sin depender de infraestructura externa.
 
 **Criterios de aceptación:**
@@ -431,28 +432,30 @@ Esta versión deja el backlog alineado con el estado actual del proyecto: valida
 
 ---
 
-## HU-040 — Consultar matriz funcional V1-V134
+## HU-019 — Consultar matriz funcional V1-V134
 
-**Como** analista, auditor o desarrollador,
-**quiero** consultar la matriz funcional completa desde la documentación o desde la app,
-**para** revisar reglas, dependencias, comodines y severidades.
+**Como** analista, auditor o desarrollador,  
+**quiero** consultar la matriz funcional completa desde la documentación o desde la app,  
+**para** revisar variables, reglas, dependencias, comodines y severidades.
 
 **Criterios de aceptación:**
 
-* Existe matriz funcional actualizada por variable V1-V134.
-* La matriz indica módulo, tipo de dato, formato, comodines, dependencias, reglas, soporte y severidad.
-* La app puede enlazar o mostrar el documento `.md`.
+* Existe matriz de variables actualizada por variable V1-V134.
+* Existe matriz de reglas de negocio V1-V134 como documento separado.
+* La matriz de variables indica módulo, tipo de dato, formato, comodines, dependencias, soporte y severidad cuando aplique.
+* La matriz de reglas documenta reglas, errores, advertencias, excepciones y trazabilidad.
+* La app puede enlazar o mostrar los documentos `.md`.
 * No se duplica la matriz completa en JavaScript.
-* El documento `.md` es la fuente documental central.
+* Los documentos `.md` son fuente documental central.
 
 **Estado:** Documentación actualizada; visualización en APP pendiente o en mejora.
 
 ---
 
-## HU-041 — Ajustar advertencias sin tocar errores
+## HU-020 — Ajustar advertencias sin tocar errores
 
-**Como** desarrollador o mantenedor,
-**quiero** depurar advertencias falsas,
+**Como** desarrollador o mantenedor,  
+**quiero** depurar advertencias falsas,  
 **para** que la APP no alerte sobre valores permitidos por el instructivo.
 
 **Criterios de aceptación:**
@@ -472,18 +475,19 @@ Esta versión deja el backlog alineado con el estado actual del proyecto: valida
 
 ---
 
-## HU-042 — Mantener documentación del proyecto actualizada
+## HU-021 — Mantener documentación del proyecto actualizada
 
-**Como** desarrollador o mantenedor,
-**quiero** actualizar la documentación del proyecto,
+**Como** desarrollador o mantenedor,  
+**quiero** actualizar la documentación del proyecto,  
 **para** que no existan incoherencias entre avance real, reglas y archivos técnicos.
 
 **Criterios de aceptación:**
 
 * Los documentos no deben decir V66, V86 o variable pendiente si ya está cerrado hasta V134.
 * El estado funcional debe indicar V1-V134.
-* La fase actual debe indicar ajuste de advertencias y auditoría global.
-* La matriz funcional debe contener variables V1-V134.
+* La fase actual debe indicar ajuste de advertencias, documentación y auditoría global.
+* La matriz de variables debe contener variables V1-V134.
+* La matriz de reglas de negocio debe existir como documento separado.
 * Los casos de uso deben reflejar todos los bloques funcionales.
 * Las historias de usuario deben reflejar los módulos cerrados.
 * La documentación debe ser clara, práctica y útil para continuar sin perder trazabilidad.
@@ -494,38 +498,39 @@ Esta versión deja el backlog alineado con el estado actual del proyecto: valida
 
 # Mapeo de avance
 
-| Sprint / Bloque                   | Objetivo                                          | Estado           |
-| --------------------------------- | ------------------------------------------------- | ---------------- |
-| Sprint 1                          | Carga, estructura y V1-V16                        | Cerrado          |
-| Sprint 2A                         | Diagnóstico V17-V24                               | Cerrado          |
-| Sprint 2B                         | Confirmación, histología y diferenciación V25-V28 | Cerrado          |
-| Sprint 2C                         | Estadificación inicial V29                        | Cerrado          |
-| Sprint 2D                         | Fechas y marcadores V30-V33                       | Cerrado          |
-| Sprint 2E                         | Dukes V34-V35                                     | Cerrado          |
-| Sprint 3A                         | Linfomas, mieloma y riesgo V36-V40                | Cerrado          |
-| Sprint 3B                         | Intervención y antecedentes V41-V44               | Cerrado          |
-| Sprint 3C-3H                      | Terapia sistémica V45-V73                         | Cerrado          |
-| Módulo cirugía                    | Cirugía V74-V85                                   | Cerrado          |
-| Módulo radioterapia               | Radioterapia V86-V105                             | Cerrado          |
-| Módulo trasplante                 | Trasplante V106-V110                              | Cerrado          |
-| Módulo tratamiento complementario | V111-V124                                         | Cerrado          |
-| Módulo situación final            | V125-V134                                         | Cerrado          |
-| Fase actual                       | Ajuste de advertencias en APP                     | En curso         |
-| Documentación                     | Matriz, casos de uso e historias                  | En actualización |
+| Sprint / Bloque | Objetivo | Estado |
+|---|---|---|
+| Sprint 1 | Carga, estructura y V1-V16 | Cerrado |
+| Sprint 2A | Diagnóstico V17-V24 | Cerrado |
+| Sprint 2B | Confirmación, histología y diferenciación V25-V28 | Cerrado |
+| Sprint 2C | Estadificación inicial V29 | Cerrado |
+| Sprint 2D | Fechas y marcadores V30-V33 | Cerrado |
+| Sprint 2E | Dukes V34-V35 | Cerrado |
+| Sprint 3A | Linfomas, mieloma y riesgo V36-V40 | Cerrado |
+| Sprint 3B | Intervención y antecedentes V41-V44 | Cerrado |
+| Sprint 3C-3H | Terapia sistémica V45-V73 | Cerrado |
+| Módulo cirugía | Cirugía V74-V85 | Cerrado |
+| Módulo radioterapia | Radioterapia V86-V105 | Cerrado |
+| Módulo trasplante | Trasplante V106-V110 | Cerrado |
+| Módulo tratamiento complementario | V111-V124 | Cerrado |
+| Módulo situación final | V125-V134 | Cerrado |
+| Fase actual | Ajuste de advertencias, documentación y auditoría global | En curso |
+| Documentación | Backlog, matriz de variables, matriz de reglas, casos de uso e historias | En actualización |
 
 ---
 
 # Resumen
 
-| Concepto                | Estado                                       |
-| ----------------------- | -------------------------------------------- |
-| Avance funcional actual | V1-V134                                      |
-| Variables cerradas      | V1-V134                                      |
-| Siguiente variable      | Ninguna                                      |
-| Catálogo CIE-10         | Disponible                                   |
-| Catálogo CUPS           | Disponible                                   |
-| Catálogo ATC            | Disponible                                   |
-| Bloque actual           | Ajuste de advertencias                       |
-| Restricción principal   | No tocar errores cerrados                    |
-| Matriz funcional        | Actualizada por variable V1-V134             |
-| Pendiente operativo     | Mostrar matriz en APP y auditar advertencias |
+| Concepto | Estado |
+|---|---|
+| Avance funcional actual | V1-V134 |
+| Variables cerradas | V1-V134 |
+| Siguiente variable | Ninguna |
+| Catálogo CIE-10 | Disponible |
+| Catálogo CUPS | Disponible |
+| Catálogo ATC | Disponible |
+| Bloque actual | Documentación, reglas de negocio y ajuste de advertencias |
+| Restricción principal | No tocar errores cerrados |
+| Matriz de variables | Actualizada por variable V1-V134 |
+| Matriz de reglas de negocio | Creada como documento separado V1-V134 |
+| Pendiente operativo | Consolidar reglas por bloque, mostrar matriz en APP y auditar advertencias |
